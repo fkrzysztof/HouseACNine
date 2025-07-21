@@ -1,0 +1,25 @@
+﻿@using System.Globalization
+@model Data.Data.HouseRentalData.RentalHouse
+
+
+<div class="row no-gutters">
+    <div class="col-sm-12 p-3 text-sm-left">
+        <h2>Dzkiękujemy za rezerwacje</h2>
+    </div>
+    <div class="col-12 p-3">
+        <h5>Wybrany termin:</h5>
+        @*  <h4>@newRental.From.Date.ToShortDateString()  - @newRental.To.Date.ToShortDateString() </h4> *@
+        <h5>@Model.From.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))  </h5>
+        <h5>@Model.To.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))  </h5>
+        <h6>@Model.HowManyDaysFromSelect Nocy</h6>
+    </div>
+    <div class="col-sm-12 p-3 text-sm-left">
+        <h5>Do zapłaty:</h5>
+        <h4>@Model.ToPay.ToString("C", CultureInfo.CurrentCulture)</h4>
+    </div>
+    @*     <div class="col-sm-12 p-3 text-sm-right">
+        Dalsze instrukcje znajdziesz na swoim e-mailu: @Model.RentalClient.Email
+    </div> *@
+
+
+</div>

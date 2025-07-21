@@ -1,0 +1,129 @@
+﻿@model Data.Data.HouseRentalData.RentalClient 
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4>Moja rezerwacja</h4>
+<hr />
+<form asp-action="Create">
+    <div class="row">
+        <div class="col-xl-8 order-2 order-xl-1">
+
+            <div class="row">
+                <div class="col-sm-6">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+
+
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label asp-for="Phone" class="control-label"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label asp-for="City" class="control-label"></label>
+                        <input asp-for="City" class="form-control" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label asp-for="Street" class="control-label"></label>
+                        <input asp-for="Street" class="form-control" />
+                        <span asp-validation-for="Street" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-6 form-group">
+                            <label asp-for="Number" class="control-label"></label>
+                            <input asp-for="Number" class="form-control" />
+                            <span asp-validation-for="Number" class="text-danger"></span>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label asp-for="ZIPCode" class="control-label"></label>
+                            <input asp-for="ZIPCode" class="form-control" />
+                            <span asp-validation-for="ZIPCode" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label asp-for="Country" class="control-label"></label>
+                        <input asp-for="Country" class="form-control" />
+                        <span asp-validation-for="Country" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+                <div class="col-md-4 col-12">
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="col-xl-4 order-1 order-xl-2">
+
+            @using System.Globalization
+            @using Data.Data.HouseRentalData
+            @{
+                RentalHouse newRental = ViewBag.NewRentalInfo;
+            }
+
+            <div class="row no-gutters">
+                <div class="col-12 p-3">
+                    <h5>Wybrany termin:</h5>
+                    @*  <h4>@newRental.From.Date.ToShortDateString()  - @newRental.To.Date.ToShortDateString() </h4> *@
+                    <h5>@newRental.From.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))  </h5>
+                    <h5>@newRental.To.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))  </h5>
+                    <h6>@newRental.HowManyDaysFromSelect Nocy</h6>
+                </div>
+                <div class="col-sm-12 p-3 text-sm-left">
+                    <h5>Do zapłaty:</h5>
+                    <h4>@newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</h4>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+
+</form>

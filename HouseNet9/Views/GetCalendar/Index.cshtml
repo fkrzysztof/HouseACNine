@@ -1,0 +1,285 @@
+﻿@using System.Globalization
+@model Data.Data.HouseRentalData.House
+
+@* <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/newCalendar.js" asp-append-version="true"></script> *@
+
+
+<!-- <div id="info"></div>  *** sekcja Info stara wersja   -->
+<div class="row no-gutters">
+
+    <div class="col-sm-12 justify-content-between">
+        <form asp-action="Create" class="RentalHouseForm">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input name="HouseId" type="hidden" value="@Model.HouseId" />
+
+
+            @**************************************** Kalendarz rezerwacji START ***************************@
+
+            <div class="col-xl-12 p-sm-4">
+                <!-- How many days -->
+
+                <div class="row justify-content-center m-sm-4">
+                    <div class="col-xl-12 p-sm-4">
+                        <select id="HowManyDaysSelect" class="form-select-lg" name="HowManyDaysFromSelect">
+                            <option value="13">14 Dni</option>
+                            <option selected="selected" value="6">7 Dni</option>
+                        </select>
+
+                        @*  <div class="flipswitch">
+                            <input type="checkbox" checked="" id="fs" class="flipswitch-cb" name="HowManyDaysFromSelect">
+                                <label for="fs" class="flipswitch-label">
+                                    <div class="flipswitch-inner"></div>
+                                    <div class="flipswitch-switch"></div>
+                                </label>
+                            </div> *@
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 m-0">
+                <div class="row no-gutters justify-content-between">
+
+                    <div class="col-xl-8 rounded order-2 order-xl-1">
+                        <!-- 2x kalendarze -->
+
+                        <div class="row justify-content-center">
+                            @**************************************** kalendarz 1 START ****************************@
+                            <div class="col-lg-6 p-0 text-center">
+                                @{
+                                    //wyswietlam date
+                                    <div class="mb-5 mt-1">
+                                        <a asp-action="Index" asp-route-id="@Model.HouseId" asp-route-navigation="previous" id="previous">
+                                            <i class="fas fa-chevron-left float-left Calendar-navi"></i>
+                                        </a>
+                                        @{
+                                            //wyswietlanie aktualnego miesiaca
+                                            var calendar = ViewBag.CalendarPage as List<DateTime>;
+                                            <h5 class="m-2">@ViewBag.MonthString</h5>
+                                        }
+                                    </div>
+                                    //wyswietlam dni tygodnia
+                                    @foreach (string day in @ViewBag.DaysOfWeek)
+                                    {
+                                        <div class="d-inline-block rounded align-middle day"><small>@day</small> </div>
+                                    }
+
+                                    <div class="text-dark horizontal-line">
+                                    </div>
+                                    if(calendar != null)
+                                    foreach (var item in calendar)
+                                    {
+                                        //sprawdzam czy to poniedzialek i czy nie jest to pierwszy dzien miesiaca - jesli tak dodaje diva aby oddzielić tydzien
+                                        if (@item.DayOfWeek == DayOfWeek.Monday && @item != calendar.ElementAt(0))
+                                        {
+                                            <div class="bg-dark m-0 p-0"></div>
+                                        }
+
+
+                                        //nie wyswietlam dni innych miesiecy - opcjonalnie
+                                        if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth))
+                                        {
+                                            <div class="rounded btn-group-toggle d-inline-block mt-1 invisible" data-toggle="buttons">
+                                                <label class="btn active day">
+                                                    <input type="radio" disabled autocomplete="off">
+                                                    x
+                                                </label>
+                                            </div>
+                                            continue;
+                                        }
+
+                                        //sprawdzam czy dzien jest zajety -- ZAJETY
+                                        if (Model.RentalHouses != null && Model.RentalHouses.FirstOrDefault(f => f.From.CompareTo(item) <= 0 && f.To.CompareTo(item) >= 0 && f.IsActive == true) != null)
+                                        {
+                                            <div class="rounded btn-group-toggle d-inline-block mt-1 rented" data-toggle="buttons">
+                                                <label class="btn btn-danger active day">
+                                                    <input type="radio" disabled autocomplete="off">
+                                                    @{
+                                                        if (item.CompareTo(DateTime.Now.Date) == 0)
+                                                        {
+                                                            <span class="mark-today">@item.Day</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.Day
+                                                        }
+                                                    }
+                                                </label>
+                                            </div>
+                                        }
+                                        //Dzien jest -- WOLNY
+                                        else
+                                        {
+                                            //Ten dzien juz był.. brak moziwosci rezerwacji
+                                            if (@item.CompareTo(DateTime.Now.Date) < 0)
+                                            {
+                                                <div class="rounded btn-group-toggle d-inline-block mt-1" data-toggle="buttons">
+                                                    <label class="btn day yesterday">
+                                                        @item.Day
+                                                    </label>
+                                                </div>
+                                                continue;
+                                            }
+                                            // REZERWACJA
+                                            else
+                                            {
+                                                <div class="rounded btn-group-toggle d-inline-block mt-1 calandarDayFree calendarOne" data-toggle="buttons">
+
+                                                    <label class="btn day" id="@item.Year-@item.Month-@item.Day">
+                                                        <input type="radio" name="From" value="@item" autocomplete="off">
+                                                        @{
+                                                            if (item.CompareTo(DateTime.Now.Date) == 0)
+                                                            {
+                                                                <span class="mark-today">@item.Day</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                @item.Day
+                                                            }
+                                                        }
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            </div>
+                            @**************************************** kalendarz 1 KONIEC ***************************@
+                            @**************************************** kalendarz 2 START ****************************@
+                            <div class="col-lg-6  p-0 text-center">
+                                @{
+                                    //wyswietlam date
+                                    <div class="mb-5 mt-1">
+                                        <a asp-action="Index" asp-route-id="@Model.HouseId" asp-route-navigation="next" id="next">
+                                            <i class="fas fa-chevron-right float-right Calendar-navi"></i>
+                                        </a>
+                                        @{
+                                            //wyswietlanie aktualnego miesiaca
+                                            var calendarTwo = ViewBag.calendarTwoPage as List<DateTime>;
+                                            <h5 class="m-2">@ViewBag.MonthStringCalendarTwo</h5>
+                                        }
+                                    </div>
+
+                                    //wyswietlam dni tygodnia
+
+                                    @foreach (string day in @ViewBag.DaysOfWeek)
+                                    {
+                                        <div class="d-inline-block rounded align-middle day"><small>@day</small> </div>
+                                    }
+                                    <div class="text-dark horizontal-line cal2">
+                                    </div>
+
+                                    if (calendarTwo != null)
+                                    foreach (var item in calendarTwo)
+                                    {
+                                        //sprawdzam czy to poniedzialek - jesli tak dodaje diva aby oddzielić tydzien
+                                        //if (@item.DayOfWeek == DayOfWeek.Monday && @item != calendar.ElementAt(0))
+                                        if (@item.DayOfWeek == DayOfWeek.Monday )//&& @item != calendar.ElementAt(0))
+                                        {
+                                            <div class="bg-dark m-0 p-0"></div>
+                                        }
+
+                                        //nie wyswietlam dni innych miesiecy
+                                        if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth) + 1)
+                                        {
+                                            <div class="rounded btn-group-toggle d-inline-block mt-1 invisible" data-toggle="buttons">
+                                                <label class="btn btn-light active day">
+                                                    <input type="radio" disabled autocomplete="off">
+                                                    x
+                                                </label>
+                                            </div>
+                                            continue;
+                                        }
+
+                                        //sprawdzam czy dzien jest zajety -- ZAJETY
+                                        if (Model.RentalHouses != null && Model.RentalHouses.FirstOrDefault(f => f.From.CompareTo(item) <= 0 && f.To.CompareTo(item) >= 0 && f.IsActive == true) != null)
+                                        {
+                                            <div class="rounded btn-group-toggle d-inline-block mt-1 rented" data-toggle="buttons">
+                                                <label class="btn btn-danger active day">
+                                                    <input type="radio" disabled autocomplete="off">
+                                                    @{
+                                                        if (item.CompareTo(DateTime.Now.Date) == 0)
+                                                        {
+                                                            <span class="mark-today">@item.Day</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            @item.Day
+                                                        }
+                                                    }
+                                                </label>
+                                            </div>
+                                        }
+                                        //Dzien jest -- WOLNY
+                                        else
+                                        {
+                                            //Ten dzien juz był.. brak moziwosci rezerwacji
+                                            if (@item.CompareTo(DateTime.Now.Date) < 0)
+                                            {
+                                                // <div class="rounded btn-group-toggle d-inline-block mt-1" data-toggle="buttons">
+                                                //     <label class="btn active day">
+                                                //         <input type="radio" disabled autocomplete="off">
+                                                //         @item.Day
+                                                //     </label>
+                                                // </div>
+
+                                                <div class="rounded btn-group-toggle d-inline-block mt-1" data-toggle="buttons">
+                                                    <label class="btn day yesterday">
+                                                        @item.Day
+                                                    </label>
+                                                </div>
+                                                continue;
+
+
+                                            }
+                                            // REZERWACJA
+                                            else
+                                            {
+                                                <div class="kom rounded btn-group-toggle d-inline-block mt-1 calandarDayFree calendarTwo" data-toggle="buttons">
+
+                                                    <label class="btn day" id="@item.Day">
+                                                        <input type="radio" name="From" value="@item" autocomplete="off">
+                                                        @{
+                                                            if (item.CompareTo(DateTime.Now.Date) == 0)
+                                                            {
+                                                                <span class="mark-today">@item.Day</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                @item.Day
+                                                            }
+                                                        }
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            </div>
+                            @**************************************** kalendarz 2 KONIEC ***************************@
+                        </div>
+
+                    </div>
+
+                    <div class="col-xl-3 col-12 p-0 text-left order-1 order-xl-2 info-modal">
+                        <!-- Informacja -->
+                        <div id="info"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+@******************************** Kalendarz rezerwacji KONEC ************************************@
+

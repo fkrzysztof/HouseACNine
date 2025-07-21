@@ -1,0 +1,14 @@
+E:\Programowanie\HouseNet9\Data\bin\Debug\net9.0\Data.deps.json
+E:\Programowanie\HouseNet9\Data\bin\Debug\net9.0\Data.runtimeconfig.json
+E:\Programowanie\HouseNet9\Data\bin\Debug\net9.0\Data.dll
+E:\Programowanie\HouseNet9\Data\bin\Debug\net9.0\Data.pdb
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.csproj.AssemblyReference.cache
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.AssemblyInfoInputs.cache
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.AssemblyInfo.cs
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.csproj.CoreCompileInputs.cache
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.dll
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\refint\Data.dll
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.pdb
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\Data.genruntimeconfig.cache
+E:\Programowanie\HouseNet9\Data\obj\Debug\net9.0\ref\Data.dll

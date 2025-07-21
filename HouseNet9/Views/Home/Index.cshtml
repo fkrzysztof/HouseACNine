@@ -1,0 +1,91 @@
+﻿@using Data.Data.HouseRentalData
+@* @{
+    ViewData["Title"] = "Home Page";
+}
+ *@
+@model Data.Data.HouseRentalData.House
+
+
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about building Web apps with ASP.NET Core.</p>
+</div>
+
+@* <div class="row">
+    <div class="col-12">
+        @Model.Description
+    </div>
+        <div class="col-12">
+        @Model.Location
+    </div>
+</div> *@
+
+<div class="row">
+
+@{
+    if(Model != null && Model.DescriptionPages != null)
+    foreach( DescriptionPage descriptionPage in Model.DescriptionPages)
+    {
+     @:<div class="col-12 text-left">
+                    if(descriptionPage.Image != null)
+                    {
+                            <h6 class="display-4jak ">
+                                <img src="@Url.Content("~/uploads/" + (descriptionPage.Image == null ? "no_photography_24dp.svg" : descriptionPage.Image.Path))" alt="Przesłany obraz" />
+                                @descriptionPage.Title
+                            </h6>
+                            <p>@descriptionPage.Description</p>
+                    }
+    @:</div>
+    }
+}
+
+</div>
+
+
+
+
+
+
+<div class="d-flex flex-wrap bd-highlight justify-content-center">
+    @{
+        House? house = Model;
+
+        if (house != null && house.GeneralInformation != null)
+            foreach (GeneralInformation item in house.GeneralInformation)
+            {
+                @:<div class="card p-4 m-2 d-inline justify-content-center">
+                    if (item.Image != null && item.Image.Path != null)
+                    {
+                            <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
+                            @Html.DisplayFor(modelItem => item.Name)
+                    }
+                    else
+                    {
+                            <img src="@Url.Content("~/uploads/" + "no_photography_24dp.svg")" alt="Przesłany obraz" />
+                            @Html.DisplayFor(modelItem => item.Name)
+                    }
+                @:</div>
+            }
+                
+
+    }
+</div>
+
+@section scripts {
+<script>
+            $(document).ready(function(){
+    //      $("button").click(function(){
+            //$.ajax({url: "@Url.Content("~/getcalendar")", success: function(result){
+            $.ajax({url: "@Url.Action("Index", "GetCalendar")", success: function(result){
+              $("#calendar").html(result);
+            }});
+          });
+      //  });
+</script>
+}
+
+<div id="calendar"><h2>Let jQuery AJAX Change This Text</h2></div>
+<button>Get External Content</button>
+
+

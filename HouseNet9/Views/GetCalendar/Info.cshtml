@@ -1,0 +1,96 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using System.Globalization
+@using Data.Data.HouseRentalData
+@model Data.Data.HouseRentalData.RentalClient
+
+@{
+    RentalHouse newRental = ViewBag.NewRentalInfo;
+}
+
+
+<div class="row no-gutters">
+    <div class="col-12 p-3 align-content-between">
+        <h5>Wybrany termin:</h5>
+        <h6><small>Od</small>:</h6> <h6><small>@newRental.From.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></h6>
+        <h6><small>Od:</small></h6> <h6><small>@newRental.To.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></h6>
+        <h6>@newRental.HowManyDaysFromSelect Nocy</h6>
+    </div>
+    <div class="col-sm-12 p-3 text-sm-left">
+
+        <h5>Do zapłaty:</h5>
+        <h4>@newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</h4>
+        <small>Cena zawiera sprzątanie końcowe</small>
+        <small>Cena zawiera pościel oraz ręczniki</small>
+    </div>
+    <div class="col-sm-12 p-3 text-sm-right">
+
+
+        <div class="form-check text-left">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <small>Podane przeze mnie informacje są prawdziwe.</small>
+            </label>
+        </div>
+        <div class="form-check text-left">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <small>Zapoznałem się i akceptuję Ogólne Warunki Najmu i polityka prywatności.</small>
+            </label>
+        </div>
+        <div class="form-check text-left">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                <small>Potwierdzam, że mam min. 18 lat.</small>
+            </label>
+        </div>
+
+
+    </div>
+    <div class="col-sm-12 p-3 text-sm-right">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+        <a asp-action="Create" class="btn btn-primary btn-sm">Kontynuuj rezerwacje</a>
+    </div>
+
+
+
+
+</div>
+
+
+
+@* <div class="row no-gutters">
+    
+    <div class="col-sm-6 p-3 text-sm-left">
+        <h4>Twoja rezerwacja:</h4>
+    </div>
+
+    <div class="col-12 p-0">
+      <div class="modal-line"></div>
+    </div>
+
+    <div class="col-12 p-3">
+        <h5>Wybrany termin: @newRental.From.Date.ToShortDateString()  - @newRental.To.Date.ToShortDateString() </h5>
+        <h6>@newRental.HowManyDaysFromSelect Nocy</h6>
+    </div>
+
+    <div class="col-sm-6 p-3 text-sm-left">
+        <h5>Do zapłaty:  @newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</h5>
+    </div>
+    <div class="col-sm-6 p-3 text-sm-right">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+        <a asp-action="Create" class="btn btn-primary btn-sm">Kontynuuj rezerwacje</a>
+    </div>
+
+</div> *@
+
+
+
+<script>
+    function sub() {
+      document.getElementById("calendarForm").submit();
+    }
+</script>
+
