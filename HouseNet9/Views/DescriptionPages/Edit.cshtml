@@ -4,10 +4,47 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section Scripts {
+    <script src="~/js/imagepreview.js"></script>
+}
 
-<h1>Edit</h1>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-lg-9">
 
-<h4>DescriptionPage</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DescriptionPageId" />
+            <input type="hidden" name="ImagePath" value="@Model.Image?.Path" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">@Html.DisplayFor(Model => Model.Description)</label>
+                <textarea class="form-control" asp-for="Description" rows="10"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Grafika</label>
+                <img id="preview" src="@Url.Content("~/uploads/" + (Model.Image == null ? "no_photography_24dp.svg" : Model.Image.Path))" alt="Podgląd obrazu" style="max-width: 100%;">
+                <input type="file" name="file" id="fileInput" accept="image/*" />
+            </div>
+            <div class="form-group align-self-end">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<div class="mt-4">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@* <h4><img src="~/uploads/add_notes.svg" class="mr-2" />Edycja opisu do strony</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -33,5 +70,5 @@
 
 <div>
     <a asp-action="Index">Back to List</a>
-</div>
+</div> *@
 

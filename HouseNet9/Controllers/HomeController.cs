@@ -27,12 +27,19 @@ namespace HouseNet9.Controllers
 
             var houseWithGenInfo = _context.Houses
                 .Include(i => i.GeneralInformation)
-                    .ThenInclude(i => i.Image)
-                .FirstOrDefault(h => h.HouseId == house.HouseId);
+                .ThenInclude(i => i.Image)
+                .Include(i => i.DescriptionPages)
+                .ThenInclude(i => i.Image)
+                .First();
 
-            // null
-            //return View(_context.Houses.Include(i => i.GeneralInformation).ThenInclude(i => i.Image).Include(i => i.DescriptionPages).ThenInclude(i => i.Image).First());
-        return View(houseWithGenInfo);
+            if (houseWithGenInfo?.GeneralInformation == null)
+            {
+                return NotFound();
+            }
+
+
+
+            return View(houseWithGenInfo);
         }
 
         public IActionResult Privacy()

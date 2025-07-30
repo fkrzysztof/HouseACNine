@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Data.Data.HouseRentalData;
+using HouseNet9.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Data.Data.HouseRentalData;
-using HouseNet9.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
@@ -24,7 +25,7 @@ namespace HouseNet9.Controllers
         // GET: DescriptionPages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DescriptionPages.ToListAsync());
+            return View(await _context.DescriptionPages.Include(i => i.Image).ToListAsync());
         }
 
         // GET: DescriptionPages/Details/5
@@ -105,7 +106,7 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var descriptionPage = await _context.DescriptionPages.FindAsync(id);
+            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Image).FirstAsync();
             if (descriptionPage == null)
             {
                 return NotFound();
@@ -118,12 +119,29 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage)
+        public async Task<IActionResult> Edit(int id, [Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, IFormFile? file, string? ImagePath)
         {
             if (id != descriptionPage.DescriptionPageId)
-            {
                 return NotFound();
-            }
+
+
+
+            //var oldDesc = _context.DescriptionPages.Where(f => f.DescriptionPageId == id).Include(i => i.Image).FirstOrDefault();
+            //if (oldDesc == null || oldDesc.Image == null)
+            //    return NotFound();
+            //oldDesc.Image.Path = await _fileUploadService.EditFileAsync(file, ImagePath);
+            //oldDesc.Description = descriptionPage.Description;
+            //oldDesc.Title = descriptionPage.Title;
+
+            //dodaje obiejt image
+            //descriptionPage.Image = new MyFile
+            //{
+            //    Path = await _fileUploadService.EditFileAsync(file, ImagePath)
+            //};
+
+            descriptionPage.Image = _context.MyFiles.Where(w => w.DescriptionPageId == descriptionPage.DescriptionPageId).FirstOrDefault();
+            descriptionPage.Image.Path = await _fileUploadService.EditFileAsync(file, ImagePath);
+
 
             if (ModelState.IsValid)
             {
@@ -171,9 +189,12 @@ namespace HouseNet9.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var descriptionPage = await _context.DescriptionPages.FindAsync(id);
+            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Image).FirstOrDefaultAsync();
             if (descriptionPage != null)
             {
+
+                //null or empty
+                _fileUploadService.DeleteFile(descriptionPage.Image?.Path?? "");
                 _context.DescriptionPages.Remove(descriptionPage);
             }
 

@@ -49,4 +49,19 @@ public class FileUploadService
         return false;
     }
 
+    public async Task<string?> EditFileAsync(IFormFile newFile, string? oldFileName)
+    {
+        if (newFile == null || newFile.Length == 0)
+            return oldFileName; // Zwraca starą nazwę jeśli nowy plik jest pusty
+
+        // Usuń stary plik, jeśli istnieje
+        if (!string.IsNullOrWhiteSpace(oldFileName))
+        {
+            DeleteFile(oldFileName);
+        }
+
+        // Zapisz nowy plik
+        return await UploadFileAsync(newFile);
+    }
+
 }

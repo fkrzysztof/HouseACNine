@@ -1,0 +1,46 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+# Roslyn cache
+*.ide/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio Code
+.vscode/
+
+# Logs
+*.log
+
+# DotCover
+.idea/
+
+# Other temp files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Rider
+.idea/
+*.iml
+
+# Publish outputs
+publish/

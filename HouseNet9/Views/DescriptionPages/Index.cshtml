@@ -5,12 +5,66 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Opis Strony</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Dodaj nowy</a>
 </p>
-<table class="table">
+@* <table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+</table> *@
+  
+@foreach (var item in Model) {
+
+
+    <div class="card text-center my-4">
+        <div class="card-header">
+            <ul class="nav nav-pills card-header-pills">
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Edit" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/edit_square_24.svg" class="edit-options" /></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Details" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/zoom_in_24.svg" class="edit-options" /></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title"> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Title)</h5>
+            <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+        </div>
+    </div>
+
+
+
+
+
+
+}
+   
+
+
+
+
+
+
+
+
+
+
+@* <table class="table">
     <thead>
         <tr>
             <th>
@@ -23,20 +77,21 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DescriptionPageId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DescriptionPageId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DescriptionPageId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/edit_square_24.svg" class="p-2 edit-options" /></a>
+                    <a asp-action="Details" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/zoom_in_24.svg" class="p-2 edit-options" /></a>
+                    <a asp-action="Delete" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="p-2 edit-options" /></a>
+                </td>
+            </tr>
+        }
     </tbody>
-</table>
+</table> *@
