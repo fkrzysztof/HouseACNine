@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Data.Data.HouseRentalData.DetailedInformation>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Informacje szczegółowe</h3>
+<h4>Lista</h4>
+<hr />
+
+<p>
+    <a asp-action="Create">Dodaj</a>
+</p>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-6">
+            <div class="card m-2">
+                <div class="card-body">
+                    <span> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Name)</span><span class="float-right">
+                        <a class="nav-link" asp-action="Edit" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/edit_square_24.svg" class="edit-options" /></a>
+                        <a class="nav-link" asp-action="Details" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/zoom_in_24.svg" class="edit-options" /></a>
+                        <a class="nav-link" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>

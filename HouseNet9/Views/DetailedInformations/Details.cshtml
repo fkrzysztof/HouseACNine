@@ -1,0 +1,46 @@
+﻿@model Data.Data.HouseRentalData.DetailedInformation
+@using Data.Data.HouseRentalData
+@{
+    //ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Informacje szczegółowe</h3>
+<hr />
+<div class="row mb-4">
+    <div class="col-md-8 p-2">
+        <div class="card">
+            <div class="card-header">
+                <img src="@Url.Content("~/uploads/" + (Model.Image == null ? "no_photography_24dp.svg" : Model.Image.Path))" alt="Przesłany obraz" />  @Html.DisplayFor(model => model.Name)
+            </div>
+            <ul class="list-group list-group-flush">
+                @{
+                    if (Model != null && Model.DetailedInformationItems != null)
+                        foreach (DetailedInformationItem item in Model.DetailedInformationItems)
+                        {
+                            <li class="list-group-item">@item.Description <a asp-action="DeleteDetailedInformationItem" asp-route-DetailedInformationId="@Model.DetailedInformationId" asp-route-DetailedInformationItemId="@item.DetailedInformationItemId"><img src="~/uploads/delete_forever_24.svg" class="float-right" /></a></li>
+                        }
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4 p-2">
+        <h4>Dodaj</h4>
+        <hr />
+
+                <form asp-action="CreateDetailedInformationItems">
+                    <input type="hidden" name="id" value="@Model.DetailedInformationId" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        @*  <label class="control-label"></label> *@
+                        <input name="description" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" />
+                    </div>
+                </form>
+    </div>
+
+</div>
+<a asp-action="Index">Powrót do listy</a>

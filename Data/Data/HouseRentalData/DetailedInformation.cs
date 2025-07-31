@@ -18,7 +18,7 @@ namespace Data.Data.HouseRentalData
         [ForeignKey("HouseId")]
         public House? House { get; set; }
 
-
+        //Img
         [NotMapped]
         public IFormFile? FormFileItem { get; set; }
         public MyFile? Image { get; set; }

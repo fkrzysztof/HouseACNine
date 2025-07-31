@@ -30,6 +30,10 @@ namespace HouseNet9.Controllers
                 .ThenInclude(i => i.Image)
                 .Include(i => i.DescriptionPages)
                 .ThenInclude(i => i.Image)
+                .Include(i => i.DetailedInformation)
+                .ThenInclude(i => i.Image)
+                .Include(i => i.DetailedInformation)
+                .ThenInclude(i => i.DetailedInformationItems)
                 .First();
 
             if (houseWithGenInfo?.GeneralInformation == null)
