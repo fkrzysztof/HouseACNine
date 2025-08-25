@@ -22,6 +22,10 @@ namespace Data.Data.HouseRentalData
         public int? DetailedInformationId { get; set; }
         [ForeignKey("DetailedInformationId")]
         public DetailedInformation? DetailedInformation { get; set; }
+
+        public int? DistanceID { get; set; }
+        [ForeignKey("DistanceID")]
+        public Distance? Distance { get; set; }
     }
 }
         

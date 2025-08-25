@@ -1,0 +1,49 @@
+﻿@model Data.Data.HouseRentalData.Distance
+@using Data.Data.HouseRentalData
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Informacje szczegółowe</h3>
+<hr />
+<div class="row mb-4">
+    <div class="col-md-8 p-2">
+        <div class="card">
+            <div class="card-header">
+                <img src="@Url.Content("~/uploads/" + (Model.Image == null ? "no_photography_24dp.svg" : Model.Image.Path))" alt="Przesłany obraz" />  @Html.DisplayFor(model => model.Name)
+            </div>
+            <ul class="list-group list-group-flush">
+                @{
+                    if (Model != null && Model.DistanceItems != null)
+                        foreach (DistanceItem item in Model.DistanceItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between"><span>@item.NameInfo</span><span>@item.DistanceInfo</span><a asp-action="DeleteDistanceItem" asp-route-id="@Model.DistanceID" asp-route-distanceItemId="@item.DistanceItemId"><img src="~/uploads/delete_forever_24.svg" class="ml-4" /></a></li>
+                        }
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4 p-2">
+        <h4>Dodaj</h4>
+        <hr />
+        <form asp-action="CreateDistanceItem">
+            <input type="hidden" name="id" value="@Model.DistanceID" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input name="NameInfo" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input name="DistanceInfo" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-8 p-2">
+        <a class="nav-link" asp-action="Delete" asp-route-id="@Model?.DistanceID"><img src="~/uploads/delete_forever_24.svg" class="edit-options" />Usuń @Model?.Name</a>
+    </div>
+</div>
+<a asp-action="Index">Powrót do listy</a>

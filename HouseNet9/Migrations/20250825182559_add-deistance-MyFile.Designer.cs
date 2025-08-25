@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825182559_add-deistance-MyFile")]
+    partial class adddeistanceMyFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -607,7 +610,7 @@ namespace HouseNet9.Migrations
             modelBuilder.Entity("Data.Data.HouseRentalData.Distance", b =>
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
-                        .WithMany("Distances")
+                        .WithMany()
                         .HasForeignKey("HouseId");
 
                     b.Navigation("House");
@@ -768,8 +771,6 @@ namespace HouseNet9.Migrations
                     b.Navigation("DescriptionPages");
 
                     b.Navigation("DetailedInformation");
-
-                    b.Navigation("Distances");
 
                     b.Navigation("GeneralInformation");
 

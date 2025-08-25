@@ -1,0 +1,44 @@
+﻿@model Data.Data.HouseRentalData.Distance
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+    <script src="~/js/imagepreview.js"></script>
+}
+<h3>Informacje szczegółowe</h3>
+<h4>Dodaj</h4>
+<hr />
+
+@if (ViewData["Message"] != null)
+{
+    <p>@ViewData["Message"]</p>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Grafika</label>
+                <img id="preview" src="~/uploads/noimg.png" alt="Podgląd obrazu" class="my-4" style="max-width: 100%;">
+                <input type="file" name="FormFileItem" id="fileInput" accept="image/*" />
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary my-2" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Powrót do listy</a>
+</div>
+

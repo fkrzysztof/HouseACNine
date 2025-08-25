@@ -33,6 +33,9 @@ namespace Data.Data.HouseRentalData
         [Display(Name = "Opisy do strony")] // kolekcja opisow do strony
         public ICollection<DescriptionPage>? DescriptionPages { get; set; }
 
+        [Display(Name = "Odległości")] // kolekcja informacji o odleglosciach
+        public ICollection<Distance>? Distances { get; set; }
+
         public bool IsActive { get; set; }
     }
 }

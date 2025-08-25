@@ -21,6 +21,8 @@ namespace HouseNet9.Data
         public DbSet<DetailedInformation> DetailedInformation { get; set; } = default!;
         public DbSet<DetailedInformationItem> DetailedInformationItems { get; set; } = default!;
         public DbSet<DescriptionPage> DescriptionPages { get; set; } = default!;
+        public DbSet<Distance> Distances { get; set; } = default!;
+        public DbSet<DistanceItem> DistanceItems { get; set; } = default!;
 
     
     }

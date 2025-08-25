@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825181659_Distance-DistanceItem")]
+    partial class DistanceDistanceItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,6 +104,9 @@ namespace HouseNet9.Migrations
                     b.Property<int?>("HouseId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ImageFileID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -108,6 +114,8 @@ namespace HouseNet9.Migrations
                     b.HasKey("DistanceID");
 
                     b.HasIndex("HouseId");
+
+                    b.HasIndex("ImageFileID");
 
                     b.ToTable("Distances");
                 });
@@ -199,9 +207,6 @@ namespace HouseNet9.Migrations
                     b.Property<int?>("DetailedInformationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DistanceID")
-                        .HasColumnType("int");
-
                     b.Property<int?>("GeneralInformationId")
                         .HasColumnType("int");
 
@@ -217,10 +222,6 @@ namespace HouseNet9.Migrations
                     b.HasIndex("DetailedInformationId")
                         .IsUnique()
                         .HasFilter("[DetailedInformationId] IS NOT NULL");
-
-                    b.HasIndex("DistanceID")
-                        .IsUnique()
-                        .HasFilter("[DistanceID] IS NOT NULL");
 
                     b.HasIndex("GeneralInformationId")
                         .IsUnique()
@@ -607,10 +608,16 @@ namespace HouseNet9.Migrations
             modelBuilder.Entity("Data.Data.HouseRentalData.Distance", b =>
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
-                        .WithMany("Distances")
+                        .WithMany()
                         .HasForeignKey("HouseId");
 
+                    b.HasOne("Data.Data.HouseRentalData.MyFile", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageFileID");
+
                     b.Navigation("House");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Data.Data.HouseRentalData.DistanceItem", b =>
@@ -641,10 +648,6 @@ namespace HouseNet9.Migrations
                         .WithOne("Image")
                         .HasForeignKey("Data.Data.HouseRentalData.MyFile", "DetailedInformationId");
 
-                    b.HasOne("Data.Data.HouseRentalData.Distance", "Distance")
-                        .WithOne("Image")
-                        .HasForeignKey("Data.Data.HouseRentalData.MyFile", "DistanceID");
-
                     b.HasOne("Data.Data.HouseRentalData.GeneralInformation", "GeneralInformation")
                         .WithOne("Image")
                         .HasForeignKey("Data.Data.HouseRentalData.MyFile", "GeneralInformationId");
@@ -652,8 +655,6 @@ namespace HouseNet9.Migrations
                     b.Navigation("DescriptionPage");
 
                     b.Navigation("DetailedInformation");
-
-                    b.Navigation("Distance");
 
                     b.Navigation("GeneralInformation");
                 });
@@ -754,8 +755,6 @@ namespace HouseNet9.Migrations
             modelBuilder.Entity("Data.Data.HouseRentalData.Distance", b =>
                 {
                     b.Navigation("DistanceItems");
-
-                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Data.Data.HouseRentalData.GeneralInformation", b =>
@@ -768,8 +767,6 @@ namespace HouseNet9.Migrations
                     b.Navigation("DescriptionPages");
 
                     b.Navigation("DetailedInformation");
-
-                    b.Navigation("Distances");
 
                     b.Navigation("GeneralInformation");
 

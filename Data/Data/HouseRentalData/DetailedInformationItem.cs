@@ -14,9 +14,5 @@ namespace Data.Data.HouseRentalData
         [ForeignKey("DetailedInformationId")]
         public DetailedInformation? DetailedInformation { get; set; }
 
-
-
-
-
     }
 }
