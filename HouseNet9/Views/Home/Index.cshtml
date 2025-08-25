@@ -1,79 +1,47 @@
 ﻿@using Data.Data.HouseRentalData
-@* @{
-    ViewData["Title"] = "Home Page";
-}
- *@
+@* @{ ViewData["Title"] = "Home Page"; } *@
 @model Data.Data.HouseRentalData.House
 
+@section scripts {
+<script>
+            $(document).ready(function(){
+            $.ajax({url: "@Url.Action("Index", "GetCalendar")", success: function(result){
+              $("#calendar").html(result);
+            }});
+          });
+</script>
+}
 
 
-<div class="text-center">
+
+<div class="text-center my-4">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about building Web apps with ASP.NET Core.</p>
 </div>
 
-@* <div class="row">
-    <div class="col-12">
-        @Model.Description
-    </div>
-        <div class="col-12">
-        @Model.Location
-    </div>
-</div> *@
 
-<div class="row">
-
+@* *************************  DescriptionPages ************************* *@
+<div class="row my-4">
 @{
     if(Model != null && Model.DescriptionPages != null)
     foreach( DescriptionPage descriptionPage in Model.DescriptionPages)
     {
      @:<div class="col-12 text-left">
-                    if(descriptionPage.Image != null)
-                    {
-                            <h6 class="display-4jak ">
-                                <img src="@Url.Content("~/uploads/" + (descriptionPage.Image == null ? "no_photography_24dp.svg" : descriptionPage.Image.Path))" alt="Przesłany obraz" />
-                                @descriptionPage.Title
-                            </h6>
-                            <p>@descriptionPage.Description</p>
-                    }
-    @:</div>
+            if(descriptionPage.Image != null)
+            {
+                <h6 class="display-4jak ">
+                    <img src="@Url.Content("~/uploads/" + (descriptionPage.Image == null ? "no_photography_24dp.svg" : descriptionPage.Image.Path))" alt="Przesłany obraz" />
+                    @descriptionPage.Title
+                </h6>
+                <p>@descriptionPage.Description</p>
+            }
+     @:</div>
     }
 }
-
 </div>
 
-
-<div class="row">
-    <div class="col-12">
-            <div class="card-columns">
-        @foreach(DetailedInformation information in Model.DetailedInformation)
-{
-          <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">@information.Name</h5>
-      @foreach(DetailedInformationItem detailedInformationItem in information.DetailedInformationItems )
-        {
-                <p class="card-text">@detailedInformationItem.Description</p>
-        }
-                       
-       
-      </div>
-      </div>
-
-}
-
-
-    </div>
-</div>
-</div>
-
-
-
-
-
-
-
-<div class="d-flex flex-wrap bd-highlight justify-content-center">
+@* *************************  GeneralInformation ************************* *@
+<div class="d-flex flex-wrap bd-highlight justify-content-center my-4">
     @{
         House? house = Model;
 
@@ -93,25 +61,29 @@
                     }
                 @:</div>
             }
-                
-
     }
 </div>
 
-@section scripts {
-<script>
-            $(document).ready(function(){
-    //      $("button").click(function(){
-            //$.ajax({url: "@Url.Content("~/getcalendar")", success: function(result){
-            $.ajax({url: "@Url.Action("Index", "GetCalendar")", success: function(result){
-              $("#calendar").html(result);
-            }});
-          });
-      //  });
-</script>
-}
-
-<div id="calendar"><h2>Let jQuery AJAX Change This Text</h2></div>
-<button>Get External Content</button>
+@* *************************  Calendar ************************* *@
+<div id="calendar"><h2>Kalendarz Rezerwacji</h2></div>
 
 
+ @* *************************  DetailedInformation ************************* *@                           
+<div class="row  my-4">
+    <div class="col-12">
+        <div class="card-columns">
+            @foreach(DetailedInformation information in Model.DetailedInformation)
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@information.Name</h5>
+                        @foreach(DetailedInformationItem detailedInformationItem in information.DetailedInformationItems )
+                        {
+                            <div class="d-flex">  <img src="~/uploads/check_24dp.svg" class="mr-2" />@detailedInformationItem.Description</div> 
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

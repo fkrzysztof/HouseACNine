@@ -10,20 +10,7 @@
 <p>
     <a asp-action="Create">Dodaj nowy</a>
 </p>
-@* <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-</table> *@
-  
+
 @foreach (var item in Model) {
 
 
@@ -37,7 +24,7 @@
                     <a class="nav-link" asp-action="Details" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/zoom_in_24.svg" class="edit-options" /></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
+                    <a class="nav-link" asp-action="Delete" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
                 </li>
             </ul>
         </div>

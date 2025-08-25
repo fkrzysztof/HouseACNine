@@ -55,9 +55,6 @@ namespace HouseNet9.Controllers
             return View();
         }
 
-        // POST: DetailedInformations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DetailedInformationId,Name")] DetailedInformation detailedInformation, IFormFile file)
@@ -82,10 +79,7 @@ namespace HouseNet9.Controllers
 
                         }
 
-                        ViewData["Message"] = $"Plik '{file.FileName}' został przesłany.";
-                        return View("Create");
-
-
+                        return RedirectToAction(nameof(Index));
                     }
                 }
                 catch (Exception e)
@@ -171,24 +165,28 @@ namespace HouseNet9.Controllers
             }
 
             var detailedInformation = await _context.DetailedInformation
-                .FirstOrDefaultAsync(m => m.DetailedInformationId == id);
-            if (detailedInformation == null)
-            {
-                return NotFound();
-            }
-
-            return View(detailedInformation);
-        }
-
-        // POST: DetailedInformations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var detailedInformation = await _context.DetailedInformation.FindAsync(id);
+                .Where(w => w.DetailedInformationId == id)
+                .Include(i => i.Image)
+                .Include(i => i.DetailedInformationItems)
+                .FirstOrDefaultAsync();
+            
             if (detailedInformation != null)
             {
-                _context.DetailedInformation.Remove(detailedInformation);
+                if (detailedInformation.DetailedInformationItems != null)
+                {
+                    _context.DetailedInformationItems.RemoveRange(detailedInformation.DetailedInformationItems);
+                }
+
+                bool result = _fileUploadService.DeleteFile(detailedInformation.Image.Path);
+                if (!result)
+                {
+                    return Ok("bląd");
+                }
+                else
+                {
+                    _context.MyFiles.Remove(detailedInformation.Image);
+                    _context.DetailedInformation.Remove(detailedInformation);
+                }
             }
 
             await _context.SaveChangesAsync();

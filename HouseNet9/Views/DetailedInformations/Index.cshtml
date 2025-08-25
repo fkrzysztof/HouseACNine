@@ -20,9 +20,7 @@
             <div class="card m-2">
                 <div class="card-body">
                     <span> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Name)</span><span class="float-right">
-                        <a class="nav-link" asp-action="Edit" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/edit_square_24.svg" class="edit-options" /></a>
-                        <a class="nav-link" asp-action="Details" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/zoom_in_24.svg" class="edit-options" /></a>
-                        <a class="nav-link" asp-route-id="@item.DetailedInformationId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
+                        @await Html.PartialAsync("~/Views/Partial/EditDetailsMenu.cshtml", item.DetailedInformationId)
                     </span>
                 </div>
             </div>

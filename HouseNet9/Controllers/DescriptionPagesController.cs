@@ -60,8 +60,6 @@ namespace HouseNet9.Controllers
         public async Task<IActionResult> Create([Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, IFormFile file)
         {
 
-
-
             if (ModelState.IsValid)
             {
                 try
@@ -82,9 +80,9 @@ namespace HouseNet9.Controllers
                         }
 
                         ViewData["Message"] = $"Plik '{file.FileName}' został przesłany.";
-                        return View("Create");
-                    
-                    
+                        return RedirectToAction(nameof(Index));
+
+
                     }
                 }
                 catch (Exception e)
@@ -94,8 +92,7 @@ namespace HouseNet9.Controllers
 
             }
 
-
-            return RedirectToAction(nameof(Index));
+            return View(descriptionPage);
         }
 
         // GET: DescriptionPages/Edit/5
@@ -174,31 +171,26 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var descriptionPage = await _context.DescriptionPages
-                .FirstOrDefaultAsync(m => m.DescriptionPageId == id);
-            if (descriptionPage == null)
-            {
-                return NotFound();
-            }
-
-            return View(descriptionPage);
-        }
-
-        // POST: DescriptionPages/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Image).FirstOrDefaultAsync();
             if (descriptionPage != null)
             {
 
-                //null or empty
-                _fileUploadService.DeleteFile(descriptionPage.Image?.Path?? "");
-                _context.DescriptionPages.Remove(descriptionPage);
+                if (descriptionPage.Image != null && descriptionPage.Image.Path != null)
+                {
+                    bool result = _fileUploadService.DeleteFile(descriptionPage.Image.Path);
+                    if (!result)
+                    {
+                        return Ok("bląd");
+                    }
+                    else
+                    {
+                        _context.MyFiles.Remove(descriptionPage.Image);
+                        _context.DescriptionPages.Remove(descriptionPage);
+                        await _context.SaveChangesAsync();
+                    }
+                }
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -28,7 +28,6 @@
     <div class="col-md-4 p-2">
         <h4>Dodaj</h4>
         <hr />
-
                 <form asp-action="CreateDetailedInformationItems">
                     <input type="hidden" name="id" value="@Model.DetailedInformationId" />
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -42,5 +41,8 @@
                 </form>
     </div>
 
+    <div class="col-md-8 p-2">
+        <a class="nav-link" asp-action="Delete" asp-route-id="@Model?.DetailedInformationId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" />Usuń @Model?.Name</a>
+    </div>
 </div>
 <a asp-action="Index">Powrót do listy</a>

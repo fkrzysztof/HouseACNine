@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Data.Data.HouseRentalData;
 using HouseNet9.Data;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace HouseNet9.Controllers
 {
@@ -21,26 +20,9 @@ namespace HouseNet9.Controllers
         public IActionResult Index()
         {
 
-            return View(_context.GeneralInformation.ToList());
+            return View(_context.GeneralInformation.Include(i => i.Image).ToList());
         }
 
-        // GET: GeneralInformations/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var generalInformation = await _context.GeneralInformation
-                .FirstOrDefaultAsync(m => m.GeneralInformationId == id);
-            if (generalInformation == null)
-            {
-                return NotFound();
-            }
-
-            return View(generalInformation);
-        }
 
         // GET: GeneralInformations/Create
         public IActionResult Create()
@@ -48,27 +30,10 @@ namespace HouseNet9.Controllers
             return View();
         }
 
-        // POST: GeneralInformations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("GeneralInformationId,Name")] GeneralInformation generalInformation)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(generalInformation);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(generalInformation);
-        //}
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormFile file, [Bind("GeneralInformationId,Name")] GeneralInformation generalInformation)
+        public async Task<IActionResult> Create([Bind("GeneralInformationId,Name")] GeneralInformation generalInformation, IFormFile file)
         {
 
             if (ModelState.IsValid)
@@ -90,8 +55,7 @@ namespace HouseNet9.Controllers
 
                         }
 
-                        ViewData["Message"] = $"Plik '{file.FileName}' został przesłany.";
-                        return View("Create");
+                        return RedirectToAction(nameof(Index));
 
 
                     }
@@ -103,9 +67,7 @@ namespace HouseNet9.Controllers
 
             }
 
-
-            return RedirectToAction(nameof(Index));
-
+            return View(generalInformation);
         }
 
 
@@ -117,7 +79,10 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var generalInformation = await _context.GeneralInformation.FindAsync(id);
+            var generalInformation = await _context.GeneralInformation
+                .Where(w => w.GeneralInformationId == id)
+                .Include(i => i.Image)
+                .FirstOrDefaultAsync();
             if (generalInformation == null)
             {
                 return NotFound();
@@ -130,7 +95,7 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("GeneralInformationId,Name")] GeneralInformation generalInformation)
+        public async Task<IActionResult> Edit(int id, [Bind("GeneralInformationId,Name")] GeneralInformation generalInformation, IFormFile? file, string? ImagePath)
         {
             if (id != generalInformation.GeneralInformationId)
             {
@@ -141,6 +106,14 @@ namespace HouseNet9.Controllers
             {
                 try
                 {
+                    generalInformation.Image = _context.MyFiles.Where(w => w.GeneralInformationId == generalInformation.GeneralInformationId).FirstOrDefault();
+                    if (generalInformation.Image == null)
+                    {
+                        generalInformation.Image = new MyFile() { GeneralInformationId = id };
+                    }
+                    generalInformation.Image.Path = await _fileUploadService.EditFileAsync(file, ImagePath);
+
+
                     _context.Update(generalInformation);
                     await _context.SaveChangesAsync();
                 }
@@ -168,21 +141,6 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var generalInformation = await _context.GeneralInformation
-                .FirstOrDefaultAsync(m => m.GeneralInformationId == id);
-            if (generalInformation == null)
-            {
-                return NotFound();
-            }
-
-            return View(generalInformation);
-        }
-
-        // POST: GeneralInformations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
             var generalInformation = await _context.GeneralInformation.Include(i => i.Image).FirstOrDefaultAsync(f => f.GeneralInformationId == id);
             if (generalInformation != null)
             {

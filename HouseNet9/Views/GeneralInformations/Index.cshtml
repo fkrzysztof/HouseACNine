@@ -5,41 +5,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h3>Cechy główne</h3>
+<h4>Lista</h4>
+<hr />
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Dodaj</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-       
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @if(item.Image != null) 
-                {
-                    <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
-                }
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.GeneralInformationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.GeneralInformationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.GeneralInformationId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
 
-Kalendarz
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-6">
+            <div class="card m-2">
+                <div class="card-body">
+                    <span> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Name)</span><span class="float-right">
+                        @await Html.PartialAsync("~/Views/Partial/EditDeleteMenu.cshtml", item.GeneralInformationId)
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>

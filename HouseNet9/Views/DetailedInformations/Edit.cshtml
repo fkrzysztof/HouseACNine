@@ -18,7 +18,6 @@
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DetailedInformationId" />
-            @* <input type="hidden" name="id" value="@Model.DetailedInformationId" /> *@
             <input type="hidden" name="ImagePath" value="@Model.Image?.Path" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>

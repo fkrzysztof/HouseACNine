@@ -5,18 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-
-<h4>GeneralInformation</h4>
+@section Scripts {
+    <script src="~/js/imagepreview.js"></script>
+}
+<h3>Cechy główne</h3>
+<h4>Dodaj</h4>
 <hr />
-
-<h1>Przesyłanie pliku</h1>
 
 @if (ViewData["Message"] != null)
 {
     <p>@ViewData["Message"]</p>
 }
-
 
 <div class="row">
     <div class="col-md-4">
@@ -28,16 +27,17 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="file" name="file" />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label class="control-label">Grafika</label>
+                <img id="preview" src="~/uploads/noimg.png" alt="Podgląd obrazu" class="my-4" style="max-width: 100%;">
+                <input type="file" name="file" id="fileInput" accept="image/*" />
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary my-2" />
+                </div>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Powrót do listy</a>
 </div>
-
