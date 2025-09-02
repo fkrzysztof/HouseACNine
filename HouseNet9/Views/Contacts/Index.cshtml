@@ -1,0 +1,222 @@
+﻿@model IEnumerable<Data.Data.HouseRentalData.Contact>
+@using Data.Data.HouseRentalData
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h3>Kontakt</h3>
+<h4>Lista</h4>
+<hr />
+
+<p>
+    <a asp-action="Create">Dodaj</a>
+</p>
+
+
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-6 col-md-12">
+            <div class="card m-2 shadow-sm">
+                
+                <!-- Nagłówek z imieniem/nazwiskiem i menu akcji -->
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>@item.Name
+                    </h5>
+                    <div>
+                        @await Html.PartialAsync("~/Views/Partial/DetailsMenu.cshtml", item.ContactId)
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body">
+
+                    <!-- Adresy -->
+                    @if (item.Addresses?.Any() == true)
+                    {
+                        <div class="mb-3">
+                            <h6 class="fw-bold"><i class="bi bi-geo-alt-fill me-1"></i>Adresy</h6>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var address in item.Addresses)
+                                {
+                                    <li class="list-group-item">
+                                        <div>@address.Street</div>
+                                        <div>@address.PostalCode @address.City</div>
+                                        <div>@address.Country</div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- E-maile -->
+                    @if (item.EmailAddresses?.Any() == true)
+                    {
+                        <div class="mb-3">
+                            <h6 class="fw-bold"><i class="bi bi-envelope-fill me-1"></i>E-maile</h6>
+                            <ul class="list-unstyled">
+                                @foreach (var email in item.EmailAddresses)
+                                {
+                                    <li><i class="bi bi-dot me-1"></i>@email.Email</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- Telefony -->
+                    @if (item.PhoneNumbers?.Any() == true)
+                    {
+                        <div>
+                            <h6 class="fw-bold"><i class="bi bi-telephone-fill me-1"></i>Telefony</h6>
+                            <ul class="list-unstyled">
+                                @foreach (var phone in item.PhoneNumbers)
+                                {
+                                    <li><i class="bi bi-dot me-1"></i>@phone.Number</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+
+<h3>Kontakt</h3>
+<hr />
+
+<p>
+    <a asp-action="Create">Dodaj</a>
+</p>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-6">
+            <div class="card m-2">
+                <div class="card-body">
+                    <span>@Html.DisplayFor(modelItem => item.Name)</span><span class="float-right">
+                        @await Html.PartialAsync("~/Views/Partial/EditDetailsMenu.cshtml", item.ContactId)
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div> *@
+
+@* 
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <form asp-action="Edit">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="ContactID" />
+                            <div class="mb-3">
+                                <label asp-for="Name" class="control-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="NIP" class="control-label"></label>
+                                <input asp-for="NIP" class="form-control" />
+                                <span asp-validation-for="NIP" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="REGON" class="control-label"></label>
+                                <input asp-for="REGON" class="form-control" />
+                                <span asp-validation-for="REGON" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="KRS" class="control-label"></label>
+                                <input asp-for="KRS" class="form-control" />
+                                <span asp-validation-for="KRS" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3 d-flex justify-content-md-end my-4">
+                                <input type="submit" value="Save" class="btn btn-sm btn-primary" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="row justify-content-center">
+
+
+                @foreach (Contact contact in Model)
+                {
+                    <div class="col-md-10 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-white">
+                                <h5 class="align-items-center">
+                                   @contact.Name
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+
+                                    @foreach (var ItemAddress in contact.Addresses)
+                                    {
+                                    <div class="col-12 text-right">@ItemAddress.Street</div>
+                                    <div class="col-12 text-right">@ItemAddress.City, @ItemAddress.PostalCode</div>
+                                    <div class="col-12 text-right">@ItemAddress.Country</div>
+                                    }
+                                    <div class="col-12"><hr /></div>
+                                    <div class="col-12 text-left"><span>Telefon(y):</span></div>
+
+                                    
+                                        @foreach (var ItemPhones in contact.PhoneNumbers)
+                                        {
+                                            <div class="col-12"><span class="float-lg-left">@ItemPhones.Number</span></div>
+                                        }
+                                    <div class="col-12"><hr /></div>
+                                    <div class="col-12 text-left"><span>Adres(y) Email:</span></div>
+                                    @if (contact.EmailAddresses != null)
+                                        @foreach (var ItemEmail in contact.EmailAddresses)
+                                        {
+                                            <div class="col-12 text-right">@ItemEmail.Email</div>
+                                        }
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <a asp-controller="Address" asp-action="Edit" asp-route-id="@ItemAddresses.AddressID"><i class="bi bi-sliders m-3" style="font-size: 1rem; color:black;"></i></a>
+                                        <a asp-controller="Address" asp-action="Delete" asp-route-id="@ItemAddresses.AddressID" class="removeButton" data-id="@ItemAddresses.AddressID"><i class="bi bi-x-circle m-3 " style="font-size: 1rem; color:black;"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+        </div>
+    </div>
+</div>
+ *@

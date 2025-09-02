@@ -1,0 +1,103 @@
+﻿@model Data.Data.HouseRentalData.Contact
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/js/contact.js"></script>
+
+
+
+    <h2>Create Contact</h2>
+<form method="post" asp-action="Create" class="mt-4">
+
+        <!-- Contact Name -->
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" name="Name" class="form-control" required>
+        </div>
+
+        <!-- Phones -->
+        <h4>Phone Numbers</h4>
+        <div id="phoneNumbers"></div>
+        <button type="button" class="btn btn-outline-primary mb-3" onclick="addPhone()">+ Add Phone</button>
+
+        <!-- Emails -->
+        <h4>Email Addresses</h4>
+        <div id="emails"></div>
+        <button type="button" class="btn btn-outline-primary mb-3" onclick="addEmail()">+ Add Email</button>
+
+        <!-- Addresses -->
+        <h4>Addresses</h4>
+        <div id="addresses"></div>
+        <button type="button" class="btn btn-outline-primary mb-3" onclick="addAddress()">+ Add Address</button>
+
+        <!-- Submit -->
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Save Contact</button>
+        </div>
+    </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+<h1>Create</h1>
+
+<h4>Contact</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="@Model.EmailAddresses" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+ *@

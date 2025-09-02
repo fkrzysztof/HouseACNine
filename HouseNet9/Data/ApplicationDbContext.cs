@@ -23,6 +23,10 @@ namespace HouseNet9.Data
         public DbSet<DescriptionPage> DescriptionPages { get; set; } = default!;
         public DbSet<Distance> Distances { get; set; } = default!;
         public DbSet<DistanceItem> DistanceItems { get; set; } = default!;
+        public DbSet<Contact> Contacts { get; set; } = default!;
+        public DbSet<Address> Addresses { get; set; } = default!;
+        public DbSet<PhoneNumber> PhoneNumbers { get; set; } = default!;
+        public DbSet<EmailAddress> EmailAddresses { get; set; } = default!;
 
     
     }

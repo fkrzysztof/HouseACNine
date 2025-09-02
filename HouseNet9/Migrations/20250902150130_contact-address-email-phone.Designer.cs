@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250902150130_contact-address-email-phone")]
+    partial class contactaddressemailphone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace HouseNet9.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("ContactId")
+                    b.Property<int?>("ContactId")
                         .HasColumnType("int");
 
                     b.Property<string>("Country")
@@ -200,7 +203,7 @@ namespace HouseNet9.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmailAddressId"));
 
-                    b.Property<int>("ContactId")
+                    b.Property<int?>("ContactId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -313,7 +316,7 @@ namespace HouseNet9.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PhoneNumberId"));
 
-                    b.Property<int>("ContactId")
+                    b.Property<int?>("ContactId")
                         .HasColumnType("int");
 
                     b.Property<string>("Number")
@@ -679,9 +682,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.Contact", "Contact")
                         .WithMany("Addresses")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactId");
 
                     b.Navigation("Contact");
                 });
@@ -735,9 +736,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.Contact", "Contact")
                         .WithMany("EmailAddresses")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactId");
 
                     b.Navigation("Contact");
                 });
@@ -782,9 +781,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.Contact", "Contact")
                         .WithMany("PhoneNumbers")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactId");
 
                     b.Navigation("Contact");
                 });

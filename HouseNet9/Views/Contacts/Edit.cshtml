@@ -1,0 +1,160 @@
+﻿@model Data.Data.HouseRentalData.Contact
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@* 
+<h1>Edit</h1>
+
+<h4>Contact</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ContactId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+ *@
+
+
+@section Scripts {
+    <script>
+        function addPhone(contactId) {
+            const container = document.getElementById("phones-" + contactId);
+            const index = container.querySelectorAll(".phone-item").length;
+
+            const div = document.createElement("div");
+            div.className = "mb-1 phone-item";
+            div.innerHTML = `
+                <input type="text" name="PhoneNumbers[${index}].Number" class="form-control" placeholder="Phone Number" />
+            `;
+            container.appendChild(div);
+        }
+
+        function addEmail(contactId) {
+            const container = document.getElementById("emails-" + contactId);
+            const index = container.querySelectorAll(".email-item").length;
+
+            const div = document.createElement("div");
+            div.className = "mb-1 email-item";
+            div.innerHTML = `
+                <input type="email" name="EmailAddresses[${index}].Email" class="form-control" placeholder="Email" />
+            `;
+            container.appendChild(div);
+        }
+
+        function addAddress(contactId) {
+            const container = document.getElementById("addresses-" + contactId);
+            const index = container.querySelectorAll(".address-card").length;
+
+            const card = document.createElement("div");
+            card.className = "card p-2 mb-2 address-card";
+            card.innerHTML = `
+                <input type="text" name="Addresses[${index}].Street" class="form-control mb-1" placeholder="Street" />
+                <input type="text" name="Addresses[${index}].PostalCode" class="form-control mb-1" placeholder="Postal Code" />
+                <input type="text" name="Addresses[${index}].City" class="form-control mb-1" placeholder="City" />
+                <input type="text" name="Addresses[${index}].Country" class="form-control" placeholder="Country" />
+            `;
+            container.appendChild(card);
+        }
+    </script>
+}
+
+<div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card m-2 shadow-sm">
+                
+                <form method="post" asp-action="Edit" asp-controller="Contact">
+                    <input type="hidden" name="ContactId" value="@Model.ContactId" />
+
+                    <!-- Nagłówek -->
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <input type="text" name="Name" class="form-control form-control-lg" value="@Model.Name" />
+                        <div>
+                        @await Html.PartialAsync("~/Views/Partial/DetailsMenu.cshtml", Model.ContactId)
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <!-- Adresy -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold"><i class="bi bi-geo-alt-fill me-1"></i>Adresy</h6>
+                        <div id="addresses-@Model.ContactId">
+                            @if (Model.Addresses?.Any() == true)
+                                {
+                                for (int i = 0; i < Model.Addresses.Count; i++)
+                                    {
+                                        <div class="card p-2 mb-2 address-card">
+                                        <input type="hidden" name="Addresses[@i].AddressId" value="@Model.Addresses.ElementAt(i).AddressId" />
+                                        <input type="text" name="Addresses[@i].Street" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).Street" placeholder="Street" />
+                                        <input type="text" name="Addresses[@i].PostalCode" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).PostalCode" placeholder="Postal Code" />
+                                        <input type="text" name="Addresses[@i].City" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).City" placeholder="City" />
+                                        <input type="text" name="Addresses[@i].Country" class="form-control" value="@Model.Addresses.ElementAt(i).Country" placeholder="Country" />
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addAddress(@Model.ContactId)">+ Add Address</button>
+                        </div>
+
+                        <!-- E-maile -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold"><i class="bi bi-envelope-fill me-1"></i>E-maile</h6>
+                        <div id="emails-@Model.ContactId">
+                            @if (Model.EmailAddresses?.Any() == true)
+                                {
+                                for (int i = 0; i < Model.EmailAddresses.Count; i++)
+                                    {
+                                        <div class="mb-1 email-item">
+                                        <input type="hidden" name="EmailAddresses[@i].EmailAddressId" value="@Model.EmailAddresses.ElementAt(i).EmailAddressId" />
+                                        <input type="email" name="EmailAddresses[@i].Email" class="form-control" value="@Model.EmailAddresses.ElementAt(i).Email" placeholder="Email" />
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addEmail(@Model.ContactId)">+ Add Email</button>
+                        </div>
+
+                        <!-- Telefony -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold"><i class="bi bi-telephone-fill me-1"></i>Telefony</h6>
+                        <div id="phones-@Model.ContactId">
+                            @if (Model.PhoneNumbers?.Any() == true)
+                                {
+                                for (int i = 0; i < Model.PhoneNumbers.Count; i++)
+                                    {
+                                        <div class="mb-1 phone-item">
+                                        <input type="hidden" name="PhoneNumbers[@i].PhoneNumberId" value="@Model.PhoneNumbers.ElementAt(i).PhoneNumberId" />
+                                        <input type="text" name="PhoneNumbers[@i].Number" class="form-control" value="@Model.PhoneNumbers.ElementAt(i).Number" placeholder="Phone Number" />
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addPhone(@Model.ContactId)">+ Add Phone</button>
+                        </div>
+
+                        <button type="submit" class="btn btn-success mt-2">Zapisz zmiany</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+</div>

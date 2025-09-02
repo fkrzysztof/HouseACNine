@@ -27,13 +27,17 @@ namespace HouseNet9.Controllers
 
             var houseWithGenInfo = _context.Houses
                 .Include(i => i.GeneralInformation)
-                .ThenInclude(i => i.Image)
+                    .ThenInclude(i => i.Image)
                 .Include(i => i.DescriptionPages)
-                .ThenInclude(i => i.Image)
+                    .ThenInclude(i => i.Image)
                 .Include(i => i.DetailedInformation)
-                .ThenInclude(i => i.Image)
+                    .ThenInclude(i => i.Image)
                 .Include(i => i.DetailedInformation)
-                .ThenInclude(i => i.DetailedInformationItems)
+                    .ThenInclude(i => i.DetailedInformationItems)
+                .Include(i => i.Distances)
+                    .ThenInclude(i => i.Image)
+                .Include(i => i.Distances)
+                    .ThenInclude(i => i.DistanceItems)
                 .First();
 
             if (houseWithGenInfo?.GeneralInformation == null)
