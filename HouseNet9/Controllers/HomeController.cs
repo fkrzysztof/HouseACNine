@@ -4,6 +4,7 @@ using HouseNet9.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
@@ -19,13 +20,10 @@ namespace HouseNet9.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string name)
         {
 
-            var house = _context.Houses.FirstOrDefault();
-            if (house == null) return NotFound();
-
-            var houseWithGenInfo = _context.Houses
+            var houseWithGenInfo = await _context.Houses
                 .Include(i => i.GeneralInformation)
                     .ThenInclude(i => i.Image)
                 .Include(i => i.DescriptionPages)
@@ -38,14 +36,21 @@ namespace HouseNet9.Controllers
                     .ThenInclude(i => i.Image)
                 .Include(i => i.Distances)
                     .ThenInclude(i => i.DistanceItems)
-                .First();
+                 .Include(i => i.Contacts)
+                    .ThenInclude(i => i.Addresses)
+                 .Include(i => i.Contacts)
+                    .ThenInclude(i => i.EmailAddresses)
+                 .Include(i => i.Contacts)
+                    .ThenInclude(i => i.PhoneNumbers)
+                .FirstOrDefaultAsync();
 
             if (houseWithGenInfo?.GeneralInformation == null)
             {
                 return NotFound();
             }
 
-
+            HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
+            ViewData["Contacts"] = houseWithGenInfo.Contacts; 
 
             return View(houseWithGenInfo);
         }

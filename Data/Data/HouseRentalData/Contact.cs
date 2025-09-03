@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Data.HouseRentalData
 {
@@ -13,6 +14,11 @@ namespace Data.Data.HouseRentalData
         public ICollection<Address>? Addresses { get; set; }
         public ICollection<PhoneNumber>? PhoneNumbers { get; set; }
         public ICollection<EmailAddress>? EmailAddresses { get; set; }
+
+        public int? HouseId { get; set; }
+
+        [ForeignKey("HouseId")]
+        public House? House { get; set; }
 
     }
 }

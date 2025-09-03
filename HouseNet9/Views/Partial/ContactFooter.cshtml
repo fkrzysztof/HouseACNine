@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Data.Data.HouseRentalData.Contact>
+
+@* *************************  Contact  ************************* *@  
+
+<div class="row  my-4">
+
+    @if (Model?.Any() == true)
+    {
+        @foreach (var contact in Model)
+        {
+            <div class="col-4">
+                <strong>@contact.Name</strong><br />
+
+                @if (contact.Addresses?.Any() == true)
+                {
+                    foreach (var address in contact.Addresses)
+                    {
+                        @address.Street
+        
+                        <br />
+                        @address.PostalCode @address.City
+        
+                        <br />
+                        @address.Country
+        
+                        <br />
+                    }
+                }
+
+
+                @if (contact.EmailAddresses?.Any() == true)
+                {
+                    foreach (var email in contact.EmailAddresses)
+                    {
+                        @email.Email
+        
+                        <br />
+                    }
+                }
+
+                @if (contact.PhoneNumbers?.Any() == true)
+                {
+                    foreach (var phone in contact.PhoneNumbers)
+                    {
+                        @phone.Number
+        
+                        <br />
+                    }
+                }
+
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-4">
+            <p>Brak danych kontaktowych dla tego domu.</p>
+        </div>
+    }
+</div>
+

@@ -1,75 +1,57 @@
 ﻿@model Data.Data.HouseRentalData.Contact
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Contact";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@* 
-<h1>Edit</h1>
-
-<h4>Contact</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ContactId" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
- *@
-
 
 @section Scripts {
     <script>
-        function addPhone(contactId) {
-            const container = document.getElementById("phones-" + contactId);
+        function removeElement(button) {
+            button.closest(".removable-item").remove();
+        }
+
+        function addPhone() {
+            const container = document.getElementById("phones");
             const index = container.querySelectorAll(".phone-item").length;
 
             const div = document.createElement("div");
-            div.className = "mb-1 phone-item";
+            div.className = "mb-1 phone-item removable-item";
             div.innerHTML = `
-                <input type="text" name="PhoneNumbers[${index}].Number" class="form-control" placeholder="Phone Number" />
+                <input type="hidden" name="PhoneNumbers[${index}].PhoneNumberId" value="0" />
+                <input type="text" name="PhoneNumbers[${index}].Number" class="form-control d-inline w-75" placeholder="Phone Number" />
+                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeElement(this)">Usuń</button>
             `;
             container.appendChild(div);
         }
 
-        function addEmail(contactId) {
-            const container = document.getElementById("emails-" + contactId);
+        function addEmail() {
+            const container = document.getElementById("emails");
             const index = container.querySelectorAll(".email-item").length;
 
             const div = document.createElement("div");
-            div.className = "mb-1 email-item";
+            div.className = "mb-1 email-item removable-item";
             div.innerHTML = `
-                <input type="email" name="EmailAddresses[${index}].Email" class="form-control" placeholder="Email" />
+                <input type="hidden" name="EmailAddresses[${index}].EmailAddressId" value="0" />
+                <input type="email" name="EmailAddresses[${index}].Email" class="form-control d-inline w-75" placeholder="Email" />
+                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeElement(this)">Usuń</button>
             `;
             container.appendChild(div);
         }
 
-        function addAddress(contactId) {
-            const container = document.getElementById("addresses-" + contactId);
+        function addAddress() {
+            const container = document.getElementById("addresses");
             const index = container.querySelectorAll(".address-card").length;
 
             const card = document.createElement("div");
-            card.className = "card p-2 mb-2 address-card";
+            card.className = "card p-2 mb-2 address-card removable-item";
             card.innerHTML = `
+                <input type="hidden" name="Addresses[${index}].AddressId" value="0" />
                 <input type="text" name="Addresses[${index}].Street" class="form-control mb-1" placeholder="Street" />
                 <input type="text" name="Addresses[${index}].PostalCode" class="form-control mb-1" placeholder="Postal Code" />
                 <input type="text" name="Addresses[${index}].City" class="form-control mb-1" placeholder="City" />
-                <input type="text" name="Addresses[${index}].Country" class="form-control" placeholder="Country" />
+                <input type="text" name="Addresses[${index}].Country" class="form-control mb-1" placeholder="Country" />
+                <button type="button" class="btn btn-sm btn-danger mt-1" onclick="removeElement(this)">Usuń adres</button>
             `;
             container.appendChild(card);
         }
@@ -77,84 +59,92 @@
 }
 
 <div class="row">
-        <div class="col-lg-6 col-md-12">
-            <div class="card m-2 shadow-sm">
-                
-                <form method="post" asp-action="Edit" asp-controller="Contact">
-                    <input type="hidden" name="ContactId" value="@Model.ContactId" />
+    <div class="col-lg-8 col-md-12">
+        <div class="card m-2 shadow-sm">
 
-                    <!-- Nagłówek -->
-                    <div class="card-header d-flex justify-content-between align-items-center">
+            <!-- FORMULARZ -->
+            <form method="post" asp-action="Edit" asp-controller="Contacts">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ContactId" value="@Model.ContactId" />
+
+                <!-- Nagłówek -->
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <input type="text" name="Name" class="form-control form-control-lg" value="@Model.Name" />
-                        <div>
-                        @await Html.PartialAsync("~/Views/Partial/DetailsMenu.cshtml", Model.ContactId)
-                        </div>
+                    <div>
+                        <a asp-action="Delete" asp-route-id="@Model.ContactId" class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Czy na pewno chcesz usunąć ten kontakt?')">
+                            Usuń kontakt
+                        </a>
                     </div>
+                </div>
 
-                    <div class="card-body">
+                <!-- Body -->
+                <div class="card-body">
 
-                        <!-- Adresy -->
-                        <div class="mb-3">
-                            <h6 class="fw-bold"><i class="bi bi-geo-alt-fill me-1"></i>Adresy</h6>
-                        <div id="addresses-@Model.ContactId">
+                    <!-- Adresy -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold"><i class="bi bi-geo-alt-fill me-1"></i>Adresy</h6>
+                        <div id="addresses">
                             @if (Model.Addresses?.Any() == true)
-                                {
+                            {
                                 for (int i = 0; i < Model.Addresses.Count; i++)
-                                    {
-                                        <div class="card p-2 mb-2 address-card">
+                                {
+                                    <div class="card p-2 mb-2 address-card removable-item">
                                         <input type="hidden" name="Addresses[@i].AddressId" value="@Model.Addresses.ElementAt(i).AddressId" />
                                         <input type="text" name="Addresses[@i].Street" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).Street" placeholder="Street" />
                                         <input type="text" name="Addresses[@i].PostalCode" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).PostalCode" placeholder="Postal Code" />
                                         <input type="text" name="Addresses[@i].City" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).City" placeholder="City" />
-                                        <input type="text" name="Addresses[@i].Country" class="form-control" value="@Model.Addresses.ElementAt(i).Country" placeholder="Country" />
-                                        </div>
-                                    }
+                                        <input type="text" name="Addresses[@i].Country" class="form-control mb-1" value="@Model.Addresses.ElementAt(i).Country" placeholder="Country" />
+                                        <button type="button" class="btn btn-sm btn-danger mt-1" onclick="removeElement(this)">Usuń adres</button>
+                                    </div>
                                 }
-                            </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addAddress(@Model.ContactId)">+ Add Address</button>
+                            }
                         </div>
-
-                        <!-- E-maile -->
-                        <div class="mb-3">
-                            <h6 class="fw-bold"><i class="bi bi-envelope-fill me-1"></i>E-maile</h6>
-                        <div id="emails-@Model.ContactId">
-                            @if (Model.EmailAddresses?.Any() == true)
-                                {
-                                for (int i = 0; i < Model.EmailAddresses.Count; i++)
-                                    {
-                                        <div class="mb-1 email-item">
-                                        <input type="hidden" name="EmailAddresses[@i].EmailAddressId" value="@Model.EmailAddresses.ElementAt(i).EmailAddressId" />
-                                        <input type="email" name="EmailAddresses[@i].Email" class="form-control" value="@Model.EmailAddresses.ElementAt(i).Email" placeholder="Email" />
-                                        </div>
-                                    }
-                                }
-                            </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addEmail(@Model.ContactId)">+ Add Email</button>
-                        </div>
-
-                        <!-- Telefony -->
-                        <div class="mb-3">
-                            <h6 class="fw-bold"><i class="bi bi-telephone-fill me-1"></i>Telefony</h6>
-                        <div id="phones-@Model.ContactId">
-                            @if (Model.PhoneNumbers?.Any() == true)
-                                {
-                                for (int i = 0; i < Model.PhoneNumbers.Count; i++)
-                                    {
-                                        <div class="mb-1 phone-item">
-                                        <input type="hidden" name="PhoneNumbers[@i].PhoneNumberId" value="@Model.PhoneNumbers.ElementAt(i).PhoneNumberId" />
-                                        <input type="text" name="PhoneNumbers[@i].Number" class="form-control" value="@Model.PhoneNumbers.ElementAt(i).Number" placeholder="Phone Number" />
-                                        </div>
-                                    }
-                                }
-                            </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addPhone(@Model.ContactId)">+ Add Phone</button>
-                        </div>
-
-                        <button type="submit" class="btn btn-success mt-2">Zapisz zmiany</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addAddress()">+ Dodaj adres</button>
                     </div>
-                </form>
 
-            </div>
+                    <!-- E-maile -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold"><i class="bi bi-envelope-fill me-1"></i>E-maile</h6>
+                        <div id="emails">
+                            @if (Model.EmailAddresses?.Any() == true)
+                            {
+                                for (int i = 0; i < Model.EmailAddresses.Count; i++)
+                                {
+                                    <div class="mb-1 email-item removable-item">
+                                        <input type="hidden" name="EmailAddresses[@i].EmailAddressId" value="@Model.EmailAddresses.ElementAt(i).EmailAddressId" />
+                                        <input type="email" name="EmailAddresses[@i].Email" class="form-control d-inline w-75" value="@Model.EmailAddresses.ElementAt(i).Email" placeholder="Email" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeElement(this)">Usuń</button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addEmail()">+ Dodaj email</button>
+                    </div>
+
+                    <!-- Telefony -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold"><i class="bi bi-telephone-fill me-1"></i>Telefony</h6>
+                        <div id="phones">
+                            @if (Model.PhoneNumbers?.Any() == true)
+                            {
+                                for (int i = 0; i < Model.PhoneNumbers.Count; i++)
+                                {
+                                    <div class="mb-1 phone-item removable-item">
+                                        <input type="hidden" name="PhoneNumbers[@i].PhoneNumberId" value="@Model.PhoneNumbers.ElementAt(i).PhoneNumberId" />
+                                        <input type="text" name="PhoneNumbers[@i].Number" class="form-control d-inline w-75" value="@Model.PhoneNumbers.ElementAt(i).Number" placeholder="Phone Number" />
+                                        <button type="button" class="btn btn-sm btn-danger ms-2" onclick="removeElement(this)">Usuń</button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-1" onclick="addPhone()">+ Dodaj telefon</button>
+                    </div>
+
+                    <!-- Zapis -->
+                    <button type="submit" class="btn btn-success mt-2">💾 Zapisz zmiany</button>
+                </div>
+            </form>
         </div>
-
+    </div>
 </div>

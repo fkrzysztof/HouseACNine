@@ -36,6 +36,9 @@ namespace Data.Data.HouseRentalData
         [Display(Name = "Odległości")] // kolekcja informacji o odleglosciach
         public ICollection<Distance>? Distances { get; set; }
 
+        [Display(Name = "Kontakt")] // kolekcja kontaktów o odleglosciach
+        public ICollection<Contact>? Contacts { get; set; }
+
         public bool IsActive { get; set; }
     }
 }

@@ -59,17 +59,24 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("ContactId,Name")] Contact contact)
-        
-       
         public async Task<IActionResult> Create(Contact contact)
         {
+            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
+            if (!houseId.HasValue)
+            {
+                return BadRequest("Nie wybrano domu.");
+            }
+
+            // Wymuszamy poprawny HouseId
+            contact.HouseId = houseId.Value;
+
             if (ModelState.IsValid)
             {
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Houses", new { id = houseId.Value });
             }
+
             return View(contact);
         }
 
@@ -99,9 +106,7 @@ namespace HouseNet9.Controllers
         public async Task<IActionResult> Edit(Contact model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             // Pobranie kontaktu z bazy wraz z kolekcjami
             var contactInDb = await _context.Contacts
@@ -111,21 +116,24 @@ namespace HouseNet9.Controllers
                 .FirstOrDefaultAsync(c => c.ContactId == model.ContactId);
 
             if (contactInDb == null)
-            {
                 return NotFound();
-            }
 
-            // Aktualizacja podstawowych danych
+            // ===== Aktualizacja podstawowych danych =====
             contactInDb.Name = model.Name;
+
+            // ===== Ustawienie domu =====
+            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
+            if (houseId.HasValue)
+                contactInDb.HouseId = houseId.Value;
 
             // ===== Adresy =====
             var addressIds = model.Addresses?.Select(a => a.AddressId).ToList() ?? new List<int>();
-            // Usuń te, które nie są już w modelu
             foreach (var address in contactInDb.Addresses.Where(a => !addressIds.Contains(a.AddressId)).ToList())
             {
                 contactInDb.Addresses.Remove(address);
+                _context.Addresses.Remove(address); // usuń fizycznie z bazy
             }
-            // Aktualizacja istniejących i dodanie nowych
+
             if (model.Addresses != null)
             {
                 foreach (var address in model.Addresses)
@@ -156,7 +164,9 @@ namespace HouseNet9.Controllers
             foreach (var email in contactInDb.EmailAddresses.Where(e => !emailIds.Contains(e.EmailAddressId)).ToList())
             {
                 contactInDb.EmailAddresses.Remove(email);
+                _context.EmailAddresses.Remove(email);
             }
+
             if (model.EmailAddresses != null)
             {
                 foreach (var email in model.EmailAddresses)
@@ -181,7 +191,9 @@ namespace HouseNet9.Controllers
             foreach (var phone in contactInDb.PhoneNumbers.Where(p => !phoneIds.Contains(p.PhoneNumberId)).ToList())
             {
                 contactInDb.PhoneNumbers.Remove(phone);
+                _context.PhoneNumbers.Remove(phone);
             }
+
             if (model.PhoneNumbers != null)
             {
                 foreach (var phone in model.PhoneNumbers)
@@ -201,10 +213,11 @@ namespace HouseNet9.Controllers
                 }
             }
 
-            // Zapis do bazy danych
+            // ===== Zapis do bazy =====
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            // Przekierowanie do strony domu
+            return RedirectToAction("Details", "Houses", new { id = houseId });
         }
 
 
