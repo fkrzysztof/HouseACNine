@@ -10,7 +10,6 @@ namespace HouseNet9.Controllers
 {
     public class HomeController : Controller
     {
-        //przeniesc do abstract class
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
@@ -20,7 +19,7 @@ namespace HouseNet9.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string name)
+        public async Task<IActionResult> Index()
         {
 
             var houseWithGenInfo = await _context.Houses
@@ -36,12 +35,6 @@ namespace HouseNet9.Controllers
                     .ThenInclude(i => i.Image)
                 .Include(i => i.Distances)
                     .ThenInclude(i => i.DistanceItems)
-                 .Include(i => i.Contacts)
-                    .ThenInclude(i => i.Addresses)
-                 .Include(i => i.Contacts)
-                    .ThenInclude(i => i.EmailAddresses)
-                 .Include(i => i.Contacts)
-                    .ThenInclude(i => i.PhoneNumbers)
                 .FirstOrDefaultAsync();
 
             if (houseWithGenInfo?.GeneralInformation == null)
@@ -49,8 +42,8 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
-            ViewData["Contacts"] = houseWithGenInfo.Contacts; 
+            //HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
+ 
 
             return View(houseWithGenInfo);
         }

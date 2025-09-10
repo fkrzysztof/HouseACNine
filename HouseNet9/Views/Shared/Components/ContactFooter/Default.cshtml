@@ -1,12 +1,9 @@
-﻿@model IEnumerable<Data.Data.HouseRentalData.Contact>
+﻿@model List<Data.Data.HouseRentalData.Contact>
 
-@* *************************  Contact  ************************* *@  
-
-<div class="row  my-4">
-
+<div class="row my-4">
     @if (Model?.Any() == true)
     {
-        @foreach (var contact in Model)
+        foreach (var contact in Model)
         {
             <div class="col-4">
                 <strong>@contact.Name</strong><br />
@@ -27,7 +24,6 @@
                     }
                 }
 
-
                 @if (contact.EmailAddresses?.Any() == true)
                 {
                     foreach (var email in contact.EmailAddresses)
@@ -47,7 +43,6 @@
                         <br />
                     }
                 }
-
             </div>
         }
     }
@@ -58,4 +53,3 @@
         </div>
     }
 </div>
-

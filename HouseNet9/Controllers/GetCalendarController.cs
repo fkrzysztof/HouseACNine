@@ -30,15 +30,14 @@ namespace HouseRent.Controllers
             //ustawiam session na aktualnie wybrany miesiac lub dzisiejsza date - aktualny miesiac
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("FirstDayofMonth")))
             {
-                //jesli nie mamy zmiennej w sesji ustawiamy pierwszy dzien biezacego miesiaca ***
+                //jesli nie mamy zmiennej w sesji ustawiamy pierwszy dzien biezacego miesiaca
                 firstDay = new DateTime(today.Year, today.Month, 1);
                 HttpContext.Session.SetString("FirstDayofMonth", JsonConvert.SerializeObject(firstDay));
             }
             //jesli jest ustawiamy wybrany z session
             else
             {
-             //   firstDay = JsonConvert.DeserializeObject<DateTime>(HttpContext.Session.GetString("FirstDayofMonth"));
-                firstDay = today;    //today jest do zmiany!!!!
+                firstDay = JsonConvert.DeserializeObject<DateTime>(HttpContext.Session.GetString("FirstDayofMonth"));
             }
 
             //Dodaje lub odejmuje miesiac NEXT - PREVIOUS oraz aktualizuje zmienna w sesji
@@ -52,14 +51,23 @@ namespace HouseRent.Controllers
                 {
                     firstDay = firstDay.AddMonths(-1);
                 }
-
+                
+                //zapisuje zmiany, Aktualizacja session
                 HttpContext.Session.SetString("FirstDayofMonth", JsonConvert.SerializeObject(firstDay));
             }
 
-            //Ustawiamy wybrany miesiac - po ewetuanej zmianie i przed szukaniem poniedziałku
-            DateTime selectedMonth = new DateTime(firstDay.Year, firstDay.Month, firstDay.Day);
-            DateTime firstDayCalendarTwo = new DateTime(firstDay.Year, firstDay.Month + 1, 1);
+            //czy te zmienne sa potrzebne? do prawidłowego wskazania miesiaca.??
 
+            
+
+            //Ustawiamy wybrany miesiac - po ewetuanej zmianie i przed szukaniem poniedziałku
+
+            //dodaje miesiac aby wyswietli go na kal 1
+            DateTime selectedMonth = new DateTime(firstDay.Year, firstDay.Month, firstDay.Day);
+            //dodaje miesiac aby wyswietli go na kal 2
+            DateTime firstDayCalendarTwo = new DateTime(firstDay.AddMonths(1).Year, firstDay.AddMonths(1).Month, 1);
+
+            //firstDay  - nie oznacza 1 pokazanego ale 1 poniedzialek który moze byc z miesiaca poprzedzajacego i byc niewidoczny
             //cofamy do poniedzialku kalendarz 1
             while (firstDay.DayOfWeek != DayOfWeek.Monday)
             {
@@ -78,7 +86,6 @@ namespace HouseRent.Controllers
             List<DateTime> calendarPage = new List<DateTime>();
             //ustawiam iteracje na 42 - 6x7 pokazuje 5 tygodni 
             for (int i = 0; i < 42; i++)
-            //while (selectedMonth.Month != selectedMonth.AddMonths(1).Month)
             {
                 calendarPage.Add(calendarDay);
                 calendarDay = calendarDay.AddDays(1);
@@ -87,10 +94,10 @@ namespace HouseRent.Controllers
             List<DateTime> calendarTwoPage = new List<DateTime>();
             //ustawiam iteracje na 42 - 6x7 pokazuje 5 tygodni 
             for (int i = 0; i < 42; i++)
-            //while (calendarDay.AddMonths(1).Month != selectedMonth.AddMonths(2).Month)
             {
                 calendarTwoPage.Add(calendarTwoDay);
                 calendarTwoDay = calendarTwoDay.AddDays(1);
+            
             }
 
             //nazwy dni tygodnia
@@ -102,9 +109,16 @@ namespace HouseRent.Controllers
             ViewBag.CalendarPage = calendarPage;
             ViewBag.calendarTwoPage = calendarTwoPage;
             ViewBag.DaysOfWeek = dayscOfWeek;
+
+            
             ViewBag.MonthString = monthOfYear[selectedMonth.Month - 1] + " " + selectedMonth.Year.ToString();
-            ViewBag.MonthStringCalendarTwo = monthOfYear[selectedMonth.Month] + " " + selectedMonth.Year.ToString();
-            ViewBag.SelectedMonth = selectedMonth.Month;
+            //tu jest problem z nowym rokiem !!!!!!!!!!!!!!!!!
+            //ViewBag.MonthStringCalendarTwo = monthOfYear[selectedMonth.Month] + " " + selectedMonth.Year.ToString();
+            ViewBag.MonthStringCalendarTwo = monthOfYear[selectedMonth.AddMonths(1).Month -1] + " " + selectedMonth.Year.ToString();
+            
+            //zmiana na calego dataTime (potrzebny do przeskakiwania lat gru-sty)
+            ViewBag.SelectedMonth = selectedMonth;
+            //ViewBag.SelectedMonth = selectedMonth.Month;
 
             House? house = await _context.Houses.Include(i => i.RentalHouses).FirstOrDefaultAsync();
             if(house == null)
@@ -189,8 +203,8 @@ namespace HouseRent.Controllers
         public IActionResult Create()
         {
 
-            //RentalHouse? rentalHouse = JsonConvert.DeserializeObject<RentalHouse>(HttpContext.Session.GetString("Rental"));
-            RentalHouse rentalHouse = new RentalHouse();
+            RentalHouse? rentalHouse = JsonConvert.DeserializeObject<RentalHouse>(HttpContext.Session.GetString("Rental"));
+           // RentalHouse rentalHouse = new RentalHouse();
 
             
              

@@ -115,7 +115,8 @@
 
     function navi(prevOrNext) {
         $.ajax({
-            url: "./GetCalendar/Index/1?navigation=" + prevOrNext, data: { 'navigation': "previous" }, success: function (result) {
+            url: "./GetCalendar/Index/1?navigation=" + prevOrNext, data: { 'navigation': prevOrNext }, success: function (result) {
+            //url: "./GetCalendar", data: { 'navigation': prevOrNext }, success: function (result) {
                 $("#calendar").html(result);
             }
         });

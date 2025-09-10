@@ -3,8 +3,8 @@
 
 @* <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/newCalendar.js" asp-append-version="true"></script> *@
+<script src="~/js/site.js" asp-append-version="true"></script> *@
+<script src="~/js/newCalendar.js" asp-append-version="true"></script>
 
 
 <!-- <div id="info"></div>  *** sekcja Info stara wersja   -->
@@ -83,7 +83,8 @@
 
 
                                         //nie wyswietlam dni innych miesiecy - opcjonalnie
-                                        if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth))
+                                        //if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth))
+                                        if (item.Month != ((DateTime)ViewBag.SelectedMonth).Month)
                                         {
                                             <div class="rounded btn-group-toggle d-inline-block mt-1 invisible" data-toggle="buttons">
                                                 <label class="btn active day">
@@ -186,7 +187,8 @@
                                         }
 
                                         //nie wyswietlam dni innych miesiecy
-                                        if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth) + 1)
+                                        //if (item.Month != Convert.ToInt32(ViewBag.SelectedMonth) + 1)  //selected Month do zmiany na datatime!! ********
+                                            if (item.Month != ((DateTime)ViewBag.SelectedMonth).AddMonths(1).Month)
                                         {
                                             <div class="rounded btn-group-toggle d-inline-block mt-1 invisible" data-toggle="buttons">
                                                 <label class="btn btn-light active day">
