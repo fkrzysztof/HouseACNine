@@ -15,12 +15,15 @@ namespace Data.Data.HouseRentalData
         
         public ICollection<RentalPrice>? RentalPrices { get; set; }
 
-        //info teksty
-        [Display(Name = "Opis")]
-        public string? Description { get; set; }
+        //info teksty house rental rules
+        [Display(Name = "Teks krótki")]
+        public string? ShortText { get; set; }
 
-        [Display(Name = "Położenie")]
-        public string? Location { get; set; }
+        [Display(Name = "Tekst dłuższy")]
+        public string? LongText { get; set; }
+
+        [Display(Name = "Zasady wynajmu")]
+        public string? RentalRules { get; set; }  
 
         //lista grafika + info
 

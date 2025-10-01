@@ -1,6 +1,7 @@
 ﻿using Data.Data.HouseRentalData;
 //using HouseData.Data.HouseRentalData;
 using HouseNet9.Data;
+using Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -10,10 +11,12 @@ namespace HouseRent.Controllers
     public class GetCalendarController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public GetCalendarController(ApplicationDbContext context)
+        public GetCalendarController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // GET: GetCalendar
@@ -266,7 +269,7 @@ namespace HouseRent.Controllers
             return View(rentalHouse);
         }
 
-
+        //REALIZACJA REZERWACJI
         // create z client
         //form POST: RentalClients/Create
         [HttpPost]
@@ -294,7 +297,10 @@ namespace HouseRent.Controllers
                     rentalHouse.RentalClient = rentalClient;
                     _context.Add(rentalHouse);
                     await _context.SaveChangesAsync();
+                    //wysylam maila
+                    await _emailService.SendEmailAsync("krzysztofranczyk@gmail.com", "Nowa rezerwacja domu", "Hello world! beda piniądze");
                     return RedirectToAction("ThanksForTheReservation", "GetCalendar", rentalHouse);
+
                 }
                 else 
                 {

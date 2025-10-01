@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Create</h1>
@@ -18,14 +19,19 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="ShortText" class="control-label"></label>
+                <input asp-for="ShortText" class="form-control" />
+                <span asp-validation-for="ShortText" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
-                <span asp-validation-for="Location" class="text-danger"></span>
+                <label asp-for="LongText" class="control-label"></label>
+                <input asp-for="LongText" class="form-control" />
+                <span asp-validation-for="LongText" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RentalRules" class="control-label"></label>
+                <input asp-for="RentalRules" class="form-control" />
+                <span asp-validation-for="RentalRules" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -43,6 +49,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

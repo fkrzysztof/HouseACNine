@@ -14,10 +14,16 @@ namespace HouseNet9.Controllers
             _context = context;
         }
 
+        // GET: Rules
+        public async Task<IActionResult> Rules()
+        {
+            return View(await _context.Houses.FirstOrDefaultAsync());
+        }
+
         // GET: Houses
         public async Task<IActionResult> Index()
         {
-            return View("Index", await _context.Houses.ToListAsync());
+            return View(await _context.Houses.ToListAsync());
         }
 
         // GET: Houses/Details/5
@@ -49,7 +55,7 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HouseId,Name,Description,Location,IsActive")] House house)
+        public async Task<IActionResult> Create([Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +87,7 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("HouseId,Name,Description,Location,IsActive")] House house)
+        public async Task<IActionResult> Edit(int id, [Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
         {
             if (id != house.HouseId)
             {

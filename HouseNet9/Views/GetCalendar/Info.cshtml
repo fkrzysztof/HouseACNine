@@ -1,8 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-@using System.Globalization
+﻿@using System.Globalization
 @using Data.Data.HouseRentalData
 @model Data.Data.HouseRentalData.RentalClient
 
@@ -10,87 +6,50 @@
     RentalHouse newRental = ViewBag.NewRentalInfo;
 }
 
+@* <form asp-action="Create" method="post"> *@
 
 <div class="row no-gutters">
-    <div class="col-12 p-3 align-content-between">
-        <h5>Wybrany termin:</h5>
-        <h6><small>Od</small>:</h6> <h6><small>@newRental.From.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></h6>
-        <h6><small>Od:</small></h6> <h6><small>@newRental.To.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></h6>
-        <h6>@newRental.HowManyDaysFromSelect Nocy</h6>
+    <!-- Wybrany termin -->
+    <div class="col-12 p-2 align-content-between">
+        <h6 class="mb-1">Wybrany termin:</h6>
+        <p class="mb-0"><small>Od: @newRental.From.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></p>
+        <p class="mb-0"><small>Do: @newRental.To.Date.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))</small></p>
+        <p class="mb-0"><small>@newRental.HowManyDaysFromSelect Nocy</small></p>
     </div>
-    <div class="col-sm-12 p-3 text-sm-left">
 
-        <h5>Do zapłaty:</h5>
-        <h4>@newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</h4>
-        <small>Cena zawiera sprzątanie końcowe</small>
-        <small>Cena zawiera pościel oraz ręczniki</small>
+    <!-- Do zapłaty -->
+    <div class="col-sm-12 p-2 text-sm-left">
+        <h6 class="mb-1">Do zapłaty:</h6>
+        <p class="mb-0 fw-bold">@newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</p>
+        <small class="d-block">Cena zawiera sprzątanie końcowe</small>
+        <small class="d-block">Cena zawiera pościel oraz ręczniki</small>
     </div>
-    <div class="col-sm-12 p-3 text-sm-right">
 
-
-        <div class="form-check text-left">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                <small>Podane przeze mnie informacje są prawdziwe.</small>
-            </label>
+    <!-- Checkboxy -->
+    <div class="col-sm-12 p-2 text-sm-right">
+        <div class="form-check mb-1 text-left">
+            <input class="form-check-input check-color" type="checkbox" id="check1">
+            <label class="form-check-label" for="check1"><small>Podane przeze mnie informacje są prawdziwe.</small></label>
         </div>
-        <div class="form-check text-left">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                <small>Zapoznałem się i akceptuję Ogólne Warunki Najmu i polityka prywatności.</small>
-            </label>
+        <div class="form-check mb-1 text-left">
+            <input class="form-check-input check-color" type="checkbox" id="check2">
+            <label class="form-check-label" for="check2"><small>Akceptuję warunki i politykę prywatności.</small></label>
         </div>
-        <div class="form-check text-left">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                <small>Potwierdzam, że mam min. 18 lat.</small>
-            </label>
+        <div class="form-check mb-1 text-left">
+            <input class="form-check-input check-color" type="checkbox" id="check3">
+            <label class="form-check-label" for="check3"><small>Potwierdzam, że mam min. 18 lat.</small></label>
         </div>
-
-
-    </div>
-    <div class="col-sm-12 p-3 text-sm-right">
-        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-        <a asp-action="Create" class="btn btn-primary btn-sm">Kontynuuj rezerwacje</a>
     </div>
 
-
-
-
+    <!-- Przyciski -->
+    <div class="col-sm-12 p-2 text-sm-right">
+        <button type="button" class="btn btn-secondary btn-sm" id="btnClose">Close</button>
+        <a asp-action="Create" class="btn btn-primary btn-sm" id="btnCreate">Kontynuuj rezerwację</a>
+    </div>
 </div>
 
+@* <p>@Url.Action("Create", "GetCalendar")</p> tu *@
 
 
-@* <div class="row no-gutters">
-    
-    <div class="col-sm-6 p-3 text-sm-left">
-        <h4>Twoja rezerwacja:</h4>
-    </div>
+<script src="~/js/agreement.js" asp-append-version="true"></script>
 
-    <div class="col-12 p-0">
-      <div class="modal-line"></div>
-    </div>
-
-    <div class="col-12 p-3">
-        <h5>Wybrany termin: @newRental.From.Date.ToShortDateString()  - @newRental.To.Date.ToShortDateString() </h5>
-        <h6>@newRental.HowManyDaysFromSelect Nocy</h6>
-    </div>
-
-    <div class="col-sm-6 p-3 text-sm-left">
-        <h5>Do zapłaty:  @newRental.ToPay.ToString("C", CultureInfo.CurrentCulture)</h5>
-    </div>
-    <div class="col-sm-6 p-3 text-sm-right">
-        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-        <a asp-action="Create" class="btn btn-primary btn-sm">Kontynuuj rezerwacje</a>
-    </div>
-
-</div> *@
-
-
-@* 
-<script>
-    function sub() {
-      document.getElementById("calendarForm").submit();
-    }
-</script>
- *@

@@ -23,29 +23,52 @@ namespace HouseNet9.Controllers
         {
 
             var houseWithGenInfo = await _context.Houses
-                .Include(i => i.GeneralInformation)
-                    .ThenInclude(i => i.Image)
-                .Include(i => i.DescriptionPages)
-                    .ThenInclude(i => i.Image)
-                .Include(i => i.DetailedInformation)
-                    .ThenInclude(i => i.Image)
-                .Include(i => i.DetailedInformation)
-                    .ThenInclude(i => i.DetailedInformationItems)
-                .Include(i => i.Distances)
-                    .ThenInclude(i => i.Image)
-                .Include(i => i.Distances)
-                    .ThenInclude(i => i.DistanceItems)
-                .FirstOrDefaultAsync();
+            .Include(i => i.GeneralInformation)
+                .ThenInclude(i => i.Image)
+            .Include(i => i.DescriptionPages)
+                .ThenInclude(i => i.Image)
+            .Include(i => i.DetailedInformation)
+                .ThenInclude(i => i.Image)
+            .Include(i => i.DetailedInformation)
+                .ThenInclude(i => i.DetailedInformationItems)
+            .Include(i => i.Distances)
+                .ThenInclude(i => i.Image)
+            .Include(i => i.Distances)
+                .ThenInclude(i => i.DistanceItems)
+            .FirstOrDefaultAsync();
 
             if (houseWithGenInfo?.GeneralInformation == null)
             {
                 return NotFound();
             }
 
+
+            //ViewBag.DescriptionPages = await _context.Houses.Where(f => f.HouseId == houseWithGenInfo.HouseId)
+            //    .Include(i => i.DescriptionPages)
+            //    .ThenInclude(i => i.Image)
+            //    .ToListAsync();
+            //ViewBag.GeneralInformation = await _context.Houses.Where(f => f.HouseId == houseWithGenInfo.HouseId)
+            //    .Include(i => i.GeneralInformation)
+            //    .ThenInclude(i => i.Image)
+            //    .ToListAsync();
+
+            //ViewBag.DetailedInformation = await _context.Houses.Where(f => f.HouseId == houseWithGenInfo.HouseId)
+            //    .Include(i => i.DetailedInformation)
+            //        .ThenInclude(i => i.Image)
+            //    .Include(i => i.DetailedInformation)
+            //        .ThenInclude(i => i.DetailedInformationItems)
+            //    .ToListAsync();
+
+            //ViewBag.Distances = await _context.Houses.Where(f => f.HouseId == houseWithGenInfo.HouseId)
+            //    .Include(i => i.Distances)
+            //        .ThenInclude(i => i.Image)
+            //    .ToListAsync();
+
             //HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
- 
+
 
             return View(houseWithGenInfo);
+           // return View();
         }
 
         public IActionResult Privacy()
