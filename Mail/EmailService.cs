@@ -23,14 +23,51 @@ namespace Mail
             email.Body = new TextPart("html") { Text = body };
 
             using var smtp = new SmtpClient();
-            
+
             smtp.ServerCertificateValidationCallback = (s, c, h, e) => true; // tylko do testów lokalnych **************************
 
             await smtp.ConnectAsync(_settings.SmtpServer, _settings.Port, MailKit.Security.SecureSocketOptions.StartTls);
             await smtp.AuthenticateAsync(_settings.Username, _settings.Password);
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
-            
+
         }
+
+        //    public async Task SendEmailAsync(
+        //                                    string to,
+        //                                    string subject,
+        //                                    string body,
+        //                                    Dictionary<string, (byte[] Content, string MimeType)> attachments = null)
+        //    {
+        //        var email = new MimeMessage();
+        //        email.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
+        //        email.To.Add(MailboxAddress.Parse(to));
+        //        email.Subject = subject;
+
+        //        var builder = new BodyBuilder
+        //        {
+        //            HtmlBody = body
+        //        };
+
+        //        // Dodanie załączników jeśli są
+        //        if (attachments != null)
+        //        {
+        //            foreach (var att in attachments)
+        //            {
+        //                builder.Attachments.Add(att.Key, att.Value.Content, ContentType.Parse(att.Value.MimeType));
+        //            }
+        //        }
+
+        //        email.Body = builder.ToMessageBody();
+
+        //        using var smtp = new SmtpClient();
+
+        //        smtp.ServerCertificateValidationCallback = (s, c, h, e) => true; // tylko do testów lokalnych
+
+        //        await smtp.ConnectAsync(_settings.SmtpServer, _settings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+        //        await smtp.AuthenticateAsync(_settings.Username, _settings.Password);
+        //        await smtp.SendAsync(email);
+        //        await smtp.DisconnectAsync(true);
+        //    }
     }
 }

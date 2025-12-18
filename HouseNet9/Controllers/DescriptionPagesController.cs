@@ -25,26 +25,10 @@ namespace HouseNet9.Controllers
         // GET: DescriptionPages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DescriptionPages.Include(i => i.Image).ToListAsync());
+            return View(await _context.DescriptionPages.Include(i => i.Images).ToListAsync());
         }
 
-        // GET: DescriptionPages/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var descriptionPage = await _context.DescriptionPages
-                .FirstOrDefaultAsync(m => m.DescriptionPageId == id);
-            if (descriptionPage == null)
-            {
-                return NotFound();
-            }
-
-            return View(descriptionPage);
-        }
 
         // GET: DescriptionPages/Create
         public IActionResult Create()
@@ -52,48 +36,62 @@ namespace HouseNet9.Controllers
             return View();
         }
 
-        // POST: DescriptionPages/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, IFormFile file)
+        public async Task<IActionResult> Create([Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage,List<IFormFile> files)
         {
+            if (!ModelState.IsValid)
+                return View(descriptionPage);
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                var house = await _context.Houses
+                    .Include(h => h.DescriptionPages)
+                    .FirstOrDefaultAsync();
+
+                if (house == null)
                 {
-                    var filePath = await _fileUploadService.UploadFileAsync(file);
-                    if (filePath != null)
+                    ModelState.AddModelError("", "Nie znaleziono domu.");
+                    return View(descriptionPage);
+                }
+
+                // Zapis DescriptionPage aby miała ID
+                house.DescriptionPages.Add(descriptionPage);
+                await _context.SaveChangesAsync();
+
+                // --- ZAPIS WIELU PLIKÓW ---
+                if (files != null && files.Any())
+                {
+                    foreach (var file in files)
                     {
+                        var filePath = await _fileUploadService.UploadFileAsync(file);
 
-                        MyFile myFile = new MyFile();
-                        myFile.Path = filePath;
-                        descriptionPage.Image = myFile;
-                        var house = await _context.Houses.Include(i => i.DescriptionPages).FirstOrDefaultAsync();
-                        if (house != null && house.DescriptionPages != null)
+                        if (filePath != null)
                         {
-                            house.DescriptionPages.Add(descriptionPage);
-                            await _context.SaveChangesAsync();
+                            var myFile = new MyFile
+                            {
+                                Path = filePath,
+                                DescriptionPageId = descriptionPage.DescriptionPageId
+                            };
 
+                            descriptionPage.Images.Add(myFile);
+                            _context.MyFiles.Add(myFile);
                         }
-
-                        ViewData["Message"] = $"Plik '{file.FileName}' został przesłany.";
-                        return RedirectToAction(nameof(Index));
-
-
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("The process failed: {0}", e.ToString());
+
+                    await _context.SaveChangesAsync();
                 }
 
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(descriptionPage);
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e);
+                ModelState.AddModelError("", "Wystąpił błąd podczas zapisu.");
+                return View(descriptionPage);
+            }
         }
+
 
         // GET: DescriptionPages/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -103,7 +101,7 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Image).FirstAsync();
+            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Images).FirstAsync();
             if (descriptionPage == null)
             {
                 return NotFound();
@@ -116,87 +114,143 @@ namespace HouseNet9.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, IFormFile? file, string? ImagePath)
+        public async Task<IActionResult> Edit(
+      int id,
+      [Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage,
+      List<IFormFile> files)  // <- zmienione na List<IFormFile>
         {
             if (id != descriptionPage.DescriptionPageId)
                 return NotFound();
 
+            if (!ModelState.IsValid)
+                return View(descriptionPage);
 
-
-            //var oldDesc = _context.DescriptionPages.Where(f => f.DescriptionPageId == id).Include(i => i.Image).FirstOrDefault();
-            //if (oldDesc == null || oldDesc.Image == null)
-            //    return NotFound();
-            //oldDesc.Image.Path = await _fileUploadService.EditFileAsync(file, ImagePath);
-            //oldDesc.Description = descriptionPage.Description;
-            //oldDesc.Title = descriptionPage.Title;
-
-            //dodaje obiejt image
-            //descriptionPage.Image = new MyFile
-            //{
-            //    Path = await _fileUploadService.EditFileAsync(file, ImagePath)
-            //};
-
-            descriptionPage.Image = _context.MyFiles.Where(w => w.DescriptionPageId == descriptionPage.DescriptionPageId).FirstOrDefault();
-            descriptionPage.Image.Path = await _fileUploadService.EditFileAsync(file, ImagePath);
-
-
-            if (ModelState.IsValid)
+            try
             {
-                try
+                // Pobierz istniejącą stronę z bazy wraz z kolekcją Images
+                var existingPage = await _context.DescriptionPages
+                    .Include(d => d.Images)
+                    .FirstOrDefaultAsync(d => d.DescriptionPageId == id);
+
+                if (existingPage == null)
+                    return NotFound();
+
+                // Aktualizacja pól
+                existingPage.Title = descriptionPage.Title;
+                existingPage.Description = descriptionPage.Description;
+
+                // --- Obsługa nowych plików ---
+                if (files != null && files.Any())
                 {
-                    _context.Update(descriptionPage);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DescriptionPageExists(descriptionPage.DescriptionPageId))
+                    foreach (var file in files)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        var filePath = await _fileUploadService.UploadFileAsync(file);
+                        if (filePath != null)
+                        {
+                            var myFile = new MyFile
+                            {
+                                Path = filePath,
+                                DescriptionPageId = existingPage.DescriptionPageId
+                            };
+
+                            existingPage.Images.Add(myFile);
+                            _context.MyFiles.Add(myFile);
+                        }
                     }
                 }
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(descriptionPage);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.DescriptionPages.Any(d => d.DescriptionPageId == id))
+                    return NotFound();
+                else
+                    throw;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Błąd: {0}", e);
+                ModelState.AddModelError("", "Wystąpił błąd podczas zapisu.");
+                return View(descriptionPage);
+            }
         }
 
-        // GET: DescriptionPages/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Image).FirstOrDefaultAsync();
-            if (descriptionPage != null)
-            {
-
-                if (descriptionPage.Image != null && descriptionPage.Image.Path != null)
-                {
-                    bool result = _fileUploadService.DeleteFile(descriptionPage.Image.Path);
-                    if (!result)
-                    {
-                        return Ok("bląd");
-                    }
-                    else
-                    {
-                        _context.MyFiles.Remove(descriptionPage.Image);
-                        _context.DescriptionPages.Remove(descriptionPage);
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
+     
 
         private bool DescriptionPageExists(int id)
         {
             return _context.DescriptionPages.Any(e => e.DescriptionPageId == id);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            var image = await _context.MyFiles.FindAsync(id);
+            if (image == null) return Json(new { success = false });
+
+            try
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", image.Path);
+                if (System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+
+                _context.MyFiles.Remove(image);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return Json(new { success = false });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var page = await _context.DescriptionPages
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(m => m.DescriptionPageId == id);
+
+            if (page == null)
+                return Json(new { success = false });
+
+            // Usuń pliki fizyczne
+            if (page.Images != null)
+            {
+                foreach (var img in page.Images)
+                {
+                    if (!string.IsNullOrEmpty(img.Path))
+                    {
+                        string fullPath = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot/uploads",
+                            img.Path
+                        );
+
+                        if (System.IO.File.Exists(fullPath))
+                            System.IO.File.Delete(fullPath);
+                    }
+                }
+            }
+
+            // Usuń rekordy zdjęć
+            _context.MyFiles.RemoveRange(page.Images);
+
+            // Usuń DescriptionPage
+            _context.DescriptionPages.Remove(page);
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+
     }
 }

@@ -2,50 +2,655 @@
 @* @{ ViewData["Title"] = "Home Page"; } *@
 @model Data.Data.HouseRentalData.House
 
-@section scripts {
+
+
+
+@* @section scripts { *@
+@*     <script>
+              //   $(document).ready(function(){
+              //   $.ajax({url: "@Url.Action("Index", "GetCalendar")", success: function(result){
+              //     $("#calendar").html(result);
+              //   }});
+              // });
+
+                    $(document).ready(function(){
+                    $.ajax({url: "@Url.Action("GetCalendarNew", "GetCalendar")", success: function(result){
+                        $("#calendar").html(result);
+                    }});
+
+    </script> *@
+
+
+@* } *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* <div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <button id="prevBtn" class="btn btn-secondary">⟵ Poprzednie 2 miesiące</button>
+        <button id="nextBtn" class="btn btn-secondary">Następne 2 miesiące ⟶</button>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Długość rezerwacji:</label>
+        <select id="weeksSelect" class="form-select w-auto d-inline-block ms-2">
+            <option value="1">1 tydzień</option>
+            <option value="2">2 tygodnie</option>
+            <option value="3">3 tygodnie</option>
+        </select>
+    </div>
+
+    <div id="calendarWrapper" class="row g-4"></div>
+    <div id="selectedRange" class="alert alert-info d-none mt-3"></div>
+</div>
+ *@
+
+
+@* <div id="reservationInfo" class="alert alert-info d-none mt-3"></div>
+
+<form id="reservationForm">
+    <input type="hidden" name="start" id="reservationStart">
+    <input type="hidden" name="end" id="reservationEnd">
+</form>
+
+
+
+
 <script>
-            $(document).ready(function(){
-            $.ajax({url: "@Url.Action("Index", "GetCalendar")", success: function(result){
-              $("#calendar").html(result);
-            }});
-          });
+document.addEventListener('DOMContentLoaded', () => {
+    let currentDate = new Date();
+    const today = new Date(new Date().setHours(0,0,0,0));
+    let reservedDates = [];
+    let confirmedRanges = [];
+
+    function formatDate(d){
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    async function loadReservedDates(){
+        // Pobieramy zakres: 1 miesiąc przed, 2 miesiące bieżące, 1 miesiąc po
+        const start = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1);
+        const end = new Date(currentDate.getFullYear(), currentDate.getMonth()+3, 0);
+        const url = `/api/calendar/reserved?start=${start.toISOString()}&end=${end.toISOString()}`;
+
+        try {
+            const resp = await fetch(url);
+            reservedDates = await resp.json();
+        } catch(err){
+            console.error('Błąd pobierania rezerwacji', err);
+            reservedDates = [];
+        }
+    }
+
+    function renderCalendar(){
+        const wrapper = document.getElementById('calendarWrapper');
+        wrapper.innerHTML='';
+        for(let m=0;m<2;m++){
+            const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+m, 1);
+            wrapper.appendChild(generateMonth(monthDate));
+        }
+    }
+
+    function generateMonth(date){
+        const monthDiv = document.createElement('div');
+        monthDiv.className='col-6';
+        const monthName = date.toLocaleString('pl-PL',{month:'long', year:'numeric'});
+        const table = document.createElement('table');
+        table.className='table table-bordered text-center';
+        const thead = document.createElement('thead');
+        thead.innerHTML=`<tr><th colspan="7">${monthName}</th></tr>
+                          <tr><th>Pn</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>So</th><th>Nd</th></tr>`;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let firstDay = date.getDay(); if(firstDay===0) firstDay=7;
+        let row = document.createElement('tr');
+        for(let i=1;i<firstDay;i++) row.appendChild(document.createElement('td'));
+
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth()+1,0).getDate();
+        for(let d=1; d<=daysInMonth; d++){
+            const cell = document.createElement('td');
+            const cellDate = new Date(date.getFullYear(), date.getMonth(), d);
+            const iso = formatDate(cellDate);
+            cell.textContent=d;
+            cell.classList.add('day-cell');
+            cell.dataset.date=iso;
+
+            if(reservedDates.includes(iso)){
+                cell.classList.add('reserved');
+            }
+            if(cellDate<today) cell.classList.add('past-day');
+            if(confirmedRanges.flat().includes(iso)) cell.classList.add('selected');
+            if(cellDate.getDay()===6 && !cell.classList.contains('reserved')) cell.classList.add('saturday-split');
+
+            cell.addEventListener('mouseenter',()=>highlightWeek(cellDate));
+            cell.addEventListener('mouseleave',()=>removeHover());
+            cell.addEventListener('click',()=>confirmWeek(cellDate));
+
+            row.appendChild(cell);
+            if((firstDay+d-1)%7===0){tbody.appendChild(row); row=document.createElement('tr');}
+        }
+        tbody.appendChild(row);
+        table.appendChild(tbody);
+        monthDiv.appendChild(table);
+        return monthDiv;
+    }
+
+    function getPreviousSaturday(date){
+        let d = new Date(date);
+        while(d.getDay()!==6) d.setDate(d.getDate()-1);
+        return d;
+    }
+
+    function isRangeFree(start,end){
+        if(start<today) return false;
+        for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+            if(reservedDates.includes(formatDate(d))) return false;
+        }
+        return true;
+    }
+
+    function highlightWeek(date){
+        document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('hover-selected'));
+        const weeks = parseInt(document.getElementById('weeksSelect').value);
+        let start = (date.getDay()===6)?new Date(date):getPreviousSaturday(date);
+        let end = new Date(start); end.setDate(end.getDate()+weeks*7-1);
+        if(!isRangeFree(start,end)) return;
+        for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+            const cell = document.querySelector(`[data-date='${formatDate(d)}']`);
+            if(cell && !cell.classList.contains('selected')) cell.classList.add('hover-selected');
+        }
+    }
+
+    function removeHover(){
+        document.querySelectorAll('.hover-selected').forEach(c=>c.classList.remove('hover-selected'));
+    }
+
+    function confirmWeek(date){
+        const weeks = parseInt(document.getElementById('weeksSelect').value);
+        let start = (date.getDay()===6)?new Date(date):getPreviousSaturday(date);
+        let end = new Date(start); end.setDate(end.getDate()+weeks*7-1);
+        if(!isRangeFree(start,end)) return;
+
+        let range = [];
+        for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)) range.push(formatDate(d));
+        confirmedRanges = [range];
+        renderCalendar();
+
+        const info = document.getElementById('selectedRange');
+        info.textContent = `Wybrany termin (${weeks} tyg.): ${start.toLocaleDateString('pl-PL')} – ${end.toLocaleDateString('pl-PL')}`;
+        info.classList.remove('d-none');
+    }
+
+    document.getElementById('nextBtn').onclick = async () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+2,1);
+        await loadReservedDates();
+        renderCalendar();
+    }
+    document.getElementById('prevBtn').onclick = async () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()-2,1);
+        await loadReservedDates();
+        renderCalendar();
+    }
+
+    loadReservedDates().then(renderCalendar);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        function confirmWeek(date){
+        const weeks = parseInt(document.getElementById('weeksSelect').value);
+        let start = (date.getDay()===6) ? new Date(date) : getPreviousSaturday(date);
+        let end = new Date(start);
+        end.setDate(end.getDate() + weeks*7 - 1);
+
+        if(!isRangeFree(start,end)) return;
+
+        // Wywołanie Ajax do backendu w celu obliczenia ceny
+        fetch(`/GetCalendar/CalculatePrice?from=${formatDate(start)}&to=${formatDate(end)}`)
+            .then(res => res.json())
+            .then(data => {
+                const info = document.getElementById('selectedRange');
+                info.innerHTML = `
+                    <p>Wybrany termin: <strong>${data.start} – ${data.end}</strong></p>
+                    <p>Ilość dni: <strong>${data.days}</strong></p>
+                    <p>Cena: <strong>${data.price} PLN</strong></p>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="check18">
+                        <label class="form-check-label" for="check18">Potwierdzam, że mam min. 18 lat.</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkRegulamin">
+                        <label class="form-check-label" for="checkRegulamin">Akceptuję regulamin i politykę prywatności.</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="checkInfo">
+                        <label class="form-check-label" for="checkInfo">Podane przeze mnie informacje są prawdziwe.</label>
+                    </div>
+
+                    <button id="btnContinue" class="btn btn-primary mt-2" disabled>Kontynuuj rezerwację</button>
+                `;
+                info.classList.remove('d-none');
+
+                // Odblokowanie przycisku po zaznaczeniu wszystkich checkboxów
+                const btn = document.getElementById('btnContinue');
+                const checks = [
+                    document.getElementById('check18'),
+                    document.getElementById('checkRegulamin'),
+                    document.getElementById('checkInfo')
+                ];
+
+                checks.forEach(ch => ch.addEventListener('change', () => {
+                    btn.disabled = !checks.every(c => c.checked);
+                }));
+
+                // Kliknięcie przycisku – wysłanie POST do kontrolera CreateNewReservation
+                btn.addEventListener('click', () => {
+                    fetch('/GetCalendar/CreateNewReservation', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ from: data.start, to: data.end })
+                    })
+                    .then(res => res.json())
+                    .then(resp => {
+                        if(resp.success){
+                            window.location.href = resp.redirectUrl; // przekierowanie np. do szczegółów rezerwacji
+                        } else {
+                            alert('Błąd przy tworzeniu rezerwacji.');
+                        }
+                    })
+                    .catch(err => console.error(err));
+                });
+            })
+            .catch(err => console.error(err));
+
+        // Zaznaczenie wybranego tygodnia w kalendarzu
+        let range = [];
+        for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) range.push(formatDate(d));
+        confirmedRanges = [range];
+        renderCalendar();
+    }
+
+
+
+
+});
+</script> *@
+
+
+
+
+
+
+
+<div class="container">
+
+    <div class="d-flex justify-content-between mb-3">
+        <button id="prevBtn" class="btn btn-secondary">⟵ Poprzednie 2 miesiące</button>
+        <button id="nextBtn" class="btn btn-secondary">Następne 2 miesiące ⟶</button>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Długość rezerwacji:</label>
+        <select id="weeksSelect" class="form-select w-auto d-inline-block ms-2">
+            <option value="1">1 tydzień</option>
+            <option value="2">2 tygodnie</option>
+            <option value="3">3 tygodnie</option>
+        </select>
+    </div>
+
+    <div id="calendarWrapper" class="row g-4"></div>
+    <div id="selectedRange" class="alert alert-info d-none mt-3"></div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let reservedDates = [];
+        let currentDate = new Date();
+        const today = new Date(new Date().setHours(0,0,0,0));
+        let confirmedRanges = [];
+
+        function formatDate(d){
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+
+        async function loadReservedDates(start, end){
+            try {
+                const response = await fetch(`/api/calendar/reserved?start=${start.toISOString()}&end=${end.toISOString()}`);
+                if(!response.ok) throw new Error("Błąd pobierania zajętych dni");
+                reservedDates = await response.json();
+            } catch(err){
+                console.error(err);
+                reservedDates = [];
+            }
+        }
+
+        async function renderCalendar(){
+            // pobieramy dane dla miesiąca przed i po (dla poprawnego podświetlania)
+            const fetchStart = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1);
+            const fetchEnd = new Date(currentDate.getFullYear(), currentDate.getMonth()+2, 0);
+            await loadReservedDates(fetchStart, fetchEnd);
+
+            const wrapper = document.getElementById('calendarWrapper');
+            wrapper.innerHTML='';
+
+            // Renderujemy tylko 2 miesiące: bieżący + następny
+            for(let m=0; m<2; m++){
+                const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+m, 1);
+                wrapper.appendChild(generateMonth(monthDate));
+            }
+        }
+
+        function generateMonth(date){
+            const monthDiv = document.createElement('div');
+            monthDiv.className='col-6';
+            const monthName = date.toLocaleString('pl-PL',{month:'long', year:'numeric'});
+
+            const table = document.createElement('table');
+            table.className='table table-bordered text-center';
+            const thead = document.createElement('thead');
+            thead.innerHTML = `<tr><th colspan="7">${monthName}</th></tr>
+                <tr><th>Pn</th><th>Wt</th><th>Śr</th><th>Cz</th><th>Pt</th><th>So</th><th>Nd</th></tr>`;
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            let firstDay = date.getDay(); firstDay = firstDay===0?7:firstDay;
+            let row = document.createElement('tr');
+            for(let i=1;i<firstDay;i++) row.appendChild(document.createElement('td'));
+
+            const daysInMonth = new Date(date.getFullYear(), date.getMonth()+1,0).getDate();
+            for(let d=1; d<=daysInMonth; d++){
+                const cell = document.createElement('td');
+                const cellDate = new Date(date.getFullYear(), date.getMonth(), d);
+                const iso = formatDate(cellDate);
+                cell.textContent=d;
+                cell.classList.add('day-cell');
+                cell.dataset.date=iso;
+
+                if(reservedDates.includes(iso)) cell.classList.add('reserved');
+                if(cellDate<today) cell.classList.add('past-day');
+                if(confirmedRanges.flat().includes(iso)) cell.classList.add('selected');
+                if(cellDate.getDay()===6 && !cell.classList.contains('reserved')) cell.classList.add('saturday-split');
+
+                cell.addEventListener('mouseenter',()=>highlightWeek(cellDate));
+                cell.addEventListener('mouseleave',()=>removeHover());
+                cell.addEventListener('click',()=>confirmWeek(cellDate));
+
+                row.appendChild(cell);
+                if((firstDay + d -1)%7===0){tbody.appendChild(row); row=document.createElement('tr');}
+            }
+            tbody.appendChild(row);
+            table.appendChild(tbody);
+            monthDiv.appendChild(table);
+            return monthDiv;
+        }
+
+        function getPreviousSaturday(date){
+            let d = new Date(date);
+            while(d.getDay()!==6) d.setDate(d.getDate()-1);
+            return d;
+        }
+
+        function isRangeFree(start,end){
+            if(start<today) return false;
+            for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+                if(reservedDates.includes(formatDate(d))) return false;
+            }
+            return true;
+        }
+
+        function highlightWeek(date){
+            document.querySelectorAll('.day-cell').forEach(c=>c.classList.remove('hover-selected'));
+            const weeks = parseInt(document.getElementById('weeksSelect').value);
+            let start = (date.getDay()===6)?new Date(date):getPreviousSaturday(date);
+            let end = new Date(start); end.setDate(end.getDate()+weeks*7-1);
+            if(!isRangeFree(start,end)) return;
+            for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+                const cell = document.querySelector(`[data-date='${formatDate(d)}']`);
+                if(cell && !cell.classList.contains('selected')) cell.classList.add('hover-selected');
+            }
+        }
+
+        function removeHover(){
+            document.querySelectorAll('.hover-selected').forEach(c=>c.classList.remove('hover-selected'));
+        }
+
+        function confirmWeek(date){
+            const weeks = parseInt(document.getElementById('weeksSelect').value);
+            let start = (date.getDay()===6)?new Date(date):getPreviousSaturday(date);
+            let end = new Date(start);
+            end.setDate(end.getDate()+weeks*7-1);
+
+            fetch('/api/calendar/calculate', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    from: start.toISOString(),
+                    to: end.toISOString()
+                })
+            })
+            .then(res => {
+                if(!res.ok) throw 'Błąd API';
+                return res.json();
+            })
+            .then(data => {
+                showReservationInfo(data);
+            })
+            .catch(err => console.error(err));
+        }
+
+
+
+        document.getElementById('nextBtn').onclick = () => {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+2,1);
+            renderCalendar();
+        }
+        document.getElementById('prevBtn').onclick = () => {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()-2,1);
+            renderCalendar();
+        }
+
+        renderCalendar();
+
+            function showReservationInfo(data){
+        const info = document.getElementById('selectedRange');
+
+        info.innerHTML = `
+            <p><strong>Termin:</strong> ${data.start} – ${data.end}</p>
+            <p><strong>Ilość dni:</strong> ${data.days}</p>
+            <p><strong>Cena:</strong> ${data.price} PLN</p>
+
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="c1">
+                <label class="form-check-label">Mam ukończone 18 lat</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="c2">
+                <label class="form-check-label">Akceptuję regulamin i politykę prywatności</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="c3">
+                <label class="form-check-label">Podane dane są prawdziwe</label>
+            </div>
+
+            <button id="btnContinue" class="btn btn-primary mt-3" disabled>
+                Kontynuuj rezerwację
+            </button>
+        `;
+
+        info.classList.remove('d-none');
+
+        const btn = document.getElementById('btnContinue');
+        const checks = ['c1','c2','c3'].map(id => document.getElementById(id));
+
+        checks.forEach(c => c.addEventListener('change', () => {
+            btn.disabled = !checks.every(x => x.checked);
+        }));
+
+        btn.onclick = () => {
+            fetch('/GetCalendar/CreateNewReservation', {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ from:data.start, to:data.end })
+            })
+            .then(r=>r.json())
+            .then(resp=>{
+                if(resp.success)
+                    window.location.href = resp.redirectUrl;
+            });
+        };
+    }
+
+
+    });
 </script>
-}
 
 
 
+
+
+
+
+
+
+
+
+@* 
 <div class="text-center my-4">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about building Web apps with ASP.NET Core.</p>
-</div>
+</div> *@
 
 
 @* *************************  DescriptionPages ************************* *@
-<div class="row my-4">
-    @{
-    if(Model != null && Model.DescriptionPages != null)
-    foreach( DescriptionPage descriptionPage in Model.DescriptionPages)
-    {
-         @:<div class="col-12 text-left">
-                if(descriptionPage.Image != null)
+
+    <section class="projects-section bg-light" id="projects">
+        <div class="container px-4 px-lg-5">
+            <!-- Featured Project Row-->
+            <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
+                <div class="col-xl-8 col-lg-7">
+
+                <video src="~/video/compressed_cro-dron-short2-hq-ok.webm" type="audio/webm"
+                       autoplay
+                       loop
+                       muted
+                       playsinline
+                       style="width: 100%; height: auto; border-radius: 8px;">
+                </video>
+                    
+                </div>
+                <div class="col-xl-4 col-lg-5">
+                    <div class="featured-text text-center text-lg-left">
+                        <h4>Shoreline</h4>
+                        <p class="text-black-50 mb-0">Grayscale is open source and MIT licensed. This means you can use it for any project - even commercial projects! Download it, customize it, and publish your website!</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Project One Row-->
+        @{
+            bool xy = true;
+            int count = 0;
+            if(Model != null && Model.DescriptionPages != null)
+                foreach( DescriptionPage descriptionPage in Model.DescriptionPages)
                 {
-                    <h6 class="display-4 d-flex align-items-center">
-                        <img class="mr-2" src="@Url.Content("~/uploads/" + (descriptionPage.Image == null ? "no_photography_24dp.svg" : descriptionPage.Image.Path))" alt="Przesłany obraz" />
-                        @descriptionPage.Title
-                    </h6>
-                    <p>@descriptionPage.Description</p>
+                    <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
+                    <div class="col-lg-6 @(xy == true ? "order-first":"order-last") ">
+                        @foreach(MyFile img in descriptionPage.Images.Take(2))
+                        {
+                            <img class="circle-foto" src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" alt="..." />    
+                        }
+                    </div>
+                      
+                        <div class="col-lg-6">
+                            <div class="bg-black text-center h-100 project">
+                                <div class=""> 
+                                    <div class="project-text w-100 my-auto text-center text-lg-left">
+                                        <h4 class="text-white">@descriptionPage.Title</h4>
+                                        <p class="mb-0 text-white-50">@descriptionPage.Description</p>
+                                    </div>
+
+                                    @if(count == 0)
+                                    {
+                                        @* *************************  GeneralInformation ************************* *@
+                                        // <div class="d-flex flex-wrap justify-content-center my-4">
+                                        //     @{
+                                        //         if (Model != null && Model.GeneralInformation != null)
+                                        //             foreach (GeneralInformation item in Model.GeneralInformation)
+                                        //             {
+                                        //                 // @:<div class="card p-4 m-2 d-inline justify-content-center">
+                                        //                 @:<div class="card p-4 m-2 justify-content-center">
+                                        //                     if (item.Image != null && item.Image.Path != null)
+                                        //                     {
+                                        //                             <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
+                                        //                             @Html.DisplayFor(modelItem => item.Name)
+                                        //                     }
+                                        //                     else
+                                        //                     {
+                                        //                             <img src="@Url.Content("~/uploads/" + "no_photography_24dp.svg")" alt="Przesłany obraz" />
+                                        //                             @Html.DisplayFor(modelItem => item.Name)
+                                        //                     }
+                                        //                 @:</div>
+                                        //             }
+                                        //     }
+                                        // </div>
+                                        }
+
+                                    <a class="" asp-area="" asp-controller="Home" asp-action="More" asp-route-id="@descriptionPage.DescriptionPageId" asp-route-houseId="@Model.HouseId">więcej >></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    xy = !xy;
+                    count++;
+
+
                 }
-         @:</div>
-    }
-}
-</div>
+            }
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
 
 @* *************************  GeneralInformation ************************* *@
-<div class="d-flex flex-wrap bd-highlight justify-content-center my-4">
+@* <div class="d-flex flex-wrap bd-highlight justify-content-center my-4">
     @{
-        House house = Model;
-        if (house != null && house.GeneralInformation != null)
-            foreach (GeneralInformation item in house.GeneralInformation)
+        if (Model != null && Model.GeneralInformation != null)
+            foreach (GeneralInformation item in Model.GeneralInformation)
             {
                 @:<div class="card p-4 m-2 d-inline justify-content-center">
                     if (item.Image != null && item.Image.Path != null)
@@ -61,32 +666,14 @@
                 @:</div>
             }
     }
-</div>
+</div> *@
 
 @* *************************  Calendar ************************* *@
-<div id="calendar"><h2>Kalendarz Rezerwacji</h2></div>
+@* <div id="calendar"><h2>Kalendarz Rezerwacji</h2></div> *@
 
 
 
- @* *************************  DetailedInformation ************************* *@                           
-<div class="row  my-4">
-    <div class="col-12">
-        <div class="card-columns">
-            @foreach(DetailedInformation information in Model.DetailedInformation)
-            {
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (information.Image == null ? "no_photography_24dp.svg" : information.Image.Path))" alt="Przesłany obraz" />@information.Name</h5>
-                        @foreach(DetailedInformationItem detailedInformationItem in information.DetailedInformationItems )
-                        {
-                            <div class="d-flex align-items-center">  <img src="~/uploads/check_24dp.svg" class="mr-2" />@detailedInformationItem.Description</div> 
-                        }
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-</div>
+
 
 @* *************************  Distance ************************* *@   
 

@@ -4,81 +4,82 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+@Html.AntiForgeryToken()
 <h1>Opis Strony</h1>
 
 <p>
     <a asp-action="Create">Dodaj nowy</a>
 </p>
 
-@foreach (var item in Model) {
+<!-- KONTENER DLA AJAX -->
+<div id="pages-list" data-delete-url="@Url.Action("DeleteItem", "DescriptionPages")">
 
+    @foreach (var item in Model)
+    {
+        <div class="card text-center my-4 page-item" data-id="@item.DescriptionPageId">
+            <div class="card-header">
+                <ul class="nav nav-pills card-header-pills">
 
-    <div class="card text-center my-4">
-        <div class="card-header">
-            <ul class="nav nav-pills card-header-pills">
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Edit" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/edit_square_24.svg" class="edit-options" /></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Details" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/zoom_in_24.svg" class="edit-options" /></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-action="Delete" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="edit-options" /></a>
-                </li>
-            </ul>
+                    <li class="nav-item">
+@*                         <a class="nav-link" asp-action="Edit" asp-route-id="@item.DescriptionPageId">
+                            <img src="~/uploads/edit_square_24.svg" class="edit-options" />
+                        </a> *@
+
+                        <button type="button"
+                                class="nav-link btn btn-link p-0"
+                                onclick="location.href='@Url.Action("Edit", new { id = item.DescriptionPageId })'">
+                            <img src="~/uploads/edit_square_24.svg" class="edit-options" />
+                        </button>
+                    
+                    
+                    </li>
+
+                    <li class="nav-item">
+                        <!-- AJAX DELETE BUTTON -->
+                        <button type="button"
+                                class="nav-link btn btn-link p-0 delete-page"
+                                data-id="@item.DescriptionPageId"
+                                title="Usuń">
+                            <img src="~/uploads/delete_forever_24.svg" class="edit-options" />
+                        </button>
+                    </li>
+
+                </ul>
+                <h3>@item.Title</h3>
+            </div>
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+                    <div class="image-gallery">
+
+                        @if (item.Images != null && item.Images.Any())
+                        {
+                            foreach (var image in item.Images)
+                            {
+                                <img src="@Url.Content("~/uploads/" + image.Path)"
+                                     alt="Przesłany obraz"
+                                     style="width:100px; height:auto; margin-right:5px;" />
+                            }
+                        }
+                        else
+                        {
+                            <img src="@Url.Content("~/uploads/no_photography_24dp.svg")"
+                                 alt="Brak obrazu"
+                                 style="width:100px; height:auto;" />
+                        }
+
+                    </div>
+                </h5>
+
+                <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+
+            </div>
         </div>
-        <div class="card-body">
-            <h5 class="card-title"> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Title)</h5>
-            <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
-        </div>
-    </div>
+    }
 
+</div>
 
-
-
-
-
+@section Scripts {
+    <script src="~/js/deletepage.js"></script>
 }
-   
-
-
-
-
-
-
-
-
-
-
-@* <table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/edit_square_24.svg" class="p-2 edit-options" /></a>
-                    <a asp-action="Details" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/zoom_in_24.svg" class="p-2 edit-options" /></a>
-                    <a asp-action="Delete" asp-route-id="@item.DescriptionPageId"><img src="~/uploads/delete_forever_24.svg" class="p-2 edit-options" /></a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table> *@

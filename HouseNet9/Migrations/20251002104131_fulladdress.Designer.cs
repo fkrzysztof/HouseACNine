@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251002104131_fulladdress")]
+    partial class fulladdress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,7 +297,9 @@ namespace HouseNet9.Migrations
 
                     b.HasKey("FileID");
 
-                    b.HasIndex("DescriptionPageId");
+                    b.HasIndex("DescriptionPageId")
+                        .IsUnique()
+                        .HasFilter("[DescriptionPageId] IS NOT NULL");
 
                     b.HasIndex("DetailedInformationId")
                         .IsUnique()
@@ -769,8 +774,8 @@ namespace HouseNet9.Migrations
             modelBuilder.Entity("Data.Data.HouseRentalData.MyFile", b =>
                 {
                     b.HasOne("Data.Data.HouseRentalData.DescriptionPage", "DescriptionPage")
-                        .WithMany("Images")
-                        .HasForeignKey("DescriptionPageId");
+                        .WithOne("Image")
+                        .HasForeignKey("Data.Data.HouseRentalData.MyFile", "DescriptionPageId");
 
                     b.HasOne("Data.Data.HouseRentalData.DetailedInformation", "DetailedInformation")
                         .WithOne("Image")
@@ -896,7 +901,7 @@ namespace HouseNet9.Migrations
 
             modelBuilder.Entity("Data.Data.HouseRentalData.DescriptionPage", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Data.Data.HouseRentalData.DetailedInformation", b =>

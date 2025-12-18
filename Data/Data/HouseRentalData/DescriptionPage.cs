@@ -20,8 +20,14 @@ namespace Data.Data.HouseRentalData
         public House? House { get; set; }
 
         //IMG
+        //[NotMapped]
+        //public IFormFile? FormFileItem { get; set; }
+        //public MyFile? Image { get; set; }
+
+        //IMG COL
         [NotMapped]
-        public IFormFile? FormFileItem { get; set; }
-        public MyFile? Image { get; set; }
+        public List<IFormFile>? FormFileItems { get; set; }
+        public ICollection<MyFile> Images { get; set; } = new List<MyFile>();
+
     }
 }

@@ -14,9 +14,17 @@ namespace Data.Data.HouseRentalData
         [Required(ErrorMessage = "Pole jest wymagane")]
         public required string LastName { get; set; }
 
+        //*************************************************
         [NotMapped]
         [Display(Name = "Klient")]
-        public string FullName => $"{Name} {LastName}";
+        //public string FullName => $"{Name} {LastName}";
+        public string FullName => $"{Name ?? ""} {LastName ?? ""}";
+
+        [NotMapped]
+        [Display(Name = "Adres")]
+        public string FullAddress => $"{Street ?? ""} {Number ?? ""}{Environment.NewLine}{ZIPCode ?? ""} {City ?? ""}{Environment.NewLine}{Country ?? ""}".Trim();
+        //*************************************************
+
 
         //Kontakt
 
@@ -41,16 +49,16 @@ namespace Data.Data.HouseRentalData
         public required string City { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane")]
+        [Display(Name = "Kod")]
+        public required string ZIPCode { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane")]
         [Display(Name = "Ulica")]
         public required string Street { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane")]
         [Display(Name = "Numer")]
         public required string Number { get; set; }
-
-        [Required(ErrorMessage = "Pole jest wymagane")]
-        [Display(Name = "Kod")]
-        public required string ZIPCode { get; set; }
 
         public ICollection<RentalHouse>? RentalHouses { get; set; }
     }

@@ -1,0 +1,26 @@
+﻿@model List<string>
+@{
+    Layout = null;
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between mb-3">
+        <button id="prevBtn" class="btn btn-secondary">⟵ Poprzednie 2 miesiące</button>
+        <button id="nextBtn" class="btn btn-secondary">Następne 2 miesiące ⟶</button>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Długość rezerwacji:</label>
+        <select id="weeksSelect" class="form-select w-auto d-inline-block ms-2">
+            <option value="1">1 tydzień</option>
+            <option value="2">2 tygodnie</option>
+            <option value="3">3 tygodnie</option>
+        </select>
+    </div>
+
+    <div id="calendarWrapper" class="row g-4"></div>
+    <div id="selectedRange" class="alert alert-info d-none mt-3"></div>
+
+    <!-- Przekazujemy dane do JS przez data-attribute -->
+    <div id="calendarData" data-reserved='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model))'></div>
+</div>

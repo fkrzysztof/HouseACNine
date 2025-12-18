@@ -1,0 +1,302 @@
+/*html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}*/
+
+
+
+
+/*dodane ***************************************************************************************************  */
+
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* pełny ekran */
+    overflow: hidden;
+}
+
+    .video-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /*background: rgba(0,0,0,0.6);*/ /* <-- poziom przyciemnienia */
+        background: #000000;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        background: #11120eba;
+        /* tworzy trapez */
+        clip-path: polygon( 0% 0%, /* góra lewo */
+        75% 0%, /* góra prawo */
+        50% 100%, /* dół prawo – krótszy */
+        0% 100% /* dół lewo – krótszy */
+        );
+    }
+
+.video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.content {
+    position: relative;
+    z-index: 2; /* ponad przyciemnieniem */
+    color: white;
+}
+
+
+
+
+nav a {
+    position: relative;
+    display: inline-block;
+    padding: 0px 0;
+    color: #bbb;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    /* Pasek - początkowo niewidoczny */
+    nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0px; /* odległość od tekstu */
+        width: 0%;
+        height: 2px;
+        background-color: white;
+        transition: width 0.5s ease; /* efekt wzrostu */
+    }
+
+    /* Efekt po najechaniu */
+    nav a:hover {
+        color: #fff;
+    }
+
+        nav a:hover::after {
+            width: 100%; /* rośnie od lewej do prawej */
+        }
+
+
+
+
+/* Pływający kontener po prawej */
+#language-selector {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateX(100%) translateY(-50%); /* start poza ekranem po prawej */
+    background: #333;
+    padding: 10px;
+    border-radius: 8px 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.5s ease;
+    z-index: 1000;
+}
+
+    /* Po aktywacji wchodzi na ekran */
+    #language-selector.visible {
+        transform: translateX(0) translateY(-50%);
+    }
+
+/* Styl przycisków */
+.lang-btn {
+    background: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+    .lang-btn:hover {
+        background: #f0f0f0;
+    }
+
+
+.circle-foto {
+    /* width: 30rem;*/ /* dowolny rozmiar */
+    /*height: 30rem;*/ /* musi być taki sam jak width */
+    aspect-ratio: 1 / 1; /* zawsze kwadrat */
+    border-radius: 50%; /* robi koło */
+    width: 100%;
+    object-fit: cover; /* docięcie, żeby wypełniło równo */
+    padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+}
+
+
+/****************** gallery***************************/
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+    .gallery img {
+        width: 100%;
+        cursor: pointer;
+        object-fit: cover;
+        border-radius: 0px;
+        transition: 0.2s;
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }
+
+        .gallery img:hover {
+            transform: scale(1.03);
+        }
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 40px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    overflow: hidden;
+}
+
+.modal-img {
+    display: block;
+    margin: auto;
+    max-width: 90%;
+    max-height: 90vh;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+}
+
+.nav {
+    position: absolute;
+    top: 50%;
+    font-size: 60px;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.prev {
+    left: 20px;
+}
+
+.next {
+    right: 20px;
+}
+
+.nav:hover {
+    color: #ddd;
+}
+
+
+@media (min-width: 576px) {
+    .card-columns {
+        -webkit-column-count: 3;
+        -moz-column-count: 3;
+        column-count: 2;
+        -webkit-column-gap: 1.25rem;
+        -moz-column-gap: 1.25rem;
+        column-gap: 1.25rem;
+        orphans: 1;
+        widows: 1;
+    }
+}
+
+/*Calendar*****************************************************/
+.day-cell {
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+    .day-cell:hover {
+        background: #e6f0ff;
+    }
+
+.selected {
+    background: #4d94ff !important;
+}
+
+.hover-selected {
+    background: #d0e4ff !important;
+}
+
+.reserved {
+    background: #ff4d4d !important;
+    cursor: not-allowed;
+}
+
+.past-day {
+    color: #999;
+    text-decoration: line-through;
+    background: #f8f9fa !important;
+    cursor: not-allowed;
+}
+
+.half-selected {
+    background: repeating-linear-gradient(45deg, #fff 0%, #fff 50%, #ff4d4d 50%, #ff4d4d 100%) !important;
+}
+
+.half-selected-before {
+    background: repeating-linear-gradient(45deg, #fff 0%, #fff 50%, #4d94ff 50%, #4d94ff 100%) !important;
+}
+
+.half-selected-after-occupied {
+    background: repeating-linear-gradient(225deg, #4d94ff 0%, #4d94ff 50%, #ff4d4d 50%, #ff4d4d 100%) !important;
+}
+
+.saturday-split {
+    background: repeating-linear-gradient(45deg, #fff 0%, #fff 50%, #cfe2ff 50%, #cfe2ff 100%);
+}
