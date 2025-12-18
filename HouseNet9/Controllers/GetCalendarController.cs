@@ -710,13 +710,34 @@ namespace HouseRent.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateNewReservation([FromBody] ReservationDto dto)
+        public async Task<IActionResult> CreateNewReservation([FromBody] ReservationRequest request)
         {
-            // dto.From i dto.To mają daty
-            // tutaj wykonujesz logikę: np. zapis do DB, obliczenie ceny itd.
-            // zwracamy JSON z linkiem do kolejnego kroku
-            return Ok(new { success = true, redirectUrl = Url.Action("Details", "Reservation", new { from = dto.From, to = dto.To }) });
+            var from = request.From.Date;
+            var to = request.To.Date;
+
+            if (await HasCollision(from, to))
+                return Conflict("Termin już zajęty");
+
+            // zapis lub sesja tymczasowa
+            // ...
+
+            return Ok(new
+            {
+                success = true,
+                redirectUrl = "/Reservation/Details"
+            });
         }
+
+        //Walidacja kolizji
+        private async Task<bool> HasCollision(DateTime from, DateTime to)
+        {
+            return await _context.RentalHouses
+                .AnyAsync(r =>
+                    r.From.Date <= to.Date &&
+                    r.To.Date >= from.Date
+                );
+        }
+
 
         public class ReservationDto
         {
