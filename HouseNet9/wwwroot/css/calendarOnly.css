@@ -1,0 +1,245 @@
+﻿/* ===============================
+   KALENDARZ REZERWACJI
+   (IZOLOWANY CSS)
+   =============================== */
+
+/* wrapper zabezpieczający */
+#calendarWrapper {
+    --cal-primary: #0d6efd;
+    --cal-success: #198754;
+    --cal-danger: #e74c3c;
+    --cal-muted: #adb5bd;
+    --cal-bg-soft: #fff3cd;
+}
+
+    /* ===============================
+   KOMÓRKI DNI
+   =============================== */
+
+    #calendarWrapper .day-cell {
+        width: 42px;
+        height: 42px;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        user-select: none;
+        transition: background .15s ease, color .15s ease;
+    }
+
+    /* dni przeszłe */
+    #calendarWrapper .past-day {
+        color: var(--cal-muted);
+        background: #f5f5f5;
+        cursor: not-allowed;
+    }
+
+    /* dni zajęte */
+    #calendarWrapper .day-cell.reserved {
+        background: var(--cal-danger);
+        color: #fff;
+        cursor: not-allowed;
+    }
+
+    /* dni już wybrane */
+    #calendarWrapper .day-cell.selected {
+        background: var(--cal-success);
+        color: #fff;
+    }
+
+    /* hover zakres */
+    #calendarWrapper .day-cell.hover-selected {
+        background: var(--cal-primary);
+        color: #fff;
+    }
+
+    /* ===============================
+   SOBOTA – START TURNUSU
+   =============================== */
+
+    #calendarWrapper .saturday-split {
+        /*border-left: 4px solid var(--cal-primary);*/
+        background: var(--cal-bg-soft);
+        font-weight: 600;
+    }
+
+    /* ===============================
+   ZAKRES (początek / koniec)
+   =============================== */
+
+    #calendarWrapper .range-start {
+/*        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;*/
+    }
+
+    #calendarWrapper .range-end {
+/*        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;*/
+    }
+
+    /* ===============================
+   TABELA KALENDARZA
+   =============================== */
+
+    #calendarWrapper table {
+        table-layout: fixed;
+    }
+
+    #calendarWrapper th {
+        background: transparent; /*#f8f9fa;*/
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+/* ===============================
+   LEGENDA
+   =============================== */
+
+.legend {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+    .legend.free {
+        background: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .legend.reserved {
+        background: var(--cal-danger);
+    }
+
+    .legend.selected {
+        background: var(--cal-success);
+    }
+
+    .legend.saturday {
+        background: var(--cal-bg-soft);
+        border-left: 4px solid var(--cal-primary);
+    }
+
+
+
+/* ===============================
+   POPRAWKA: BRAK RAMKI TABELI
+   border TYLKO na day-cell
+   =============================== */
+
+#calendarWrapper table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none !important;
+}
+
+#calendarWrapper th,
+#calendarWrapper tr {
+    border: none !important;
+}
+
+#calendarWrapper td, td {
+    border: none !important;
+    padding: 0;
+}
+
+    /* tylko realne dni */
+    #calendarWrapper td.day-cell {
+        border: 1px solid #dee2e6;
+        background: #fff;
+    }
+
+    /* puste komórki (początek / koniec miesiąca) */
+    #calendarWrapper td:not(.day-cell) {
+        background: transparent;
+    }
+
+/* lekki efekt hover */
+#calendarWrapper .day-cell:hover:not(.reserved):not(.past-day) {
+    background: #e9f2ff;
+}
+
+
+/*
+ ===============================
+   MOBILE – LEPSZY TAP AREA
+   =============================== */
+@media (max-width: 768px) {
+
+    #calendarWrapper .day-cell {
+        width: 48px;
+        height: 48px;
+        font-size: 1rem;
+    }
+
+    #calendarWrapper table {
+        margin-bottom: 1rem;
+    }
+
+     /*mocniejszy kontrast zaznaczenia */
+    #calendarWrapper .day-cell.selected {
+        background: var(--cal-primary);
+        box-shadow: 0 0 0 2px rgba(13,110,253,.35);
+    }
+
+   /*  sobota bardziej czytelna */
+    #calendarWrapper .saturday-split {
+        background: #fff1c1;
+    }
+}
+
+
+
+/* ===============================
+   PREMIUM LOOK & FEEL
+   =============================== 
+*/
+/* delikatny hover */
+#calendarWrapper .day-cell {
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+
+    #calendarWrapper .day-cell:hover:not(.reserved):not(.past-day) {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    }
+
+     /*zaznaczony zakres – „piguła” */
+    #calendarWrapper .day-cell.selected {
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 3px 8px rgba(0,0,0,.25);
+    }
+
+   /*  hover zakres */
+    #calendarWrapper .day-cell.hover-selected {
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+    }
+
+     /*zajęte – mniej agresywne */
+    #calendarWrapper .day-cell.reserved {
+        opacity: .85;
+    }
+
+     /*animacja kliknięcia */
+    #calendarWrapper .day-cell:active {
+        transform: scale(.96);
+    }
+
+
+
+    /*navigation calendar*/
+    .button-as-link {
+        background: none; /* usuwa tło */
+        border: none; /* usuwa obramowanie */
+        padding: 0; /* usuwa padding */
+        margin: 0; /* usuwa margines */
+        color: #0d6efd; /* kolor linku (Bootstrap primary) */
+        text-decoration: underline; /* podkreślenie jak link */
+        cursor: pointer; /* zmienia kursor na rękę */
+        font: inherit; /* dziedziczy font z otoczenia */
+    }
+
+        .button-as-link i {
+            font-size: 3rem;
+            color: #3e3d36;
+        }

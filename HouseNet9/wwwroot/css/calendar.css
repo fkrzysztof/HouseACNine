@@ -1,4 +1,4 @@
-﻿.mark-today {
+﻿/*.mark-today {
     text-decoration: underline;
 }
 
@@ -26,7 +26,17 @@
 .saturday {
     border-right: 1px solid #ff6550;
     border-left: 1px solid #ff6550;
-}
+}*/
+
+
+
+
+
+
+
+
+
+
 
 /*
 .flipswitch {
@@ -115,7 +125,16 @@
 }
 */
 
-.edit-options {
+
+
+
+
+
+
+
+
+
+/*.edit-options {
     width: 1.5rem;
 }
 
@@ -133,3 +152,4 @@
     width: 100%;
     height: auto;
 }
+*/
