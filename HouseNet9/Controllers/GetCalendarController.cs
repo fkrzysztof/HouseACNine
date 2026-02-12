@@ -1,6 +1,6 @@
 ﻿using Data.Data.HouseRentalData;
-//using HouseData.Data.HouseRentalData;
 using HouseNet9.Data;
+using HouseNet9.Helpers;
 using Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,9 @@ namespace HouseRent.Controllers
             _context = context;
             _emailService = emailService;
         }
+
+
+        #region GetCalendarNew
 
         //public async Task<IActionResult> GetCalendarNew()
         //{
@@ -40,7 +43,7 @@ namespace HouseRent.Controllers
         //    return PartialView("Calendar", reservedDates.Distinct().ToList());
         //}
 
-
+        #endregion
 
         // Pobiera zajęte dni w zadanym zakresie
         //[HttpGet("reserved")]
@@ -66,6 +69,8 @@ namespace HouseRent.Controllers
         }
 
 
+
+        #region GetCalendar
 
 
         // GET: GetCalendar
@@ -185,6 +190,9 @@ namespace HouseRent.Controllers
             
         }
 
+        #endregion 
+        
+        
         //JS ACTION
         // POST: GetCalendar/Info
         [HttpPost]
@@ -214,7 +222,7 @@ namespace HouseRent.Controllers
                 return PartialView();
             }
 
-
+        #region oldCreate
         //public IActionResult Create()
         //{
         //    RentalHouse rentalHouse = new RentalHouse();
@@ -252,71 +260,105 @@ namespace HouseRent.Controllers
         // POST: RentalClients/Create
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public IActionResult Create()
-        {
 
-            RentalHouse? rentalHouse = JsonConvert.DeserializeObject<RentalHouse>(HttpContext.Session.GetString("Rental"));
-           // RentalHouse rentalHouse = new RentalHouse();
+        //public IActionResult Create()
+        //{
 
-            
-             
-            
-            //var value = HttpContext.Session.GetObjectAsJson()
-
-            //string? serializedObject = HttpContext.Session.GetString("Rental");
-            //if (!string.IsNullOrEmpty(serializedObject))
-            //{
-            //    string obj = (string)serializedObject;
-            //    RentalHouse rentalHouse = JsonSerializer.Deserialize<RentalHouse>(obj);
-
-            //}
+        //RentalHouse? rentalHouse = JsonConvert.DeserializeObject<RentalHouse>(HttpContext.Session.GetString("Rental"));
+        // RentalHouse rentalHouse = new RentalHouse();
 
 
 
-            //ISession session = HttpContext.Session;
-            //RentalHouse? rentalHouse = null;
 
-            //if (session.TryGetValue("Rental", out byte[] objectBytes))
-            //{
-            //    try
-            //    {
-            //        rentalHouse = JsonSerializer.Deserialize<RentalHouse>(objectBytes);
-            //    }
-            //    catch (JsonException)
-            //    {
-            //        // Obsługa błędu deserializacji
-            //        Console.WriteLine("Błąd deserializacji obiektu z sesji.");
-            //    }
-            //}
+        //var value = HttpContext.Session.GetObjectAsJson()
 
-            //if (myObject != null)
-            //{
-            //    // Użyj obiektu
-            //    ViewBag.MyObjectName = myObject.Name;
-            //}
-            //else
-            //{
-            //    // Obsługa braku obiektu w sesji
-            //    ViewBag.MyObjectName = "Brak obiektu w sesji";
-            //}
+        //string? serializedObject = HttpContext.Session.GetString("Rental");
+        //if (!string.IsNullOrEmpty(serializedObject))
+        //{
+        //    string obj = (string)serializedObject;
+        //    RentalHouse rentalHouse = JsonSerializer.Deserialize<RentalHouse>(obj);
+
+        //}
 
 
-            //string jsonStringFromSession = HttpContext.Session.GetString("Rental");
-            //if (!string.IsNullOrEmpty(jsonStringFromSession))
-            //{
-            //    RentalHouse rentalHouse = JsonSerializer.Deserialize<RentalHouse>(jsonStringFromSession);
-            //}
+
+        //ISession session = HttpContext.Session;
+        //RentalHouse? rentalHouse = null;
+
+        //if (session.TryGetValue("Rental", out byte[] objectBytes))
+        //{
+        //    try
+        //    {
+        //        rentalHouse = JsonSerializer.Deserialize<RentalHouse>(objectBytes);
+        //    }
+        //    catch (JsonException)
+        //    {
+        //        // Obsługa błędu deserializacji
+        //        Console.WriteLine("Błąd deserializacji obiektu z sesji.");
+        //    }
+        //}
+
+        //if (myObject != null)
+        //{
+        //    // Użyj obiektu
+        //    ViewBag.MyObjectName = myObject.Name;
+        //}
+        //else
+        //{
+        //    // Obsługa braku obiektu w sesji
+        //    ViewBag.MyObjectName = "Brak obiektu w sesji";
+        //}
 
 
-            ViewBag.NewRentalInfo = rentalHouse;
-            return View();
-        }
+        //string jsonStringFromSession = HttpContext.Session.GetString("Rental");
+        //if (!string.IsNullOrEmpty(jsonStringFromSession))
+        //{
+        //    RentalHouse rentalHouse = JsonSerializer.Deserialize<RentalHouse>(jsonStringFromSession);
+        //}
+
+
+        //    ViewBag.NewRentalInfo = rentalHouse;
+        //    return View();
+        //}
+
+        #endregion
+
 
         public IActionResult ThanksForTheReservation(RentalHouse rentalHouse)
         {
 
             return View(rentalHouse);
         }
+
+        public IActionResult Create()
+        {
+            var (from, to, houseId) = ReservationHelper.GetReservationFromTempData(TempData);
+
+            if (from == DateTime.MinValue || to == DateTime.MinValue || houseId == 0)
+                return BadRequest("Brak danych rezerwacji");
+
+            // Dalej logika Create
+            var model = new RentalHouse
+            {
+                From = from,
+                To = to,
+                HouseId = houseId
+            };
+
+            ViewBag.NewRentalInfo = model;
+            return View();
+        }
+
+
+        public class ReservationViewModel
+        {
+            public DateTime From { get; set; }
+            public DateTime To { get; set; }
+            public int HouseId { get; set; }
+        }
+
+
+
 
         //REALIZACJA REZERWACJI
         // create z client
@@ -708,25 +750,31 @@ namespace HouseRent.Controllers
             return View();
         }
 
-
         [HttpPost]
         public async Task<IActionResult> CreateNewReservation([FromBody] ReservationRequest request)
         {
             var from = request.From.Date;
             var to = request.To.Date;
+            var houseId = 1;
 
             if (await HasCollision(from, to))
-                return Conflict("Termin już zajęty");
+                return Conflict();
 
-            // zapis lub sesja tymczasowa
-            // ...
+            // Zapis do TempData jako string (bezpieczny format)
+            TempData["From"] = from.ToString("yyyy-MM-dd");
+            TempData["To"] = to.ToString("yyyy-MM-dd");
+            TempData["HouseId"] = houseId.ToString();
 
             return Ok(new
             {
                 success = true,
-                redirectUrl = "/Reservation/Details"
+                redirectUrl = Url.Action("Create", "GetCalendar") // przekierowanie do Create
             });
         }
+
+
+
+
 
         //Walidacja kolizji
         private async Task<bool> HasCollision(DateTime from, DateTime to)
@@ -739,11 +787,14 @@ namespace HouseRent.Controllers
         }
 
 
-        public class ReservationDto
+        public class ReservationRequest
         {
-            public string From { get; set; }
-            public string To { get; set; }
+            public DateTime From { get; set; }
+            public DateTime To { get; set; }
         }
+
+
+
 
     }
 }

@@ -15,12 +15,12 @@ namespace Data.Data.HouseRentalData
 
         [Required]
         [Column(TypeName = "money")]
-        [Display(Name = "Cena / 7+ dni")]
+        [Display(Name = "Cena / 7 dni")]
         public decimal OneWeek { get; set; }
 
         [Required]
         [Column(TypeName = "money")]
-        [Display(Name = "Cena / 14+ dni")]
+        [Display(Name = "Cena / 14 dni")]
         public decimal TwoWeeks { get; set; }
 
         [Display(Name = "Obowiązuje od")]

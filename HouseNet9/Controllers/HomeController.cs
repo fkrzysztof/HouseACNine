@@ -1,6 +1,7 @@
 using Data.Data.HouseRentalData;
 using HouseNet9.Data;
 using HouseNet9.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -19,9 +20,19 @@ namespace HouseNet9.Controllers
             _context = context;
         }
 
+
+
+        [Authorize]
+        public IActionResult Secret()
+        {
+            return Content("Zalogowany 👍");
+        }
+
+        //public async Task<IActionResult> Index(int id)
         public async Task<IActionResult> Index()
         {
             House? houseWithGenInfo = await _context.Houses
+              //  .Where(w => w.HouseId == id)
             .Include(i => i.GeneralInformation)
                 .ThenInclude(i => i.Image)
             .Include(i => i.DescriptionPages)

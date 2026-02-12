@@ -7,8 +7,11 @@
     <script type="importmap"></script>
 
 
-    <link href="~/css/bootstrap.css" rel="stylesheet" asp-append-version="true" />
-    <link href="~/css/calendar.css" rel="stylesheet" />
+@*     <link href="~/css/bootstrap.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/calendar.css" rel="stylesheet" /> *@
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
     <link href="~/lib/fontawesome/css/all.css" rel="stylesheet" />
     <link href="~/lib/fontawesome/css/all.min.css" rel="stylesheet" />
 
@@ -33,7 +36,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+@*                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="DescriptionPages" asp-action="Index">DescriptionPages</a>
                         </li>
                         <li class="nav-item">
@@ -44,16 +47,16 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="GeneralInformations" asp-action="Index">GeneralInformations</a>
-                        </li>
+                        </li> *@
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="RentalClients" asp-action="Index">RentalClients</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="RentalClients" asp-action="Index">RentalClients ALL</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Houses" asp-action="Index">Houses</a>
                         </li>
-                        <li class="nav-item">
+@*                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Contacts" asp-action="Index">Contact</a>
-                        </li>
+                        </li> *@
 
 
                         <li class="nav-item">
@@ -70,16 +73,43 @@
         </nav>
     </header>
     <div class="container">
+
+
+        @{
+            var controllerNow = ViewContext.RouteData.Values["controller"]?.ToString();
+            var actionNow = ViewContext.RouteData.Values["action"]?.ToString();
+
+            var houseIdFromSession = Context.Session.GetInt32("CurrentHouseId") ?? 0;
+            var houseNameFromSession = Context.Session.GetString("CurrentHouseName") ?? "Nie wybrano domu";
+        }
+
+        @if (controllerNow == "DescriptionPages" ||
+                controllerNow == "DetailedInformations" ||
+                controllerNow == "Distance" ||
+                controllerNow == "GeneralInformations" ||
+                controllerNow == "RentalClients" ||
+                controllerNow == "RentalPrices" ||
+                controllerNow == "Contacts" ||
+                (controllerNow == "Houses" && actionNow == "Edit"))
+        {
+            <div class="row">
+                <div class="col-12">
+                    <h5>Edycja domu: @houseNameFromSession</h5>
+                    @await Component.InvokeAsync("HouseTabs", new { houseId = houseIdFromSession })
+
+                </div>
+            </div>
+        }
+
+
         @*  <main role="main" class="pb-3"> *@
         @RenderBody()
         @*  </main> *@
     </div>
-
-    <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d2899.678461979676!2d16.516465084166974!3d43.38374679535635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNDPCsDIzJzAxLjUiTiAxNsKwMzEnMTYuOCJF!5e0!3m2!1spl!2spl!4v1754076848492!5m2!1spl!2spl" style="border:0; width:100%; height:400px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-
+@* 
     @await Component.InvokeAsync("ContactFooter")
-
-    <footer class="border-top footer text-muted">
+ *@
+    <footer class="border-top footer text-muted mt-5">
         <div class="container">
             &copy; 2025 - HouseNet9 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
@@ -102,12 +132,12 @@
 
 
     <script src="~/libnew/jquery/dist/jquery.min.js"></script>
-    <script src="~/libnew/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+@*     <script src="~/libnew/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+@*     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/newCalendar.js" asp-append-version="true"></script>
-    <script src="~/js/modal.js" asp-append-version="true"></script>
+    <script src="~/js/modal.js" asp-append-version="true"></script> *@
 
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

@@ -1,14 +1,5 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.Contact>
 @using Data.Data.HouseRentalData
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-
-<h3>Kontakt</h3>
-<h4>Lista</h4>
-<hr />
 
 <p>
     <a asp-action="Create">Dodaj</a>
@@ -117,7 +108,7 @@
         <div class="col-lg-6">
             <div class="card m-2">
                 <div class="card-body">
-                    <span>@Html.DisplayFor(modelItem => item.Name)</span><span class="float-right">
+                    <span>@Html.DisplayFor(modelItem => item.Name)</span><span class="float-end">
                         @await Html.PartialAsync("~/Views/Partial/EditDetailsMenu.cshtml", item.ContactId)
                     </span>
                 </div>

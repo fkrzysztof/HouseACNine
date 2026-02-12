@@ -26,23 +26,7 @@ namespace HouseNet9.Controllers
             return View(await _context.Houses.ToListAsync());
         }
 
-        // GET: Houses/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var house = await _context.Houses
-                .FirstOrDefaultAsync(m => m.HouseId == id);
-            if (house == null)
-            {
-                return NotFound();
-            }
-
-            return View(house);
-        }
 
         // GET: Houses/Create
         public IActionResult Create()
@@ -78,6 +62,13 @@ namespace HouseNet9.Controllers
             if (house == null)
             {
                 return NotFound();
+            }
+
+            //zapis do sesji ID House
+            HttpContext.Session.SetInt32("CurrentHouseId", house.HouseId);
+            if (!String.IsNullOrEmpty(house.Name))
+            {
+                HttpContext.Session.SetString("CurrentHouseName", house.Name);
             }
             return View(house);
         }

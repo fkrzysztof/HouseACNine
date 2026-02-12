@@ -1,11 +1,8 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.DescriptionPage>
 
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+
 @Html.AntiForgeryToken()
-<h1>Opis Strony</h1>
+
 
 <p>
     <a asp-action="Create">Dodaj nowy</a>

@@ -297,6 +297,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     let confirmedRanges = [];
 
+
+    let selectedStart = null;
+    let selectedEnd = null;
+
     /* ================== HELPERS ================== */
 
     function formatDate(d) {
@@ -503,8 +507,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return res.json();
             })
             .then(data => {
+                selectedStart = start;
+                selectedEnd = end;
+
                 markSelectedRange(start, end);
                 showReservationInfo(data);
+                //showReservationInfo(data);
             })
             .catch(() => { });
     }
@@ -512,59 +520,139 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ================== INFO PANEL ================== */
 
     function showReservationInfo(data) {
-
         const info = document.getElementById('selectedRange');
 
         info.innerHTML = `
-            <p><strong>Termin:</strong> ${data.start} – ${data.end}</p>
-            <p><strong>Ilość dni:</strong> ${data.days}</p>
-            <p><strong>Cena:</strong> ${data.price} PLN</p>
+        <p><strong>Termin:</strong> ${formatDate(selectedStart)} – ${formatDate(selectedEnd)}</p>
+        <p><strong>Ilość dni:</strong> ${data.days}</p>
+        <p><strong>Cena:</strong> ${data.price} PLN</p>
 
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="c1">
-                <label class="form-check-label">Mam ukończone 18 lat</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="c2">
-                <label class="form-check-label">Akceptuję regulamin i politykę prywatności</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="c3">
-                <label class="form-check-label">Podane dane są prawdziwe</label>
-            </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="c1">
+            <label class="form-check-label">Mam ukończone 18 lat</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="c2">
+            <label class="form-check-label">Akceptuję regulamin i politykę prywatności</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="c3">
+            <label class="form-check-label">Podane dane są prawdziwe</label>
+        </div>
 
-            <button id="btnContinue" class="btn btn-primary mt-3" disabled>
-                Kontynuuj rezerwację
-            </button>
-        `;
+        <button id="btnContinue" class="btn btn-primary mt-3" disabled>
+            Kontynuuj rezerwację
+        </button>
+    `;
 
         info.classList.remove('d-none');
 
         const btn = document.getElementById('btnContinue');
         const checks = ['c1', 'c2', 'c3'].map(id => document.getElementById(id));
 
+        // Włączanie przycisku tylko jeśli wszystkie checkboxy zaznaczone
         checks.forEach(c =>
             c.addEventListener('change', () => {
                 btn.disabled = !checks.every(x => x.checked);
             })
         );
 
+        // Obsługa kliknięcia przycisku
         btn.onclick = () => {
+            if (!selectedStart || !selectedEnd) {
+                alert("Brak wybranego terminu");
+                return;
+            }
+
             fetch('/GetCalendar/CreateNewReservation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    from: formatDate(start),
-                    to: formatDate(end)
+                    from: formatDate(selectedStart),
+                    to: formatDate(selectedEnd)
                 })
             })
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) throw new Error();
+                    return r.json();
+                })
                 .then(resp => {
-                    if (resp.success)
+                    if (resp.redirectUrl) {
                         window.location.href = resp.redirectUrl;
-                });
+                    } else {
+                        alert("Rezerwacja zakończona, ale brak redirectu");
+                    }
+                })
+                .catch(() => alert("Termin zajęty"));
         };
     }
+
+
+
+    //function showReservationInfo(data, start, end) {
+
+    //    const info = document.getElementById('selectedRange');
+
+    //    info.innerHTML = `
+    //        <p><strong>Termin:</strong> ${data.start} – ${data.end}</p>
+    //        <p><strong>Ilość dni:</strong> ${data.days}</p>
+    //        <p><strong>Cena:</strong> ${data.price} PLN</p>
+
+    //        <div class="form-check">
+    //            <input class="form-check-input" type="checkbox" id="c1">
+    //            <label class="form-check-label">Mam ukończone 18 lat</label>
+    //        </div>
+    //        <div class="form-check">
+    //            <input class="form-check-input" type="checkbox" id="c2">
+    //            <label class="form-check-label">Akceptuję regulamin i politykę prywatności</label>
+    //        </div>
+    //        <div class="form-check">
+    //            <input class="form-check-input" type="checkbox" id="c3">
+    //            <label class="form-check-label">Podane dane są prawdziwe</label>
+    //        </div>
+
+    //        <button id="btnContinue" class="btn btn-primary mt-3" disabled>
+    //            Kontynuuj rezerwację
+    //        </button>
+    //    `;
+
+    //    info.classList.remove('d-none');
+
+    //    const btn = document.getElementById('btnContinue');
+    //    const checks = ['c1', 'c2', 'c3'].map(id => document.getElementById(id));
+
+    //    checks.forEach(c =>
+    //        c.addEventListener('change', () => {
+    //            btn.disabled = !checks.every(x => x.checked);
+    //        })
+    //    );
+
+    //    btn.onclick = () => {
+    //        alert("to działa");
+    //        if (!selectedStart || !selectedEnd) {
+    //            alert("Brak wybranego terminu");
+    //            return;
+    //        }
+
+    //        fetch('/GetCalendar/CreateNewReservation', {
+    //            method: 'POST',
+    //            headers: { 'Content-Type': 'application/json' },
+    //            body: JSON.stringify({
+    //                from: formatDate(selectedStart),
+    //                to: formatDate(selectedEnd)
+    //            })
+    //        })
+    //            .then(r => {
+    //                if (!r.ok) throw new Error();
+    //                return r.json();
+    //            })
+    //            .then(resp => {
+    //                window.location.href = resp.redirectUrl;
+    //            })
+    //            .catch(() => alert("Termin zajęty"));
+    //    };
+
+    //}
 
     /* ================== NAVIGATION ================== */
 

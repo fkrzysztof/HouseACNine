@@ -1,0 +1,55 @@
+﻿@model Data.Data.HouseRentalData.RentalPrice
+
+@{
+    ViewData["Title"] = "Edytuj cenę";
+}
+
+<h2 class="mb-4">Edytuj cenę</h2>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <input type="hidden" asp-for="RentalPriceID" />
+    <input type="hidden" asp-for="HouseId" />
+
+    <div class="mb-3">
+        <label asp-for="OneWeek" class="form-label"></label>
+        <input asp-for="OneWeek" class="form-control" />
+        <span asp-validation-for="OneWeek" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TwoWeeks" class="form-label"></label>
+        <input asp-for="TwoWeeks" class="form-control" />
+        <span asp-validation-for="TwoWeeks" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateTimeFrom" class="form-label"></label>
+        <input asp-for="DateTimeFrom" type="date" class="form-control" />
+        <span asp-validation-for="DateTimeFrom" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateTimeTo" class="form-label"></label>
+        <input asp-for="DateTimeTo" type="date" class="form-control" />
+        <span asp-validation-for="DateTimeTo" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            Zapisz
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Anuluj
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

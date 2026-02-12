@@ -1,0 +1,91 @@
+﻿@model Data.Data.HouseRentalData.RentalPrice
+
+@{
+    ViewData["Title"] = "Dodaj cenę";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Dodaj nową cenę</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- DOM -->
+                <input type="hidden" asp-for="HouseId" />
+
+                <!-- CENA 7 DNI -->
+                <div class="mb-3">
+                    <label asp-for="OneWeek" class="form-label fw-semibold"></label>
+                    <div class="input-group">
+                        <input asp-for="OneWeek"
+                               type="number"
+                               step="0.01"
+                               class="form-control" />
+                        <span class="input-group-text">zł</span>
+                    </div>
+                    <span asp-validation-for="OneWeek" class="text-danger"></span>
+                </div>
+
+                <!-- CENA 14 DNI -->
+                <div class="mb-3">
+                    <label asp-for="TwoWeeks" class="form-label fw-semibold"></label>
+                    <div class="input-group">
+                        <input asp-for="TwoWeeks"
+                               type="number"
+                               step="0.01"
+                               class="form-control" />
+                        <span class="input-group-text">zł</span>
+                    </div>
+                    <span asp-validation-for="TwoWeeks" class="text-danger"></span>
+                </div>
+
+                <!-- DATA OD -->
+                <div class="mb-3">
+                    <label asp-for="DateTimeFrom" class="form-label fw-semibold"></label>
+                    <input asp-for="DateTimeFrom"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="DateTimeFrom" class="text-danger"></span>
+                </div>
+
+                <!-- DATA DO -->
+                <div class="mb-3">
+                    <label asp-for="DateTimeTo" class="form-label fw-semibold"></label>
+                    <input asp-for="DateTimeTo"
+                           type="date"
+                           class="form-control" />
+                    <span asp-validation-for="DateTimeTo" class="text-danger"></span>
+                </div>
+
+                <!-- AKTYWNE -->
+@*                 <div class="form-check form-switch mb-4">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label"></label>
+                </div> *@
+
+                <!-- BUTTONY -->
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        Powrót
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        Zapisz
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

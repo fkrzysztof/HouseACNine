@@ -1,9 +1,6 @@
-﻿@model Data.Data.HouseRentalData.DescriptionPage
+﻿@* @model Data.Data.HouseRentalData.DescriptionPage
 
-@{
-    ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+
 
 @section Scripts {
     <script src="~/js/imagepreview.js"></script>
@@ -80,3 +77,83 @@
 <div class="mt-4">
     <a asp-action="Index">Back to List</a>
 </div>
+ *@
+
+
+@* bootstrap 5 *@
+
+@model Data.Data.HouseRentalData.DescriptionPage
+
+@section Scripts {
+    <script src="~/js/imagepreview.js"></script>
+    <script src="~/js/imagedelete.js"></script>
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <!-- LEWA CZĘŚĆ FORMULARZA -->
+        <div class="col-lg-9">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="DescriptionPageId" />
+
+            <!-- Tytuł -->
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <!-- Opis -->
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="10"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- PRAWA CZĘŚĆ – ZDJĘCIA -->
+        <div class="col-lg-3">
+            <!-- Dodaj nowe zdjęcia -->
+            <div class="mb-3">
+                <label class="form-label">Dodaj nowe zdjęcia</label>
+                <input type="file" name="files" id="fileInput" accept="image/*" multiple class="form-control" />
+            </div>
+
+            <hr />
+
+            <!-- Aktualne zdjęcia -->
+            <div class="mb-3">
+                <label class="form-label">Aktualne zdjęcia</label>
+
+                <div id="images-container" data-delete-url="@Url.Action("DeleteImage", "DescriptionPages")">
+                    @if (Model.Images != null && Model.Images.Count > 0)
+                    {
+                        foreach (var img in Model.Images)
+                        {
+                            <div class="image-item mb-3" data-id="@img.FileID">
+                                <img src="~/uploads/@img.Path" class="img-thumbnail w-100 mb-1" />
+                                <button type="button" class="btn btn-danger btn-sm remove-image w-100">Usuń</button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p><i>Brak zdjęć</i></p>
+                    }
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary w-100">Save</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+
+                            
