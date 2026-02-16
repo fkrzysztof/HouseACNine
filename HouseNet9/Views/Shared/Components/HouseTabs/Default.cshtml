@@ -28,7 +28,7 @@
            asp-controller="DetailedInformations"
            asp-action="Index"
            asp-route-houseId="@houseId">
-            Pomieszczenia/Szczegóły
+            Szczegóły i informacje dodatkowe
         </a>
     </li>
 
@@ -46,15 +46,14 @@
            asp-controller="GeneralInformations"
            asp-action="Index"
            asp-route-houseId="@houseId">
-            Wyposażenie
+            Udogodnienia
         </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link @(controllerName == "RentalClients" ? "active" : "")"
-           asp-controller="RentalClients"
-           asp-action="Index"
-           asp-route-houseId="@houseId">
+        <a class="nav-link @(controllerName == "RentalHouse" ? "active" : "")"
+           asp-controller="RentalHouse"
+           asp-action="Index">
             Rezerwacje tego obiektu
         </a>
     </li>

@@ -33,9 +33,9 @@
                     <ul class="navbar-nav flex-grow-1">
                         @* ********** Menu *********** ********** Menu *********** ********** Menu *********** ********** Menu *********** *@
 
-                        <li class="nav-item">
+@*                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
+                        </li> *@
 @*                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="DescriptionPages" asp-action="Index">DescriptionPages</a>
                         </li>
@@ -90,6 +90,7 @@
                 controllerNow == "RentalClients" ||
                 controllerNow == "RentalPrices" ||
                 controllerNow == "Contacts" ||
+                controllerNow == "RentalHouse" ||
                 (controllerNow == "Houses" && actionNow == "Edit"))
         {
             <div class="row">
@@ -98,6 +99,12 @@
                     @await Component.InvokeAsync("HouseTabs", new { houseId = houseIdFromSession })
 
                 </div>
+                @if(actionNow != "Index")
+                {
+                    <div class="col-12">
+                    <a asp-action="Index" >powrót</a>
+                    </div>
+                }
             </div>
         }
 

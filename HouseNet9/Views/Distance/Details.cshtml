@@ -1,4 +1,4 @@
-﻿@model Data.Data.HouseRentalData.Distance
+﻿@* @model Data.Data.HouseRentalData.Distance
 @using Data.Data.HouseRentalData
 
 
@@ -44,4 +44,122 @@
         <a class="nav-link" asp-action="Delete" asp-route-id="@Model?.DistanceID"><img src="~/uploads/delete_forever_24.svg" class="edit-options" />Usuń @Model?.Name</a>
     </div>
 </div>
-<a asp-action="Index">Powrót do listy</a>
+<a asp-action="Index">Powrót do listy</a> *@
+
+
+
+                @* bootstrap5 *@
+
+
+@model Data.Data.HouseRentalData.Distance
+@using Data.Data.HouseRentalData
+
+<div class="container">
+
+    <h3 class="mb-4">Informacje szczegółowe</h3>
+
+    <div class="row g-4">
+
+        <!-- LEWA STRONA – LISTA -->
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm">
+
+                <div class="card-header d-flex align-items-center gap-3">
+                    <img src="@Url.Content("~/uploads/" +
+                                                 (Model.Image == null ? "no_photography_24dp.svg" : Model.Image.Path))"
+                         alt="Przesłany obraz"
+                         class="img-fluid rounded"
+                         style="max-height:60px;" />
+
+                    <span class="fw-semibold fs-5">
+                        @Html.DisplayFor(model => model.Name)
+                    </span>
+                </div>
+
+                <ul class="list-group list-group-flush">
+
+                    @if (Model?.DistanceItems != null)
+                    {
+                        foreach (DistanceItem item in Model.DistanceItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                <div>
+                                    <span class="fw-semibold">@item.NameInfo</span>
+                                    <span class="text-muted ms-3">@item.DistanceInfo</span>
+                                </div>
+
+                                <a asp-action="DeleteDistanceItem"
+                                   asp-route-id="@Model.DistanceID"
+                                   asp-route-distanceItemId="@item.DistanceItemId"
+                                   class="btn btn-sm btn-outline-danger">
+                                    <img src="~/uploads/delete_forever_24.svg"
+                                         alt="Usuń"
+                                         style="height:18px;" />
+                                </a>
+
+                            </li>
+                        }
+                    }
+
+                </ul>
+
+            </div>
+        </div>
+
+        <!-- PRAWA STRONA – DODAWANIE -->
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <h5 class="mb-3">Dodaj nową pozycję</h5>
+
+                    <form asp-action="CreateDistanceItem">
+
+                        <input type="hidden" name="id" value="@Model.DistanceID" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nazwa</label>
+                            <input name="NameInfo" type="text" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Odległość</label>
+                            <input name="DistanceInfo" type="text" class="form-control" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Dodaj
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- USUŃ CAŁĄ SEKCJĘ -->
+        <div class="col-12 col-lg-8">
+            <div class="mt-3">
+                <a asp-action="Delete"
+                   asp-route-id="@Model?.DistanceID"
+                   class="btn btn-outline-danger">
+                    <img src="~/uploads/delete_forever_24.svg"
+                         alt="Usuń"
+                         style="height:18px;" />
+                    Usuń @Model?.Name
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Powrót do listy
+        </a>
+    </div>
+
+</div>

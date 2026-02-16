@@ -1,0 +1,77 @@
+﻿@model Data.Data.HouseRentalData.RentalHouse
+
+@{
+    ViewData["Title"] = "Nowa rezerwacja";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create">
+    <!-- Wyświetlanie komunikatów walidacji globalnej -->
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="From" class="form-label"></label>
+        <input asp-for="From" class="form-control" type="date" id="fromDate" />
+        <span asp-validation-for="From" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="To" class="form-label"></label>
+        <input asp-for="To" class="form-control" type="date" id="toDate" />
+        <span asp-validation-for="To" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Ilość dni</label>
+        <input type="text" id="daysCount" class="form-control" value="@Model.HowManyDaysFromSelect" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label>Do zapłaty</label>
+        <input type="text" id="toPay" class="form-control" value="@Model.ToPay.ToString("C")" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Annotations" class="form-label"></label>
+        <textarea asp-for="Annotations" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+</form>
+
+@section Scripts {
+    <script>
+        // Funkcja do liczenia dni
+        function calculateDays() {
+            const from = new Date(document.getElementById('fromDate').value);
+            const to = new Date(document.getElementById('toDate').value);
+            let days = 0;
+            if (!isNaN(from) && !isNaN(to) && to > from) {
+                days = Math.round((to - from) / (1000 * 60 * 60 * 24));
+            }
+            document.getElementById('daysCount').value = days;
+
+            // 🔹 Cena – tylko 6 lub 13 dni
+            let price = 0;
+            if (days <= 7) {
+                price = @Model.House?.RentalPrices.FirstOrDefault(p => p.IsActive)?.OneWeek ?? 0;
+            } else {
+                price = @Model.House?.RentalPrices.FirstOrDefault(p => p.IsActive)?.TwoWeeks ?? 0;
+            }
+
+            // Jeśli brak klienta (właściciel) → cena = 0
+            if (@(Model.RentalClientId == null ? "true" : "false")) {
+                price = 0;
+            }
+
+            document.getElementById('toPay').value = price.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' });
+        }
+
+        document.getElementById('fromDate').addEventListener('change', calculateDays);
+        document.getElementById('toDate').addEventListener('change', calculateDays);
+
+        // Wywołanie przy ładowaniu strony
+        calculateDays();
+    </script>
+}

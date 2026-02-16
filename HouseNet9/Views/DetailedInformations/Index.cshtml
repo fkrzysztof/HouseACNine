@@ -1,31 +1,12 @@
-﻿@* @model IEnumerable<Data.Data.HouseRentalData.DetailedInformation>
+﻿@model IEnumerable<Data.Data.HouseRentalData.DetailedInformation>
 
 
-<p>
-    <a asp-action="Create">Dodaj</a>
-</p>
-
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-lg-6">
-            <div class="card m-2">
-                <div class="card-body">
-                    <span> <img src="@Url.Content("~/uploads/" + (item.Image == null ? "no_photography_24dp.svg" : item.Image.Path))" alt="Przesłany obraz" /> @Html.DisplayFor(modelItem => item.Name)</span><span class="float-end">
-                        @await Html.PartialAsync("~/Views/Partial/EditDetailsMenu.cshtml", item.DetailedInformationId)
-                    </span>
-                </div>
-            </div>
-        </div>
-    }
-</div> *@
-
-
-@model IEnumerable<Data.Data.HouseRentalData.DetailedInformation>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Dodaj</a>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Lista Rezerwacji</h4>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Dodaj
+    </a>
+</div>
 
 <div class="row row-cols-1 row-cols-md-2 g-3">
     @foreach (var item in Model)

@@ -49,7 +49,7 @@ namespace HouseNet9.Controllers
             return View(detailedInformation);
         }
 
-        // GET: DetailedInformations/Create
+        //GET: DetailedInformations/Create
         public IActionResult Create()
         {
             return View();
@@ -203,8 +203,9 @@ namespace HouseNet9.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details), new { DetailedInformationItem });
+            //return RedirectToAction(nameof(Details), new { DetailedInformationItem });
             //return RedirectToAction(Ind);
+            return RedirectToAction(nameof(Index));
         }
 
 

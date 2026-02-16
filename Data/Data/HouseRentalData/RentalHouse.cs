@@ -16,21 +16,32 @@ namespace Data.Data.HouseRentalData
 
         [Required]
         [NotMapped]
-        public int HowManyDaysFromSelect { get; set; }
+        public int HowManyDaysFromSelect 
+        {
+            get
+            {
+                if (To.Date <= From.Date)
+                    return 0;
 
-        [NotMapped]
+                return (To.Date - From.Date).Days;
+            }
+        }
+
+        
         [Column(TypeName = "money")]
         [Display(Name = "Do zapłaty")]
         public decimal ToPay { get; set; }
 
+        //[Display(Name = "Klient")]
+        //[ForeignKey("RentalClientId")]
+        //public RentalClient? RentalClient { get; set; }
+
         [Display(Name = "Klient")]
+        public int? RentalClientId { get; set; }
+
         [ForeignKey("RentalClientId")]
         public RentalClient? RentalClient { get; set; }
 
-        //[Display(Name = "Klient")]
-        //public string ApplicationUserID { get; set; }
-        //[ForeignKey("Id")]
-        //public ApplicationUser ApplicationUser { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "Od")]
@@ -52,27 +63,6 @@ namespace Data.Data.HouseRentalData
         public string? Annotations { get; set; }
 
         public bool IsActive { get; set; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

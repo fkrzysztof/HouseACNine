@@ -1,89 +1,57 @@
-﻿@* @model Data.Data.HouseRentalData.DetailedInformation
-
-
+﻿@model Data.Data.HouseRentalData.DetailedInformation
 
 @section Scripts {
     <script src="~/js/imagepreview.js"></script>
 }
-<h3>Informacje szczegółowe</h3>
-<h4>Dodaj</h4>
-<hr />
 
-@if (ViewData["Message"] != null)
-{
-    <p>@ViewData["Message"]</p>
-}
+<div class="container">
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Grafika</label>
-                <img id="preview" src="~/uploads/noimg.png" alt="Podgląd obrazu" class="my-4" class="img-preview">
-                <input type="file" name="file" id="fileInput" accept="image/*" />
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary my-2" />
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+
+                    <h3>Informacje szczegółowe</h3>
+                    <h4>Dodaj</h4>
+                    <hr />
+
+                    @if (ViewData["Message"] != null)
+                    {
+                        <p>@ViewData["Message"]</p>
+                    }
+
+                    <div class="row">
+                        <div class="col-12">
+                            <form asp-action="Create" method="post" enctype="multipart/form-data">
+
+                                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Grafika</label>
+                                    <img id="preview" src="~/uploads/noimg.png" alt="Podgląd obrazu" class="img-fluid my-4 img-preview" />
+                                    <input type="file" name="file" id="fileInput" accept="image/*" class="form-control mb-3" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="submit" value="Create" class="btn btn-primary w-100" />
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
+                    </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Powrót do listy</a>
-</div>
-
- *@
-
-             @*    Bootstrap 5 *@
-
-@model Data.Data.HouseRentalData.DetailedInformation
-
-@section Scripts {
-    <script src="~/js/imagepreview.js"></script>
-}
-
-<h3>Informacje szczegółowe</h3>
-<h4>Dodaj</h4>
-<hr />
-
-@if (ViewData["Message"] != null)
-{
-    <p>@ViewData["Message"]</p>
-}
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-            <div class="mb-3">
-                <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Grafika</label>
-                <img id="preview" src="~/uploads/noimg.png" alt="Podgląd obrazu" class="img-fluid my-4 img-preview" />
-                <input type="file" name="file" id="fileInput" accept="image/*" class="form-control mb-3" />
-            </div>
-
-            <div class="mb-3">
-                <input type="submit" value="Create" class="btn btn-primary w-100" />
-            </div>
-
-        </form>
-    </div>
-</div>
-
-<div class="mt-3">
-    <a asp-action="Index" class="btn btn-outline-secondary">Powrót do listy</a>
 </div>
