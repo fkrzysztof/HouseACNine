@@ -13,11 +13,13 @@ namespace HouseRent.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IEmailService _emailService;
+        private readonly RentalCalculatorService _calculator;
 
-        public GetCalendarController(ApplicationDbContext context, IEmailService emailService)
+        public GetCalendarController(ApplicationDbContext context, IEmailService emailService, RentalCalculatorService calculator)
         {
             _context = context;
             _emailService = emailService;
+            _calculator = calculator;
         }
 
 
@@ -330,22 +332,26 @@ namespace HouseRent.Controllers
             return View(rentalHouse);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
+            // Pobranie danych z TempData (wybrany termin i dom)
             var (from, to, houseId) = ReservationHelper.GetReservationFromTempData(TempData);
 
             if (from == DateTime.MinValue || to == DateTime.MinValue || houseId == 0)
                 return BadRequest("Brak danych rezerwacji");
 
-            // Dalej logika Create
-            var model = new RentalHouse
+            var tempRental = new RentalHouse
             {
                 From = from,
                 To = to,
-                HouseId = houseId
+                HouseId = houseId,
+                RentalClientId = -1  // tymczasowy klient do obliczeń
             };
 
-            ViewBag.NewRentalInfo = model;
+            tempRental.ToPay = await _calculator.CalculatePriceAsync(tempRental);
+
+            ViewBag.NewRentalInfo = tempRental;
+
             return View();
         }
 

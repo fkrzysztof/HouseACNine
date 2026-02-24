@@ -54,6 +54,8 @@ namespace HouseNet9.Controllers
             query = query.OrderByDescending(r => r.CreationDate);
 
             ViewData["ClientSearch"] = clientSearch;
+            ViewData["SumPrice"] = query.Sum(p => p.ToPay);
+
 
             return View(await query.ToListAsync());
         }

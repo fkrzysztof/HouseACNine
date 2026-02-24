@@ -1,4 +1,5 @@
 using HouseNet9.Data;
+using HouseNet9.Helpers;
 using Mail;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<FileUploadService>();
+builder.Services.AddScoped<RentalCalculatorService>();
 
 //emial
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
