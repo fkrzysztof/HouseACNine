@@ -1,17 +1,24 @@
 ﻿@model Data.Data.HouseRentalData.RentalClient 
-
+@using System.Globalization
+@using Data.Data.HouseRentalData
 @{
+    RentalHouse? newRental = ViewBag.NewRentalInfo as RentalHouse;
     ViewData["Title"] = "Create";
 }
 
 <h4>Moja rezerwacja</h4>
 <hr />
 <form asp-action="Create">
+
     <div class="row">
         <div class="col-xl-8 order-2 order-xl-1">
 
             <div class="row">
                 <div class="col-sm-6">
+
+                    <input type="hidden" name="HouseId" value="@newRental?.HouseId" />
+                    <input type="hidden" name="From" value="@newRental?.From.ToString("yyyy-MM-dd")" />
+                    <input type="hidden" name="To" value="@newRental?.To.ToString("yyyy-MM-dd")" />
 
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
@@ -91,12 +98,6 @@
 
         </div>
         <div class="col-xl-4 order-1 order-xl-2">
-
-            @using System.Globalization
-            @using Data.Data.HouseRentalData
-            @{
-                RentalHouse? newRental = ViewBag.NewRentalInfo as RentalHouse;
-            }
 
             <div class="row no-gutters">
                 <div class="col-12 p-3">

@@ -1,4 +1,5 @@
-﻿using HouseNet9.Data;
+﻿using Data.Data.HouseRentalData;
+using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,11 +78,8 @@ public class CalendarController : ControllerBase
     //Walidacja kolizji
     private async Task<bool> HasCollision(DateTime from, DateTime to)
     {
-        return await _context.RentalHouses
-            .AnyAsync(r =>
-                r.From.Date <= to.Date &&
-                r.To.Date >= from.Date
-            );
+          return await _collisionService.HasCollisionAsync(houseId, from, to);
+        return true;
     }
 
 }

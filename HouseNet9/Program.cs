@@ -1,5 +1,6 @@
 using HouseNet9.Data;
 using HouseNet9.Helpers;
+using HouseNet9.Services;
 using Mail;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,9 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<FileUploadService>();
 builder.Services.AddScoped<RentalCalculatorService>();
+builder.Services.AddScoped<RentalCollisionService>();
+//renderowanie maila
+builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 
 //emial
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

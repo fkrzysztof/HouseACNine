@@ -1,0 +1,41 @@
+﻿@using HouseNet9.ViewModels
+@model NewReservationEmailViewModel
+@{
+    Layout = null;
+}
+
+<html>
+<body style="font-family: Arial; font-size:14px;">
+
+    <h2>Nowa rezerwacja domu</h2>
+
+    <b>Dom:</b> @Model.HouseName
+    <br />
+    <b>Termin:</b> @Model.From.ToString("dd.MM.yyyy") - @Model.To.ToString("dd.MM.yyyy")
+    <br />
+
+    <hr />
+
+    <b>Do zapłaty:</b> @Model.TotalPrice.ToString("N2") €
+    <br />
+    <b>Zadatek:</b> @Model.Deposit.ToString("N2") € (do @Model.DepositDueDate.ToString("dd.MM.yyyy"))
+    <br />
+    <b>Pozostała kwota:</b> @Model.Remaining.ToString("N2") € (do @Model.RemainingDueDate.ToString("dd.MM.yyyy"))
+    <br />
+
+    <hr />
+
+    <b>Klient:</b>
+    <br />
+    @Model.ClientName
+    <br />
+    @Model.ClientEmail
+    <br />
+    @Model.ClientPhone
+    <br />
+
+    <hr />
+    Data utworzenia: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+
+</body>
+</html>
