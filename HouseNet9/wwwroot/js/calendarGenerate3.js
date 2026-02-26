@@ -33,7 +33,10 @@
 
     async function loadReservedDates(start, end) {
         try {
-            const res = await fetch(`/api/calendar/reserved?start=${start.toISOString()}&end=${end.toISOString()}`);
+            //const res = await fetch(`/api/calendar/reserved?start=${start.toISOString()}&end=${end.toISOString()}`);
+            const res = await fetch(
+                `/api/calendar/reserved?houseId=${houseId}&start=${start.toISOString()}&end=${end.toISOString()}`
+            );
             if (!res.ok) throw new Error('Błąd pobierania zajętych dni');
             reservedDates = await res.json();
         } catch (err) {
@@ -172,6 +175,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                houseId: houseId,
                 from: formatDate(selectedStart),
                 to: formatDate(selectedEnd)
             })
@@ -229,6 +233,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    houseId: houseId,
                     from: formatDate(selectedStart),
                     to: formatDate(selectedEnd)
                 })

@@ -6,8 +6,6 @@ using HouseNet9.ViewModels;
 using Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Globalization;
 
 namespace HouseRent.Controllers
 {
@@ -29,66 +27,36 @@ namespace HouseRent.Controllers
             _razorRenderer = razorRenderer;
         }
 
-        // Pobiera zajęte dni w zadanym zakresie
-        //[HttpGet("reserved")]
-        public async Task<IActionResult> GetReservedDates(DateTime start, DateTime end)
-        {
-            var reservations = await _context.RentalHouses
-                .Where(r => r.From <= end && r.To >= start)
-                .Select(r => new { r.From, r.To })
-                .ToListAsync();
-
-            var reservedDates = new List<string>();
-            foreach (var r in reservations)
-            {
-                var s = r.From < start ? start : r.From;
-                var e = r.To > end ? end : r.To;
-                for (var d = s.Date; d <= e.Date; d = d.AddDays(1))
-                {
-                    reservedDates.Add(d.ToString("yyyy-MM-dd"));
-                }
-            }
-
-            return Ok(reservedDates.Distinct());
-        }
 
 
-        
-        //JS ACTION
-        // POST: GetCalendar/Info
+        //http
+        //CreateNewReservation Przygotowanie rezerwacji 1
         [HttpPost]
-        public async Task<IActionResult> Info([Bind("From,HouseId,HowManyDaysFromSelect")]  RentalHouse rentalHouse)
+        public async Task<IActionResult> CreateNewReservation([FromBody] ReservationRequest request)
         {
+            var from = request.From.Date;
+            var to = request.To.Date;
+            var houseId = request.HouseId;
 
-                rentalHouse.To = rentalHouse.From.AddDays(rentalHouse.HowManyDaysFromSelect);
-                rentalHouse.CreationDate = DateTime.Now;
-                rentalHouse.IsActive = true;
+            if (await _collisionService.HasCollisionAsync(houseId, from, to))
+                return Conflict();
 
-                RentalPrice? rentalPrice = new RentalPrice();
-                rentalPrice = await _context.RentalPrices.FirstOrDefaultAsync(f => f.HouseId == rentalHouse.HouseId);
+            // Zapis do TempData jako string (bezpieczny format)
+            TempData["From"] = from.ToString("yyyy-MM-dd");
+            TempData["To"] = to.ToString("yyyy-MM-dd");
+            TempData["HouseId"] = houseId.ToString();
 
-                if (rentalPrice != null)
-                {
-                    if (rentalHouse.HowManyDaysFromSelect == 13)
-                        rentalHouse.ToPay = rentalHouse.HowManyDaysFromSelect * rentalPrice.TwoWeeks;
-                    if (rentalHouse.HowManyDaysFromSelect == 9)
-                        rentalHouse.ToPay = rentalHouse.HowManyDaysFromSelect * rentalPrice.OneWeek;
-                    if (rentalHouse.HowManyDaysFromSelect == 6)
-                        rentalHouse.ToPay = rentalHouse.HowManyDaysFromSelect * rentalPrice.OneWeek;
-                }
-
-            HttpContext.Session.SetString("Rental", JsonConvert.SerializeObject(rentalHouse));
-                
-            ViewBag.NewRentalInfo = rentalHouse;
-                return PartialView();
-            }
-
-        public IActionResult ThanksForTheReservation(RentalHouse rentalHouse)
-        {
-
-            return View(rentalHouse);
+            return Ok(new
+            {
+                success = true,
+                redirectUrl = Url.Action("Create", "GetCalendar") // przekierowanie do Create
+            });
         }
 
+
+
+        //get
+        //Create Wyświetlenie Formularza Klienta i przycisku do zapisania rezerwaji 2
         public async Task<IActionResult> Create()
         {
             // Pobranie danych z TempData (wybrany termin i dom)
@@ -113,15 +81,9 @@ namespace HouseRent.Controllers
         }
 
 
-        public class ReservationViewModel
-        {
-            public DateTime From { get; set; }
-            public DateTime To { get; set; }
-            public int HouseId { get; set; }
-        }
 
-
-
+        //http
+        //Create ZAPIS NOWEJ REZERWACJI 3 ************** END ********************
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RentalClient rentalClient, int houseId, DateTime from, DateTime to)
@@ -135,12 +97,16 @@ namespace HouseRent.Controllers
                 return View(rentalClient);
             }
 
+            //zapisanie nowego klienta
+            _context.Add(rentalClient);
+            await _context.SaveChangesAsync();
+
             var rentalHouse = new RentalHouse
             {
                 HouseId = houseId,
                 From = from,
                 To = to,
-                RentalClient = rentalClient,
+                RentalClientId = rentalClient.RentalClientId,
                 RentalStatusID = 5, // Do zapłaty
                 CreationDate = DateTime.Now,
                 IsActive = true
@@ -151,12 +117,30 @@ namespace HouseRent.Controllers
             _context.Add(rentalHouse);
             await _context.SaveChangesAsync();
 
-            //*************************************** Send email **************************************
+            // pobranie domu z kontaktami do miala
+            var house = await _context.Houses
+                .Include(h => h.Contacts)
+                    .ThenInclude(c => c.EmailAddresses)
+                .FirstOrDefaultAsync(h => h.HouseId == houseId);
+
+            if (house == null)
+                return NotFound();
+
+            //***************************************Send email**************************************
+
+            // zbieramy maile adminów
+            var adminEmails = house?.Contacts?
+                .SelectMany(c => c.EmailAddresses)
+                .Select(e => e.Email)
+                .Where(e => !string.IsNullOrEmpty(e))
+                .Distinct()
+                .ToList();
+
             var deposit = rentalHouse.ToPay * 0.3m;
 
             var emailModel = new NewReservationEmailViewModel
             {
-                HouseName = rentalHouse.House.Name,
+                HouseName = house.Name,
                 From = rentalHouse.From,
                 To = rentalHouse.To,
                 TotalPrice = rentalHouse.ToPay,
@@ -170,98 +154,91 @@ namespace HouseRent.Controllers
                 CreatedAt = rentalHouse.CreationDate
             };
 
-            var mailBody = await _razorRenderer
-                .RenderViewToStringAsync("/Views/Emails/NewReservation.cshtml", emailModel);
 
+            //mail do klienta
+            var clientMailBody = await _razorRenderer
+                                .RenderViewToStringAsync("Email/NewReservationClient", emailModel);
 
-            // pobranie domu z kontaktami
-            var house = await _context.Houses
-                .Include(h => h.Contacts)
-                    .ThenInclude(c => c.EmailAddresses)
-                .FirstOrDefaultAsync(h => h.HouseId == rentalHouse.RentalHouseID);
-
-            // zbieramy maile adminów
-            var adminEmails = house?.Contacts?
-                .SelectMany(c => c.EmailAddresses)
-                .Select(e => e.Email)
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Distinct()
-                .ToList();
-
-            // wysyłka do klienta
             await _emailService.SendEmailAsync(
                 rentalClient.Email,
                 "Potwierdzenie rezerwacji",
-                mailBody);
+                clientMailBody);
 
-            // wysyłka do adminów
-            if (adminEmails != null && adminEmails.Any())
+
+            //do admina
+            var ownerEmailModel = new NewReservationOwnerEmailViewModel
             {
-                foreach (var email in adminEmails)
-                {
-                    await _emailService.SendEmailAsync(
-                        email,
-                        "Nowa rezerwacja domu",
-                        mailBody);
-                }
+                HouseName = house.Name,
+                From = rentalHouse.From,
+                To = rentalHouse.To,
+                TotalPrice = rentalHouse.ToPay,
+                ClientName = rentalClient.FullName,
+                ClientEmail = rentalClient.Email,
+                ClientPhone = rentalClient.Phone,
+                CreatedAt = rentalHouse.CreationDate
+            };
+
+            var ownerMailBody = await _razorRenderer
+                               .RenderViewToStringAsync("Email/NewReservationOwner", ownerEmailModel);
+
+            foreach (var email in adminEmails)
+            {
+                await _emailService.SendEmailAsync(
+                    email,
+                    "Nowa rezerwacja domu",
+                    ownerMailBody);
             }
+
+
+            //var mailBody = await _razorRenderer
+            //    .RenderViewToStringAsync("Email/NewReservation", emailModel);
+
+
+
+            //// wysyłka do klienta
+            //await _emailService.SendEmailAsync(
+            //    rentalClient.Email,
+            //    "Potwierdzenie rezerwacji",
+            //    mailBody);
+
+            //// wysyłka do adminów
+            //if (adminEmails != null && adminEmails.Any())
+            //{
+            //    foreach (var email in adminEmails)
+            //    {
+            //        await _emailService.SendEmailAsync(
+            //            email,
+            //            "Nowa rezerwacja domu",
+            //            mailBody);
+            //    }
+            //}
 
             return RedirectToAction("ThanksForTheReservation");
         }
 
 
 
-        public IActionResult DetailsInfo(DateTime start, DateTime end)
+        //get
+        //ThanksForTheReservation podziekowanie/potwierdzenie/instrukcja
+        public IActionResult ThanksForTheReservation(RentalHouse rentalHouse)
         {
-            // Tutaj możesz pobrać szczegóły rezerwacji i przekazać do widoku
-            ViewData["Start"] = start;
-            ViewData["End"] = end;
-            return View();
-        }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateNewReservation([FromBody] ReservationRequest request)
-        {
-            var from = request.From.Date;
-            var to = request.To.Date;
-            var houseId = 1;
-
-            if (await HasCollision(from, to))
-                return Conflict();
-
-            // Zapis do TempData jako string (bezpieczny format)
-            TempData["From"] = from.ToString("yyyy-MM-dd");
-            TempData["To"] = to.ToString("yyyy-MM-dd");
-            TempData["HouseId"] = houseId.ToString();
-
-            return Ok(new
-            {
-                success = true,
-                redirectUrl = Url.Action("Create", "GetCalendar") // przekierowanie do Create
-            });
+            return View(rentalHouse);
         }
 
 
 
-
-
-        //Walidacja kolizji
-        private async Task<bool> HasCollision(DateTime from, DateTime to)
-        {
-            return await _context.RentalHouses
-                .AnyAsync(r =>
-                    r.From.Date <= to.Date &&
-                    r.To.Date >= from.Date
-                );
-        }
-
-
+        //CreateReservationRequest
         public class ReservationRequest
         {
+            public int HouseId { get; set; }
             public DateTime From { get; set; }
             public DateTime To { get; set; }
         }
 
+
+
+        //metoda pomocnicza do stylowania emaila
         public async Task<IActionResult> PreviewEmail()
         {
             var model = new NewReservationEmailViewModel
@@ -280,7 +257,7 @@ namespace HouseRent.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            return View("~/Views/Emails/NewReservation.cshtml", model);
+            return View("~/Views/Email/NewReservation.cshtml", model);
         }
 
 

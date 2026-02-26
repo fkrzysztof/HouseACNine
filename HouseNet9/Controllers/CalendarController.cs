@@ -1,25 +1,38 @@
 ﻿using Data.Data.HouseRentalData;
 using HouseNet9.Data;
+using HouseNet9.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math;
 
 [Route("api/calendar")]
 [ApiController]
 public class CalendarController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly RentalCollisionService _collisionService; 
+    private readonly RentalCalculatorService _calculator;
 
-    public CalendarController(ApplicationDbContext context)
+    public CalendarController(ApplicationDbContext context, RentalCollisionService collisionService, RentalCalculatorService calculator)
     {
         _context = context;
+        _collisionService = collisionService;
+        _calculator = calculator;
     }
+
+
+
+
 
     // ===== 1. POBIERANIE ZAJĘTYCH DNI =====
     [HttpGet("reserved")]
-    public async Task<IActionResult> GetReservedDates(DateTime start, DateTime end)
+    public async Task<IActionResult> GetReservedDates( int houseId, DateTime start, DateTime end)
     {
         var reservations = await _context.RentalHouses
-            .Where(r => r.From <= end && r.To >= start)
+            .Where(r =>
+                r.HouseId == houseId &&      // 🔥 NAJWAŻNIEJSZE
+                r.From <= end &&
+                r.To >= start)
             .Select(r => new { r.From, r.To })
             .ToListAsync();
 
@@ -51,7 +64,7 @@ public class CalendarController : ControllerBase
             return BadRequest("Błędny zakres dat");
 
         //WALIDACJA KOLIZJI
-        if (await HasCollision(from, to))
+        if (await _collisionService.HasCollisionAsync(request.HouseId, from, to))
         {
             return Conflict(new
             {
@@ -59,11 +72,21 @@ public class CalendarController : ControllerBase
             });
         }
 
-        int days = (to - from).Days + 1;
+        //Obliczanie Ceny
+        var rentalHouse = new RentalHouse
+        {
+            HouseId = request.HouseId,
+            From = from,
+            To = to,
+            RentalClient = null,
+            RentalStatusID = 5, // Do zapłaty
+            CreationDate = DateTime.Now,
+            IsActive = true
+        };
 
-        //Logika naliczania cen
-        decimal pricePerDay = 250;
-        decimal price = days * pricePerDay;
+        rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse, true);
+        int days = rentalHouse.HowManyDaysFromSelect;
+        decimal price = rentalHouse.ToPay;
 
         return Ok(new
         {
@@ -75,17 +98,11 @@ public class CalendarController : ControllerBase
     }
 
 
-    //Walidacja kolizji
-    private async Task<bool> HasCollision(DateTime from, DateTime to)
-    {
-          return await _collisionService.HasCollisionAsync(houseId, from, to);
-        return true;
-    }
-
 }
 
 public class ReservationRequest
 {
+    public int HouseId { get; set; }
     public DateTime From { get; set; }
     public DateTime To { get; set; }
 }

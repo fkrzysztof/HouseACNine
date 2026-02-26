@@ -28,29 +28,51 @@ namespace HouseNet9.Controllers
             return Content("Zalogowany 👍");
         }
 
-        //public async Task<IActionResult> Index(int id)
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id)
         {
-            House? houseWithGenInfo = await _context.Houses
-              //  .Where(w => w.HouseId == id)
-            .Include(i => i.GeneralInformation)
-                .ThenInclude(i => i.Image)
-            .Include(i => i.DescriptionPages)
-                .ThenInclude(i => i.Images).Take(1)
-            .Include(i => i.Distances)
-                .ThenInclude(i => i.Image)
-            .Include(i => i.Distances)
-                .ThenInclude(i => i.DistanceItems)
-            .FirstOrDefaultAsync(); //do zmiany id - get!
+            var query = _context.Houses
+                .Include(h => h.GeneralInformation)
+                    .ThenInclude(g => g.Image)
+                .Include(h => h.DescriptionPages)
+                    .ThenInclude(d => d.Images)
+                .Include(h => h.Distances)
+                    .ThenInclude(d => d.Image)
+                .Include(h => h.Distances)
+                    .ThenInclude(d => d.DistanceItems)
+                .AsQueryable();
 
+            if (id.HasValue)
+                query = query.Where(h => h.HouseId == id.Value);
+            else
+                query = query.OrderBy(h => h.HouseId).Take(1);
 
-            if (houseWithGenInfo?.GeneralInformation == null)
-            {
+            var house = await query.FirstOrDefaultAsync();
+
+            if (house == null)
                 return NotFound();
-            }
+
+
+
+            //House? houseWithGenInfo = await _context.Houses
+            //     .Where(w => w.HouseId == id)
+            //    .Include(i => i.GeneralInformation)
+            //        .ThenInclude(i => i.Image)
+            //    .Include(i => i.DescriptionPages)
+            //        .ThenInclude(i => i.Images).Take(1)
+            //    .Include(i => i.Distances)
+            //        .ThenInclude(i => i.Image)
+            //    .Include(i => i.Distances)
+            //        .ThenInclude(i => i.DistanceItems)
+            //    .FirstOrDefaultAsync();
+
+
+            //if (houseWithGenInfo?.GeneralInformation == null)
+            //{
+            //    return NotFound();
+            //}
 
             //HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
-            return View(houseWithGenInfo);
+            return View(house);
 
         }
 

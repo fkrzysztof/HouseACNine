@@ -1,6 +1,7 @@
 ﻿using Data.Data.HouseRentalData;
 using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace HouseNet9.Helpers
 {
@@ -13,9 +14,9 @@ namespace HouseNet9.Helpers
             _context = context;
         }
 
-        public async Task<decimal> CalculatePriceAsync(RentalHouse rental)
+        public async Task<decimal> CalculatePriceAsync(RentalHouse rental, bool? askForPrice = null)
         {
-            if (rental.RentalClientId == null)
+            if (rental.RentalClientId == null && askForPrice == null)
                 return 0;
 
             if (rental.To.Date <= rental.From.Date)
