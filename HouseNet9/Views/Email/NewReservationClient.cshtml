@@ -4,38 +4,141 @@
     Layout = null;
 }
 
+<!DOCTYPE html>
 <html>
-<body style="font-family: Arial; font-size:14px;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-    <h2>Nowa rezerwacja domu</h2>
+<body style="margin:0; padding:0; background-color:#f4f6f9; font-family: Arial, Helvetica, sans-serif;">
 
-    <b>Dom:</b> @Model.HouseName
-    <br />
-    <b>Termin:</b> @Model.From.ToString("dd.MM.yyyy") - @Model.To.ToString("dd.MM.yyyy")
-    <br />
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:20px 10px;">
+<tr>
+<td align="center">
 
-    <hr />
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:650px; background-color:#ffffff; border-radius:12px; overflow:hidden;">
 
-    <b>Do zapłaty:</b> @Model.TotalPrice.ToString("N2") €
-    <br />
-    <b>Zadatek:</b> @Model.Deposit.ToString("N2") € (do @Model.DepositDueDate.ToString("dd.MM.yyyy"))
-    <br />
-    <b>Pozostała kwota:</b> @Model.Remaining.ToString("N2") € (do @Model.RemainingDueDate.ToString("dd.MM.yyyy"))
-    <br />
+        <!-- LOGO -->
+@*         @if (!string.IsNullOrEmpty(Model.HouseLogoUrl))
+        { *@
+        <tr>
+            <td align="center" style="padding:25px 20px 10px 20px;">
+                            <img src="~/uploads/logo-hor.png" alt="Logo" style="max-height:80px; width:auto; display:block;">
+            </td>
+        </tr>
+ @*        } *@
+                  
+        <!-- HEADER -->
+        <tr>
+            <td style="background-color:#1f2d3d; padding:25px; text-align:center;">
+                <h1 style="margin:0; font-size:22px; color:#ffffff;">Potwierdzenie rezerwacji – @Model.HouseName</h1>
+            </td>
+        </tr>
 
-    <hr />
+                    <!-- INFORMACJE O REZERWACJI -->
 
-    <b>Klient:</b>
-    <br />
-    @Model.ClientName
-    <br />
-    @Model.ClientEmail
-    <br />
-    @Model.ClientPhone
-    <br />
+                    <tr>
+                        <td style="padding:20px;">
+                            <h2 style="margin-top:0; color:#1f2d3d;">Szczegóły rezerwacji</h2>
+                            <table width="100%" cellpadding="10" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; font-size:15px;">
+                                <tr><td><strong>Termin:</strong></td><td>@Model.From.ToShortDateString() – @Model.To.ToShortDateString()</td></tr>
+                                <tr><td><strong>Całkowita cena:</strong></td><td>@Model.TotalPrice.ToString("C")</td></tr>
+                                <tr><td><strong>Zaliczka (30%):</strong></td><td>@Model.Deposit.ToString("C") do @Model.DepositDueDate.ToShortDateString()</td></tr>
+                                <tr><td><strong>Pozostała kwota:</strong></td><td>@Model.Remaining.ToString("C") do @Model.RemainingDueDate.ToShortDateString()</td></tr>
+                                <tr><td><strong>Data rezerwacji:</strong></td><td>@Model.CreatedAt.ToShortDateString()</td></tr>
+                            </table>
+                        </td>
+                    </tr>
 
-    <hr />
-    Data utworzenia: @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+        <!-- DANE KLIENTA -->
+        <tr>
+            <td style="padding:20px;">
+                <h2 style="margin-top:0; color:#1f2d3d;">Dane klienta</h2>
+                <table width="100%" cellpadding="10" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; font-size:14px;">
+                    <tr><td><strong>Imię i nazwisko:</strong></td><td>@Model.ClientFullName</td></tr>
+                    <tr><td><strong>Email:</strong></td><td>@Model.ClientEmail</td></tr>
+                    <tr><td><strong>Telefon:</strong></td><td>@Model.ClientPhone</td></tr>
+                    <tr><td><strong>Ulica:</strong></td><td>@Model.ClientStreet @Model.ClientNumber</td></tr>
+                    <tr><td><strong>Kod pocztowy:</strong></td><td>@Model.ClientZIPCode</td></tr>
+                    <tr><td><strong>Miasto:</strong></td><td>@Model.ClientCity</td></tr>
+                    <tr><td><strong>Kraj:</strong></td><td>@Model.ClientCountry</td></tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- DANE DOMU -->
+        @if (Model.Contacts != null && Model.Contacts.Any())
+        {
+        <tr>
+            <td style="padding:20px;">
+                <h2 style="margin-top:0; color:#1f2d3d;">Dane obiektu</h2>
+                @foreach (var contact in Model.Contacts)
+                {
+                <table width="100%" cellpadding="10" cellspacing="0" style="margin-top:10px; background-color:#f8fafc; border-radius:8px; font-size:14px;">
+                    <tr>
+                        <td colspan="2" style="font-weight:600; font-size:15px; padding-bottom:5px;">@contact.Name</td>
+                    </tr>
+                    @if (contact.Addresses != null)
+                    {
+                        foreach (var address in contact.Addresses)
+                        {
+                            <tr><td>Adres:</td><td>@address</td></tr>
+                        }
+                    }
+                    @if (contact.Phones != null)
+                    {
+                        foreach (var phone in contact.Phones)
+                        {
+                            <tr><td>Telefon:</td><td>@phone</td></tr>
+                        }
+                    }
+                    @if (contact.Emails != null)
+                    {
+                        foreach (var email in contact.Emails)
+                        {
+                            <tr><td>Email:</td><td>@email</td></tr>
+                        }
+                    }
+                </table>
+                }
+            </td>
+        </tr>
+        }
+
+        <!-- REGULAMIN -->
+        @if (!string.IsNullOrEmpty(Model.RentalRules))
+        {
+        <tr>
+            <td style="padding:20px;">
+                <h2 style="margin-top:0; color:#1f2d3d;">Regulamin</h2>
+                <table width="100%" cellpadding="15" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; font-size:13px; color:#555; line-height:1.6;">
+                    <tr><td>@Html.Raw(Model.RentalRules)</td></tr>
+                </table>
+            </td>
+        </tr>
+        }
+
+        <!-- PODZIĘKOWANIE -->
+        <tr>
+            <td style="padding:20px; font-size:14px; color:#666; line-height:1.6;">
+                Dziękujemy za zaufanie i rezerwację. W razie dodatkowych pytań pozostajemy do dyspozycji.
+                <p style="margin-top:20px; font-weight:600;">Zespół @Model.HouseName</p>
+            </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+            <td style="background-color:#f1f3f6; padding:20px; text-align:center; font-size:12px; color:#888;">
+                © @DateTime.Now.Year @Model.HouseName
+            </td>
+        </tr>
+
+    </table>
+
+</td>
+</tr>
+</table>
 
 </body>
 </html>

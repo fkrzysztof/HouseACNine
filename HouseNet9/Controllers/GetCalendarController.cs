@@ -125,22 +125,20 @@ namespace HouseRent.Controllers
 
             if (house == null)
                 return NotFound();
+            //*************************************** Send email **************************************
 
-            //***************************************Send email**************************************
-
-            // zbieramy maile adminów
-            var adminEmails = house?.Contacts?
-                .SelectMany(c => c.EmailAddresses)
-                .Select(e => e.Email)
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Distinct()
-                .ToList();
-
+            // Obliczamy zaliczkę (30%)
             var deposit = rentalHouse.ToPay * 0.3m;
 
+            // Tworzymy model emaila z wszystkimi danymi
             var emailModel = new NewReservationEmailViewModel
             {
+                // ------------------- Dane domu -------------------
                 HouseName = house.Name,
+                HouseLogoUrl = null,
+                RentalRules = house.RentalRules,
+
+                // ------------------- Dane rezerwacji -------------------
                 From = rentalHouse.From,
                 To = rentalHouse.To,
                 TotalPrice = rentalHouse.ToPay,
@@ -148,38 +146,47 @@ namespace HouseRent.Controllers
                 DepositDueDate = DateTime.Now.AddDays(3),
                 Remaining = rentalHouse.ToPay - deposit,
                 RemainingDueDate = rentalHouse.From.AddDays(-7),
-                ClientName = rentalClient.FullName,
+                CreatedAt = rentalHouse.CreationDate,
+
+                // ------------------- Dane klienta -------------------
+                ClientFullName = rentalClient.FullName,
                 ClientEmail = rentalClient.Email,
                 ClientPhone = rentalClient.Phone,
-                CreatedAt = rentalHouse.CreationDate
+                ClientStreet = rentalClient.Street,
+                ClientNumber = rentalClient.Number,
+                ClientZIPCode = rentalClient.ZIPCode,
+                ClientCity = rentalClient.City,
+                ClientCountry = rentalClient.Country,
+
+                // ------------------- Kontakty i adresy domu -------------------
+                Contacts = house.Contacts?.Select(c => new ContactEmailModel
+                {
+                    Name = c.Name,
+                    Phones = c.PhoneNumbers?.Select(p => p.Number).ToList() ?? new List<string>(),
+                    Emails = c.EmailAddresses?.Select(e => e.Email).ToList() ?? new List<string>(),
+                    Addresses = c.Addresses?.Select(a => $"{a.Street}, {a.PostalCode} {a.City}, {a.Country}").ToList() ?? new List<string>()
+                }).ToList() ?? new List<ContactEmailModel>()
             };
 
+            // ------------------- Zbieramy maile adminów / właścicieli -------------------
+            var adminEmails = emailModel.Contacts
+                .SelectMany(c => c.Emails)
+                .Where(e => !string.IsNullOrEmpty(e))
+                .Distinct()
+                .ToList();
 
-            //mail do klienta
+            // ------------------- Wysyłka do klienta -------------------
             var clientMailBody = await _razorRenderer
-                                .RenderViewToStringAsync("Email/NewReservationClient", emailModel);
+                .RenderViewToStringAsync("Email/NewReservationClient", emailModel);
 
             await _emailService.SendEmailAsync(
                 rentalClient.Email,
                 "Potwierdzenie rezerwacji",
                 clientMailBody);
 
-
-            //do admina
-            var ownerEmailModel = new NewReservationOwnerEmailViewModel
-            {
-                HouseName = house.Name,
-                From = rentalHouse.From,
-                To = rentalHouse.To,
-                TotalPrice = rentalHouse.ToPay,
-                ClientName = rentalClient.FullName,
-                ClientEmail = rentalClient.Email,
-                ClientPhone = rentalClient.Phone,
-                CreatedAt = rentalHouse.CreationDate
-            };
-
+            // ------------------- Wysyłka do właścicieli / adminów -------------------
             var ownerMailBody = await _razorRenderer
-                               .RenderViewToStringAsync("Email/NewReservationOwner", ownerEmailModel);
+                .RenderViewToStringAsync("Email/NewReservationOwner", emailModel);
 
             foreach (var email in adminEmails)
             {
@@ -189,34 +196,10 @@ namespace HouseRent.Controllers
                     ownerMailBody);
             }
 
-
-            //var mailBody = await _razorRenderer
-            //    .RenderViewToStringAsync("Email/NewReservation", emailModel);
-
-
-
-            //// wysyłka do klienta
-            //await _emailService.SendEmailAsync(
-            //    rentalClient.Email,
-            //    "Potwierdzenie rezerwacji",
-            //    mailBody);
-
-            //// wysyłka do adminów
-            //if (adminEmails != null && adminEmails.Any())
-            //{
-            //    foreach (var email in adminEmails)
-            //    {
-            //        await _emailService.SendEmailAsync(
-            //            email,
-            //            "Nowa rezerwacja domu",
-            //            mailBody);
-            //    }
-            //}
-
+            // ------------------- Przekierowanie po zakończeniu -------------------
             return RedirectToAction("ThanksForTheReservation");
+        
         }
-
-
 
         //get
         //ThanksForTheReservation podziekowanie/potwierdzenie/instrukcja
@@ -227,7 +210,6 @@ namespace HouseRent.Controllers
         }
 
 
-
         //CreateReservationRequest
         public class ReservationRequest
         {
@@ -236,29 +218,6 @@ namespace HouseRent.Controllers
             public DateTime To { get; set; }
         }
 
-
-
-        //metoda pomocnicza do stylowania emaila
-        public async Task<IActionResult> PreviewEmail()
-        {
-            var model = new NewReservationEmailViewModel
-            {
-                HouseName = "Dom testowy",
-                From = DateTime.Today,
-                To = DateTime.Today.AddDays(7),
-                TotalPrice = 1200,
-                Deposit = 360,
-                DepositDueDate = DateTime.Today.AddDays(3),
-                Remaining = 840,
-                RemainingDueDate = DateTime.Today.AddDays(-7),
-                ClientName = "Jan Kowalski",
-                ClientEmail = "jan@test.pl",
-                ClientPhone = "123 456 789",
-                CreatedAt = DateTime.Now
-            };
-
-            return View("~/Views/Email/NewReservation.cshtml", model);
-        }
 
 
     }
