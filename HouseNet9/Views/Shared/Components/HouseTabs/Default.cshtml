@@ -76,5 +76,14 @@
         </a>
     </li>
 
+    <li class="nav-item">
+        <a class="nav-link @(controllerName == "HouseSettings" ? "active" : "")"
+           asp-controller="HouseSettings"
+           asp-action="Details"
+           asp-route-houseId="@houseId">
+            Ustawienia
+        </a>
+    </li>
+
 </ul>
 

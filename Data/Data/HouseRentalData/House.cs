@@ -42,6 +42,10 @@ namespace Data.Data.HouseRentalData
         [Display(Name = "Kontakt")] // kolekcja kontaktów o odleglosciach
         public ICollection<Contact>? Contacts { get; set; }
 
+        // Settings
+        public int? HouseSettingsId { get; set; } // nullable, bo dom może nie mieć ustawień
+        public HouseSettings? Settings { get; set; } // nawigacja
+
         public bool IsActive { get; set; }
     }
 }

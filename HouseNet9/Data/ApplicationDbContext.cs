@@ -27,7 +27,9 @@ namespace HouseNet9.Data
         public DbSet<Address> Addresses { get; set; } = default!;
         public DbSet<PhoneNumber> PhoneNumbers { get; set; } = default!;
         public DbSet<EmailAddress> EmailAddresses { get; set; } = default!;
+        public DbSet<HouseSettings> HouseSettings { get; set; } = default!;
 
-    
+
+
     }
 }

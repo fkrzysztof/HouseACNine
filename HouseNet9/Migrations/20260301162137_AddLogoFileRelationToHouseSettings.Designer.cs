@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260301162137_AddLogoFileRelationToHouseSettings")]
+    partial class AddLogoFileRelationToHouseSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,10 +315,12 @@ namespace HouseNet9.Migrations
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LogoFileName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("LogoFileId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LogoFileId");
 
                     b.ToTable("HouseSettings");
                 });
@@ -832,6 +837,15 @@ namespace HouseNet9.Migrations
                         .HasForeignKey("HouseSettingsId");
 
                     b.Navigation("Settings");
+                });
+
+            modelBuilder.Entity("Data.Data.HouseRentalData.HouseSettings", b =>
+                {
+                    b.HasOne("Data.Data.HouseRentalData.MyFile", "LogoFile")
+                        .WithMany()
+                        .HasForeignKey("LogoFileId");
+
+                    b.Navigation("LogoFile");
                 });
 
             modelBuilder.Entity("Data.Data.HouseRentalData.MyFile", b =>

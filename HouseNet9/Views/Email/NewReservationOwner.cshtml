@@ -32,7 +32,7 @@
                     <!-- HEADER -->
                     <tr>
                         <td style="background-color:#1f2d3d; padding:25px; text-align:center;">
-                            <h1 style="margin:0; font-size:22px; color:#ffffff;">Potwierdzenie rezerwacji – @Model.HouseName</h1>
+                            <h1 style="margin:0; font-size:22px; color:#ffffff;">Nowa rezerwacja - @Model.HouseName</h1>
                         </td>
                     </tr>
 
@@ -50,6 +50,15 @@
                             </table>
                         </td>
                     </tr>
+
+
+                    <!-- handshake img -->
+                    <tr>
+                        <td style="padding:20px;">
+                            <img src="~/uploads/handshake.jpg" style="width:100%;" />
+                        </td>
+                    </tr>
+
 
                     <!-- DANE KLIENTA -->
                     <tr>
@@ -107,7 +116,7 @@
                     }
 
                     <!-- REGULAMIN -->
-                    @if (!string.IsNullOrEmpty(Model.RentalRules))
+@*                     @if (!string.IsNullOrEmpty(Model.RentalRules))
                     {
                         <tr>
                             <td style="padding:20px;">
@@ -117,15 +126,15 @@
                                 </table>
                             </td>
                         </tr>
-                    }
+                    } *@
 
                     <!-- PODZIĘKOWANIE -->
-                    <tr>
+@*                     <tr>
                         <td style="padding:20px; font-size:14px; color:#666; line-height:1.6;">
                             Dziękujemy za zaufanie i rezerwację. W razie dodatkowych pytań pozostajemy do dyspozycji.
                             <p style="margin-top:20px; font-weight:600;">Zespół @Model.HouseName</p>
                         </td>
-                    </tr>
+                    </tr> *@
 
                     <!-- FOOTER -->
                     <tr>

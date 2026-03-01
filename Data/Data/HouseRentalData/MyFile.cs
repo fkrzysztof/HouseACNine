@@ -26,6 +26,10 @@ namespace Data.Data.HouseRentalData
         public int? DistanceID { get; set; }
         [ForeignKey("DistanceID")]
         public Distance? Distance { get; set; }
+
+        public int? HouseSettingsId { get; set; }
+        [ForeignKey("HouseSettingsId")]
+        public HouseSettings? HouseSettings { get; set; }
     }
 }
         

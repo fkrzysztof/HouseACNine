@@ -1,0 +1,77 @@
+﻿@model Data.Data.HouseRentalData.HouseSettings
+@{
+    ViewBag.Title = "Dodaj ustawienia domu";
+    var houseId = ViewBag.HouseId;
+}
+
+@section Scripts {
+    <script src="~/js/imagepreview.js"></script>
+}
+
+<h2>Dodaj ustawienia indywidualne obiektu</h2>
+
+<form asp-action="Create" asp-controller="HouseSettings" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="houseId" value="@houseId" />
+
+    <div class="mb-3">
+        <label class="form-label">Procent zadatku (%)</label>
+        <input asp-for="DepositPercentage" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Dni na wpłatę zadatku</label>
+        <input asp-for="DepositDueDays" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Dni przed przyjazdem na wpłatę pełnej kwoty</label>
+        <input asp-for="FullPaymentDueDaysBeforeArrival" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Waluta</label>
+        <input asp-for="Currency" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Numer konta IBAN</label>
+        <input asp-for="BankAccountIban" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">SWIFT</label>
+        <input asp-for="BankAccountSwift" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nazwa właściciela konta</label>
+        <input asp-for="BankAccountName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nazwa banku</label>
+        <input asp-for="BankName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Logo domu (plik)</label>
+        <input type="file" id="fileInput" name="logoFile" class="form-control" />
+
+
+        <div class="text-center mb-3">
+            <img id="preview"
+                 src="~/uploads/noimg.png"
+                 alt="Podgląd obrazu"
+                 class="img-fluid rounded border"
+                 style="max-height:200px;" />
+        </div>
+
+
+    </div>
+
+
+
+    <input type="hidden" asp-for="IsDefault" value="false" />
+
+    <button type="submit" class="btn btn-primary">Zapisz ustawienia</button>
+</form>

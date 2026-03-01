@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260301114123_HouseSettingsnewclass")]
+    partial class HouseSettingsnewclass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,16 +306,12 @@ namespace HouseNet9.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("DepositPercentage")
-                        .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("FullPaymentDueDaysBeforeArrival")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LogoFileName")
+                    b.Property<string>("LogoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -340,9 +339,6 @@ namespace HouseNet9.Migrations
                     b.Property<int?>("GeneralInformationId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("HouseSettingsId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
@@ -361,8 +357,6 @@ namespace HouseNet9.Migrations
                     b.HasIndex("GeneralInformationId")
                         .IsUnique()
                         .HasFilter("[GeneralInformationId] IS NOT NULL");
-
-                    b.HasIndex("HouseSettingsId");
 
                     b.ToTable("MyFiles");
                 });
@@ -852,10 +846,6 @@ namespace HouseNet9.Migrations
                         .WithOne("Image")
                         .HasForeignKey("Data.Data.HouseRentalData.MyFile", "GeneralInformationId");
 
-                    b.HasOne("Data.Data.HouseRentalData.HouseSettings", "HouseSettings")
-                        .WithMany()
-                        .HasForeignKey("HouseSettingsId");
-
                     b.Navigation("DescriptionPage");
 
                     b.Navigation("DetailedInformation");
@@ -863,8 +853,6 @@ namespace HouseNet9.Migrations
                     b.Navigation("Distance");
 
                     b.Navigation("GeneralInformation");
-
-                    b.Navigation("HouseSettings");
                 });
 
             modelBuilder.Entity("Data.Data.HouseRentalData.PhoneNumber", b =>
