@@ -2,10 +2,12 @@
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Services;
+using HouseNet9.Services.Payments;
 using HouseNet9.ViewModels;
 using Mail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Configuration;
 
 namespace HouseRent.Controllers
 {
@@ -16,15 +18,17 @@ namespace HouseRent.Controllers
         private readonly RentalCalculatorService _calculator;
         private readonly RentalCollisionService _collisionService;
         private readonly IRazorViewToStringRenderer _razorRenderer;
+        private readonly IPaymentCalculator _paymentCalculator;
 
         public GetCalendarController(ApplicationDbContext context, IEmailService emailService, RentalCalculatorService calculator, 
-            RentalCollisionService collisionService, IRazorViewToStringRenderer razorRenderer)
+            RentalCollisionService collisionService, IRazorViewToStringRenderer razorRenderer,IPaymentCalculator paymentCalculator)
         {
             _context = context;
             _emailService = emailService;
             _calculator = calculator;
             _collisionService = collisionService;
             _razorRenderer = razorRenderer;
+            _paymentCalculator = paymentCalculator;
         }
 
 
@@ -70,12 +74,36 @@ namespace HouseRent.Controllers
                 From = from,
                 To = to,
                 HouseId = houseId,
-                RentalClientId = -1  // tymczasowy klient do obliczeń
+                RentalClientId = null //-1  // tymczasowy klient do obliczeń
             };
 
-            tempRental.ToPay = await _calculator.CalculatePriceAsync(tempRental);
+            tempRental.ToPay = await _calculator.CalculatePriceAsync(tempRental, true);
+
+
+            var house = await _context.Houses
+                              //.Include(h => h.Contacts)
+                              //.ThenInclude(c => c.EmailAddresses)
+                              .FirstOrDefaultAsync(h => h.HouseId == houseId);
+
+            if (house == null)
+                return NotFound();
+
+            //sprawdzam settings, jak nie ma ustawionego to znaczy ze uzywa domyślnych ustawien.
+            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                                         : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+
+            // Obliczamy zaliczkę (30%)
+            //var deposit = rentalHouse.ToPay * 0.3m;
+            PaymentCalculationResult payment = _paymentCalculator.Calculate(
+                        tempRental.ToPay,
+                        tempRental.From,
+                        settings
+                    );
+
 
             ViewBag.NewRentalInfo = tempRental;
+            ViewBag.NewRentalInfoPayment = payment;
+            ViewBag.SettingsInfo = settings;
 
             return View();
         }
@@ -112,6 +140,7 @@ namespace HouseRent.Controllers
                 IsActive = true
             };
 
+            //naliczanie aktualnej ceny całkowitej wynajmu
             rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
 
             _context.Add(rentalHouse);
@@ -127,26 +156,38 @@ namespace HouseRent.Controllers
                 return NotFound();
             //*************************************** Send email **************************************
 
+            //sprawdzam settings, jak nie ma ustawionego to znaczy ze uzywa domyślnych ustawien.
+            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                                         : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+
             // Obliczamy zaliczkę (30%)
-            var deposit = rentalHouse.ToPay * 0.3m;
+            //var deposit = rentalHouse.ToPay * 0.3m;
+            var payment = _paymentCalculator.Calculate(
+                        rentalHouse.ToPay,
+                        rentalHouse.From,
+                        settings
+                    );
 
             // Tworzymy model emaila z wszystkimi danymi
             var emailModel = new NewReservationEmailViewModel
             {
                 // ------------------- Dane domu -------------------
                 HouseName = house.Name,
-                HouseLogoUrl = null,
+                HouseLogoUrl = string.IsNullOrEmpty(settings.LogoFileName)  ? "/images/no_photography_24dp.svg" : "/uploads/" + settings.LogoFileName,
                 RentalRules = house.RentalRules,
 
                 // ------------------- Dane rezerwacji -------------------
                 From = rentalHouse.From,
                 To = rentalHouse.To,
-                TotalPrice = rentalHouse.ToPay,
-                Deposit = deposit,
-                DepositDueDate = DateTime.Now.AddDays(3),
-                Remaining = rentalHouse.ToPay - deposit,
-                RemainingDueDate = rentalHouse.From.AddDays(-7),
+                TotalPrice = payment.Total,
+                Deposit = payment.Deposit,
+                DepositDueDate = payment.DepositDueDate,
+                //pozostala kwota
+                Remaining = payment.Remaining,
+                RemainingDueDate = payment.RemainingDueDate,
                 CreatedAt = rentalHouse.CreationDate,
+                Currency = settings.Currency ?? "€",
+                DepositPercentage = settings.DepositPercentage,
 
                 // ------------------- Dane klienta -------------------
                 ClientFullName = rentalClient.FullName,

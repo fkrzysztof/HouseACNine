@@ -20,14 +20,14 @@
                 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:650px; background-color:#ffffff; border-radius:12px; overflow:hidden;">
 
                     <!-- LOGO -->
-                    @*         @if (!string.IsNullOrEmpty(Model.HouseLogoUrl))
-        { *@
-                    <tr>
-                        <td align="center" style="padding:25px 20px 10px 20px;">
-                            <img src="~/uploads/logo-hor.png" alt="Logo" style="max-height:80px; width:auto; display:block;">
-                        </td>
-                    </tr>
-                    @*        } *@
+                    @if (!string.IsNullOrEmpty(Model.HouseLogoUrl))
+                    {
+                        <tr>
+                            <td align="center" style="padding:25px 20px 10px 20px;">
+                                <img src="~/uploads/@Model.HouseLogoUrl" alt="Logo" style="max-height:80px; width:auto; display:block;">
+                            </td>
+                        </tr>
+                    }
 
                     <!-- HEADER -->
                     <tr>
@@ -38,7 +38,7 @@
 
                     <!-- INFORMACJE O REZERWACJI -->
 
-                    <tr>
+@*                     <tr>
                         <td style="padding:20px;">
                             <h2 style="margin-top:0; color:#1f2d3d;">Szczegóły rezerwacji</h2>
                             <table width="100%" cellpadding="10" cellspacing="0" style="background-color:#f8fafc; border-radius:8px; font-size:15px;">
@@ -49,7 +49,74 @@
                                 <tr><td><strong>Data rezerwacji:</strong></td><td>@Model.CreatedAt.ToShortDateString()</td></tr>
                             </table>
                         </td>
+                    </tr> *@
+
+                    <!-- INFORMACJE O REZERWACJI -->
+
+                    <tr>
+                        <td style="padding:20px;">
+                            <h2 style="margin-top:0; color:#1f2d3d;">Szczegóły rezerwacji</h2>
+                            <table width="100%" cellpadding="10" cellspacing="0"
+                                   style="background-color:#f8fafc; border-radius:8px; font-size:15px;">
+
+                                <tr>
+                                    <td><strong>Termin:</strong></td>
+                                    <td>@Model.From.ToShortDateString() – @Model.To.ToShortDateString()</td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Całkowita cena:</strong></td>
+                                    <td>@Model.TotalPrice.ToString("N2") @Model.Currency</td>
+                                </tr>
+
+                                @if (Model.Remaining > 0)
+                                {
+                                    <tr>
+                                        <td><strong>Zaliczka (@Model.DepositPercentage%):</strong></td>
+                                        <td>
+                                            @Model.Deposit.ToString("N2") @Model.Currency
+                                            do @Model.DepositDueDate.ToShortDateString()
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><strong>Pozostała kwota:</strong></td>
+                                        <td>
+                                            @Model.Remaining.ToString("N2") @Model.Currency
+                                            do @Model.RemainingDueDate.ToShortDateString()
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td><strong>Płatność:</strong></td>
+                                        <td>
+                                            @Model.TotalPrice.ToString("N2") @Model.Currency
+                                            płatne w całości w dniu potwierdzenia rezerwacji
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2"
+                                            style="padding-top:15px; font-size:14px; color:#555;">
+                                            Zgodnie z regulaminem obiektu, w przypadku rezerwacji
+                                            dokonanej w krótkim terminie przed planowaną datą przyjazdu,
+                                            wymagana jest pełna płatność (100% wartości rezerwacji)
+                                            w momencie jej potwierdzenia.
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td><strong>Data rezerwacji:</strong></td>
+                                    <td>@Model.CreatedAt.ToShortDateString()</td>
+                                </tr>
+
+                            </table>
+                        </td>
                     </tr>
+
 
 
                     <!-- handshake img -->

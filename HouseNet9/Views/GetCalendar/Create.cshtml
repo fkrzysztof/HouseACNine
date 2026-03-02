@@ -1,9 +1,16 @@
 ﻿@model Data.Data.HouseRentalData.RentalClient 
 @using System.Globalization
 @using Data.Data.HouseRentalData
+@using HouseNet9.Services.Payments
 @{
     RentalHouse? newRental = ViewBag.NewRentalInfo as RentalHouse;
     ViewData["Title"] = "Create";
+}
+
+
+@{
+    PaymentCalculationResult paymentInfo = ViewBag.NewRentalInfoPayment;
+    HouseSettings settings = ViewBag.SettingsInfo;
 }
 
 <h4>Moja rezerwacja</h4>
@@ -109,12 +116,51 @@
                 </div>
                 <div class="col-sm-12 p-3 text-sm-left">
                     <h5>Do zapłaty:</h5>
-                    <h4>@newRental?.ToPay.ToString("C", CultureInfo.CurrentCulture)</h4>
+                    <h4>@newRental.ToPay.ToString("N2") @settings.Currency</h4>
                 </div>
-            </div>
 
+
+
+                    @if (paymentInfo.Remaining > 0)
+                    {
+                    <div class="col-sm-12 p-3 text-sm-left">
+                        <h5><strong>Zaliczka (@settings.DepositPercentage%):</strong></h5>
+                            <h4>
+                            @paymentInfo.Deposit.ToString("N2") @settings.Currency do @paymentInfo.DepositDueDate.ToShortDateString()
+                            </h4>
+                    </div>
+
+                         <div class="col-sm-12 p-3 text-sm-left">
+                            <h5><strong>Pozostała kwota:</strong></h5>
+                            <h4>
+                            @paymentInfo.Remaining.ToString("N2") @settings.Currency do @paymentInfo.RemainingDueDate.ToShortDateString()
+                            </h4>
+                        </div>
+                    }
+                    else
+                    {
+                    <div class="col-sm-12 p-3 text-sm-left">
+                            <h5><strong>Płatność:</strong></h5>
+                            <h4>
+                            @paymentInfo.Total.ToString("N2") @settings.Currency
+                            płatne w całości w dniu potwierdzenia rezerwacji
+                            </h4>
+                    </div>
+
+                    <div class="col-sm-12 p-3 text-sm-left">
+                                Zgodnie z regulaminem obiektu, w przypadku rezerwacji
+                                dokonanej w krótkim terminie przed planowaną datą przyjazdu,
+                                wymagana jest pełna płatność (100% wartości rezerwacji)
+                                w momencie jej potwierdzenia.
+                    </div>
+                    }
+
+
+                </div>
         </div>
+
     </div>
+    
 
 
 

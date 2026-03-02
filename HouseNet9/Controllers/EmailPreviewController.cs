@@ -1,7 +1,9 @@
-﻿using HouseNet9.Data;
+﻿using Data.Data.HouseRentalData;
+using HouseNet9.Data;
 using HouseNet9.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace HouseNet9.Controllers
 {
@@ -17,7 +19,6 @@ namespace HouseNet9.Controllers
         // Podgląd dla klienta
         public async Task<IActionResult> PreviewClient()
         {
-            // Pobieramy dom z bazy wraz z kontaktami i adresami
             var house = await _context.Houses
                 .Include(h => h.Contacts!)
                     .ThenInclude(c => c.Addresses)
@@ -25,17 +26,31 @@ namespace HouseNet9.Controllers
                     .ThenInclude(c => c.PhoneNumbers)
                 .Include(h => h.Contacts!)
                     .ThenInclude(c => c.EmailAddresses)
+                .Include(h => h.Settings) // <-- pobieramy ustawienia domu
                 .FirstOrDefaultAsync(h => h.HouseId == 1);
 
             if (house == null)
                 return NotFound("Nie znaleziono domu o ID 1.");
 
-            // Tworzymy model email z pełnymi danymi klienta i kontaktami domu
+            //var settings = house.Settings ?? new HouseSettings(); // fallback do default
+            //nie pokazuje logo
+            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                             : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+
+
+            // Tworzymy PaymentCalculator
+            var payment = new PaymentCalculator(
+                totalPrice: 1200m,
+                arrivalDate: DateTime.Today,
+                settings: settings
+            );
+
+            // Tworzymy model email
             var model = new NewReservationEmailViewModel
             {
-                // ------------------- Dane domu -------------------
+                // Dane domu
                 HouseName = house.Name,
-                HouseLogoUrl = null,
+                HouseLogoUrl = settings.LogoFileName,
                 RentalRules = house.RentalRules,
                 Contacts = house.Contacts.Select(c => new ContactEmailModel
                 {
@@ -45,7 +60,7 @@ namespace HouseNet9.Controllers
                     Addresses = c.Addresses?.Select(a => $"{a.Street}, {a.PostalCode} {a.City}, {a.Country}").ToList() ?? new List<string>()
                 }).ToList(),
 
-                // ------------------- Dane klienta -------------------
+                // Dane klienta
                 ClientFullName = "Jan Kowalski",
                 ClientEmail = "jan@test.pl",
                 ClientPhone = "123 456 789",
@@ -55,15 +70,19 @@ namespace HouseNet9.Controllers
                 ClientCity = "Warszawa",
                 ClientCountry = "Polska",
 
-                // ------------------- Dane rezerwacji -------------------
+                // Dane rezerwacji
                 From = DateTime.Today,
                 To = DateTime.Today.AddDays(7),
-                TotalPrice = 1200,
-                Deposit = 360,
-                DepositDueDate = DateTime.Today.AddDays(3),
-                Remaining = 840,
-                RemainingDueDate = DateTime.Today.AddDays(-7),
-                CreatedAt = DateTime.Now
+                TotalPrice = payment.TotalPrice,
+                Deposit = payment.Deposit,
+                DepositDueDate = payment.DepositDueDate,
+                Remaining = payment.Remaining,
+                RemainingDueDate = payment.RemainingDueDate,
+                CreatedAt = DateTime.Now,
+
+                // Dodatkowe dla widoku maila
+                DepositPercentage = settings.DepositPercentage,
+                Currency = settings.Currency ?? "PLN"
             };
 
             return View("~/Views/Email/NewReservationClient.cshtml", model);
@@ -79,16 +98,27 @@ namespace HouseNet9.Controllers
                     .ThenInclude(c => c.PhoneNumbers)
                 .Include(h => h.Contacts!)
                     .ThenInclude(c => c.EmailAddresses)
+                .Include(h => h.Settings)
                 .FirstOrDefaultAsync(h => h.HouseId == 1);
 
             if (house == null)
                 return NotFound("Nie znaleziono domu o ID 1.");
 
+            //var settings = house.Settings ?? new HouseSettings();
+            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                 : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+
+
+            var payment = new PaymentCalculator(
+                totalPrice: 1200m,
+                arrivalDate: DateTime.Today,
+                settings: settings
+            );
+
             var model = new NewReservationEmailViewModel
             {
-                // ------------------- Dane domu -------------------
                 HouseName = house.Name,
-                HouseLogoUrl = null,
+                HouseLogoUrl = settings.LogoFileName,
                 RentalRules = house.RentalRules,
                 Contacts = house.Contacts.Select(c => new ContactEmailModel
                 {
@@ -98,7 +128,6 @@ namespace HouseNet9.Controllers
                     Addresses = c.Addresses?.Select(a => $"{a.Street}, {a.PostalCode} {a.City}, {a.Country}").ToList() ?? new List<string>()
                 }).ToList(),
 
-                // ------------------- Dane klienta -------------------
                 ClientFullName = "Jan Kowalski",
                 ClientEmail = "jan@test.pl",
                 ClientPhone = "123 456 789",
@@ -108,18 +137,52 @@ namespace HouseNet9.Controllers
                 ClientCity = "Warszawa",
                 ClientCountry = "Polska",
 
-                // ------------------- Dane rezerwacji -------------------
                 From = DateTime.Today,
                 To = DateTime.Today.AddDays(7),
-                TotalPrice = 1200,
-                Deposit = 360,
-                DepositDueDate = DateTime.Today.AddDays(3),
-                Remaining = 840,
-                RemainingDueDate = DateTime.Today.AddDays(-7),
-                CreatedAt = DateTime.Now
+                TotalPrice = payment.TotalPrice,
+                Deposit = payment.Deposit,
+                DepositDueDate = payment.DepositDueDate,
+                Remaining = payment.Remaining,
+                RemainingDueDate = payment.RemainingDueDate,
+                CreatedAt = DateTime.Now,
+
+                DepositPercentage = settings.DepositPercentage,
+                Currency = settings.Currency ?? "PLN"
             };
 
             return View("~/Views/Email/NewReservationOwner.cshtml", model);
+        }
+    }
+
+    // ---------------- PaymentCalculator ----------------
+    public class PaymentCalculator
+    {
+        public decimal TotalPrice { get; }
+        public decimal Deposit { get; }
+        public decimal Remaining { get; }
+        public DateTime DepositDueDate { get; }
+        public DateTime RemainingDueDate { get; }
+
+        public PaymentCalculator(decimal totalPrice, DateTime arrivalDate, HouseSettings settings)
+        {
+            TotalPrice = totalPrice;
+
+            // Zaliczka
+            Deposit = Math.Round(TotalPrice * settings.DepositPercentage / 100m, 2);
+            DepositDueDate = DateTime.Now.AddDays(settings.DepositDueDays);
+
+            // Pozostała kwota
+            Remaining = TotalPrice - Deposit;
+            RemainingDueDate = arrivalDate.AddDays(-settings.FullPaymentDueDaysBeforeArrival);
+
+            // Jeśli termin jest za krótki, pobieramy całość od razu
+            if (Remaining <= 0 || arrivalDate <= DateTime.Now.AddDays(settings.FullPaymentDueDaysBeforeArrival))
+            {
+                Deposit = TotalPrice;
+                DepositDueDate = DateTime.Now;
+                Remaining = 0;
+                RemainingDueDate = DateTime.Now;
+            }
         }
     }
 }

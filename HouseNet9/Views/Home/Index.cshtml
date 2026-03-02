@@ -2,6 +2,13 @@
 @* @{ ViewData["Title"] = "Home Page"; } *@
 @model Data.Data.HouseRentalData.House
 
+
+
+
+
+
+
+
 @* ******************************** Calendar ******************************** *@
 <div class="container">
 
@@ -19,9 +26,23 @@
     </div>
 
     <div id="calendarWrapper" class="row py-4 g-4"></div>
-    <div id="selectedRange" class="alert alert-info d-none mt-3"></div>
+@*     <div id="selectedRange" class="alert alert-info d-none mt-3"></div> *@
+
+    <div id="selectedRange" class="alert alert-info d-none mt-3">
+        <p><strong>Termin:</strong> <span id="resStart"></span> – <span id="resEnd"></span></p>
+        <p><strong>Ilość noclegów:</strong> <span id="resDays"></span></p>
+        <p><strong>Cena:</strong> <span id="resPrice"></span> PLN</p>
+
+        <button id="btnContinue" class="btn btn-primary mt-3">
+            Kontynuuj rezerwację
+        </button>
+    </div>
 
 </div>
+
+
+
+
 
 @* ******************************** END  Calendar ******************************** *@
 
@@ -181,5 +202,5 @@
 </script>
 
 @section Scripts {
-    <script src="~/js/calendarGenerate3.js"></script>
+    <script src="~/js/calendarGenerate4.js"></script>
 }

@@ -22,5 +22,7 @@
         public DateTime CreatedAt { get; set; }
         public string? RentalRules { get; set; }
         public List<ContactEmailModel>? Contacts { get; set; } = new();
+        public string Currency { get; set; } = "€";
+        public decimal DepositPercentage { get; set; }
     }
 }
