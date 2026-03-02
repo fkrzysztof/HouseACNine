@@ -64,6 +64,7 @@
 
     <div class="mb-3">
         <label class="form-label">Logo domu (plik)</label>
+        <input type="hidden" asp-for="LogoFileName" />
         <input type="file" id="fileInput" name="logoFile" class="form-control" />
         @{
             var logoPath = !string.IsNullOrEmpty(Model.LogoFileName)

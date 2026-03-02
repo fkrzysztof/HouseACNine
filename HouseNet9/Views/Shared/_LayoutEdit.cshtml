@@ -100,8 +100,17 @@
                     @await Component.InvokeAsync("HouseTabs", new { houseId = houseIdFromSession })
 
                 </div>
-                @if(actionNow != "Index")
-                {
+                @if((actionNow != "Edit" && controllerNow != "Houses") &&
+                            (actionNow != "Index" && controllerNow != "DescriptionPages") &&
+                            (actionNow != "Index" && controllerNow != "DetailedInformations") &&
+                            (actionNow != "Index" && controllerNow != "Distance") &&
+                            (actionNow != "Index" && controllerNow != "GeneralInformations") &&
+                            (actionNow != "Index" && controllerNow != "RentalHouse") &&
+                            (actionNow != "Index" && controllerNow != "RentalPrices") &&
+                            (actionNow != "Index" && controllerNow != "Contacts") &&
+                            (actionNow != "Details" && controllerNow != "HouseSettings")
+                )
+            {
                     <div class="col-12">
                     <a asp-action="Index" >powrót</a>
                     </div>

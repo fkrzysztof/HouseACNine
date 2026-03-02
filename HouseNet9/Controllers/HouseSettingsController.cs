@@ -82,21 +82,44 @@ namespace HouseNet9.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int houseId, HouseSettings settings, IFormFile logoFile)
+        public async Task<IActionResult> Edit(int id, int houseId, HouseSettings settings)
         {
             if (id != settings.Id)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
-                return View(settings);
+            var existing = await _context.HouseSettings
+                .FirstOrDefaultAsync(s => s.Id == id);
 
-            // aktualizacja logo, jeśli przesłano nowy plik
-            if (logoFile != null)
+            if (existing == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
             {
-                settings.LogoFileName = await _fileUploadService.EditFileAsync(logoFile, settings.LogoFileName);
+                ViewBag.HouseId = houseId;
+                return View(settings);
             }
 
-            _context.Update(settings);
+            // aktualizacja zwykłych pól
+            existing.DepositPercentage = settings.DepositPercentage;
+            existing.DepositDueDays = settings.DepositDueDays;
+            existing.FullPaymentDueDaysBeforeArrival = settings.FullPaymentDueDaysBeforeArrival;
+            existing.BankAccountIban = settings.BankAccountIban;
+            existing.BankAccountSwift = settings.BankAccountSwift;
+            existing.BankAccountName = settings.BankAccountName;
+            existing.BankName = settings.BankName;
+            existing.Currency = settings.Currency;
+
+            // pobranie pliku bez model bindera
+            var logoFile = Request.Form.Files["logoFile"];
+
+            if (logoFile != null && logoFile.Length > 0)
+            {
+                existing.LogoFileName = await _fileUploadService.EditFileAsync(
+                    logoFile,
+                    existing.LogoFileName
+                );
+            }
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Details), new { houseId });
