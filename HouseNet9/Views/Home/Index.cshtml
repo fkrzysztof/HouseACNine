@@ -28,18 +28,104 @@
     <div id="calendarWrapper" class="row py-4 g-4"></div>
 @*     <div id="selectedRange" class="alert alert-info d-none mt-3"></div> *@
 
-    <div id="selectedRange" class="alert alert-info d-none mt-3">
+@* ******************************** ver1 ******************************** *@
+@*     <div id="selectedRange" class="alert alert-info d-none mt-3">
         <p><strong>Termin:</strong> <span id="resStart"></span> – <span id="resEnd"></span></p>
         <p><strong>Ilość noclegów:</strong> <span id="resDays"></span></p>
         <p><strong>Cena:</strong> <span id="resPrice"></span> PLN</p>
 
         <button id="btnContinue" class="btn btn-primary mt-3">
-            Kontynuuj rezerwację
+            Kontynuuj rezerwację 1/2
         </button>
+    </div> *@
+
+
+@* ******************************** ver2 ******************************** *@
+  @*   <div id="selectedRange" class="card shadow-sm border-0 d-none mt-4">
+        <div class="card-body p-4">
+
+            <h5 class="mb-4 text-uppercase text-muted" style="letter-spacing: 1px;">
+                Podsumowanie rezerwacji
+            </h5>
+
+            <div class="row mb-3">
+                <div class="col-5 text-muted">Termin</div>
+                <div class="col-7 fw-semibold">
+                    <span id="resStart"></span> – <span id="resEnd"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-5 text-muted">Ilość noclegów</div>
+                <div class="col-7 fw-semibold">
+                    <span id="resDays"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-5 text-muted">Cena</div>
+                <div class="col-7 fs-5 fw-bold text-dark">
+                    <span id="resPrice"></span> PLN
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button id="btnContinue" class="btn btn-dark px-4">
+                    Kontynuuj rezerwację 1/2
+                </button>
+            </div>
+
+        </div>
     </div>
 
-</div>
+</div> *@
+@* ******************************** ver3 ******************************** *@
 
+    <div id="selectedRange" class="card border-0 shadow-sm d-none mt-5" style="border-radius: 14px;">
+        <div class="card-body p-5">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 fw-semibold">
+                    Podsumowanie rezerwacji
+                </h5>
+                <span class="badge bg-light text-dark px-3 py-2">
+                    Krok 1 z 2
+                </span>
+            </div>
+
+            <hr class="mb-4">
+
+            <div class="mb-4">
+                <div class="text-muted small mb-1">Termin pobytu</div>
+                <div class="fs-5 fw-semibold">
+                    <span id="resStart"></span> – <span id="resEnd"></span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="text-muted small mb-1">Ilość noclegów</div>
+                    <div class="fw-semibold">
+                        <span id="resDays"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 text-md-end">
+                    <div class="text-muted small mb-1">Cena całkowita</div>
+                    <div class="fs-4 fw-bold">
+                        <span id="resPrice"></span> PLN
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-top text-end">
+                <button id="btnContinue" class="btn btn-dark px-5 py-2">
+                    Kontynuuj rezerwację
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 
 
@@ -202,5 +288,5 @@
 </script>
 
 @section Scripts {
-    <script src="~/js/calendarGenerate4.js"></script>
+    <script src="~/js/calendarGenerate4.js" asp-append-version="true"></script>
 }

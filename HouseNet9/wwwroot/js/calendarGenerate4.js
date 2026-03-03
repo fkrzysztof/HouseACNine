@@ -208,6 +208,7 @@
 
         btn.onclick = () => {
 
+
             if (!selectedStart || !selectedEnd) {
                 alert("Brak wybranego terminu");
                 return;

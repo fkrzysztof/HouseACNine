@@ -2,12 +2,15 @@
 @using System.Globalization
 @using Data.Data.HouseRentalData
 @using HouseNet9.Services.Payments
-
 @{
     RentalHouse? newRental = ViewBag.NewRentalInfo as RentalHouse;
+    ViewData["Title"] = "Create";
+}
+
+
+@{
     PaymentCalculationResult paymentInfo = ViewBag.NewRentalInfoPayment;
     HouseSettings settings = ViewBag.SettingsInfo;
-    ViewData["Title"] = "Rezerwacja";
 }
 
 <div class="container my-5">
@@ -24,6 +27,7 @@
 
             <!-- LEWA STRONA – FORMULARZ -->
             <div class="col-xl-8">
+
                 <div class="card border-0 shadow-sm" style="border-radius:14px;">
                     <div class="card-body p-5">
 
@@ -36,123 +40,133 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="row g-4">
+
                             <div class="col-md-6">
                                 <label asp-for="Name" class="form-label small text-muted"></label>
                                 <input asp-for="Name" class="form-control form-control-lg" />
                                 <span asp-validation-for="Name" class="text-danger small"></span>
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="LastName" class="form-label small text-muted"></label>
                                 <input asp-for="LastName" class="form-control form-control-lg" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="Email" class="form-label small text-muted"></label>
                                 <input asp-for="Email" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="Phone" class="form-label small text-muted"></label>
                                 <input asp-for="Phone" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="City" class="form-label small text-muted"></label>
                                 <input asp-for="City" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="Country" class="form-label small text-muted"></label>
                                 <input asp-for="Country" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-8">
                                 <label asp-for="Street" class="form-label small text-muted"></label>
                                 <input asp-for="Street" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-4">
                                 <label asp-for="Number" class="form-label small text-muted"></label>
                                 <input asp-for="Number" class="form-control form-control-lg" />
                             </div>
+
                             <div class="col-md-6">
                                 <label asp-for="ZIPCode" class="form-label small text-muted"></label>
                                 <input asp-for="ZIPCode" class="form-control form-control-lg" />
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- PRAWA STRONA – STICKY PODSUMOWANIE -->
+            <!-- PRAWA STRONA – PODSUMOWANIE -->
             <div class="col-xl-4">
-                <div class="sticky-summary">
-                    <div class="card border-0 shadow-sm" style="border-radius:14px;">
-                        <div class="card-body p-4">
 
-                            <h6 class="fw-semibold mb-3">Podsumowanie pobytu</h6>
-                            <hr>
+                <div class="card border-0 shadow-sm" style="border-radius:14px;">
+                    <div class="card-body p-4">
 
-                            <div class="mb-3">
-                                <div class="small text-muted">Termin</div>
-                                <div class="fw-semibold">
-                                    @newRental?.From.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))<br />
-                                    @newRental?.To.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))
-                                </div>
+                        <h6 class="fw-semibold mb-3">Podsumowanie pobytu</h6>
+                        <hr>
+
+                        <div class="mb-3">
+                            <div class="small text-muted">Termin</div>
+                            <div class="fw-semibold">
+                                @newRental?.From.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))<br />
+                                @newRental?.To.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="small text-muted">Liczba nocy</div>
+                            <div class="fw-semibold">@newRental?.HowManyDaysFromSelect</div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Do zapłaty</span>
+                            <span class="fw-bold fs-5">
+                                @newRental?.ToPay.ToString("N2") @settings.Currency
+                            </span>
+                        </div>
+
+                        @if (paymentInfo.Remaining > 0)
+                        {
+                            <div class="small text-muted mt-3">
+                                Zaliczka (@settings.DepositPercentage%) do @paymentInfo.DepositDueDate.ToShortDateString()
+                            </div>
+                            <div class="fw-semibold">
+                                @paymentInfo.Deposit.ToString("N2") @settings.Currency
                             </div>
 
-                            <div class="mb-3">
-                                <div class="small text-muted">Liczba nocy</div>
-                                <div class="fw-semibold">@newRental?.HowManyDaysFromSelect</div>
+                            <div class="small text-muted mt-3">
+                                Pozostała kwota do @paymentInfo.RemainingDueDate.ToShortDateString()
+                            </div>
+                            <div class="fw-semibold">
+                                @paymentInfo.Remaining.ToString("N2") @settings.Currency
+                            </div>
+                        }
+
+                        <div class="border-top pt-4 mt-4">
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="c1">
+                                <label class="form-check-label small">Mam ukończone 18 lat</label>
                             </div>
 
-                            <hr>
-
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Do zapłaty</span>
-                                <span class="fw-bold fs-5">
-                                    @newRental?.ToPay.ToString("N2") @settings.Currency
-                                </span>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="c2">
+                                <label class="form-check-label small">Akceptuję regulamin i politykę prywatności</label>
                             </div>
 
-                            @if (paymentInfo.Remaining > 0)
-                            {
-                                <div class="small text-muted mt-3">
-                                    Zaliczka (@settings.DepositPercentage%) do @paymentInfo.DepositDueDate.ToShortDateString()
-                                </div>
-                                <div class="fw-semibold">
-                                    @paymentInfo.Deposit.ToString("N2") @settings.Currency
-                                </div>
-
-                                <div class="small text-muted mt-3">
-                                    Pozostała kwota do @paymentInfo.RemainingDueDate.ToShortDateString()
-                                </div>
-                                <div class="fw-semibold">
-                                    @paymentInfo.Remaining.ToString("N2") @settings.Currency
-                                </div>
-                            }
-
-                            <div class="border-top pt-4 mt-4">
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="c1">
-                                    <label class="form-check-label small">Mam ukończone 18 lat</label>
-                                </div>
-
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="c2">
-                                    <label class="form-check-label small">Akceptuję regulamin i politykę prywatności</label>
-                                </div>
-
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="c3">
-                                    <label class="form-check-label small">Podane dane są prawdziwe</label>
-                                </div>
-
-                                <button id="btnSave" class="btn btn-dark w-100 py-2" disabled>
-                                    Potwierdzam rezerwację
-                                </button>
-
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="c3">
+                                <label class="form-check-label small">Podane dane są prawdziwe</label>
                             </div>
+
+                            <button id="btnSave" class="btn btn-dark w-100 py-2" disabled>
+                                Potwierdzam rezerwację
+                            </button>
 
                         </div>
+
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -160,9 +174,10 @@
     </form>
 </div>
 
+
 @section Scripts {
+
     <script>
-        // Aktywacja przycisku po zaznaczeniu checkboxów
         const btnSave = document.getElementById('btnSave');
         const checks = ['c1', 'c2', 'c3'].map(id => document.getElementById(id));
         checks.forEach(c => c.addEventListener('change', () => {
@@ -174,4 +189,3 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-
