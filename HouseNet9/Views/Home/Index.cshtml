@@ -10,19 +10,31 @@
 
 
 @* ******************************** Calendar ******************************** *@
-<div class="container">
+<div class="container mt-5">
 
-    <div class="d-flex justify-content-between mb-3">
-        <button id="prevBtn" class="button-as-link"><i class="bi bi-chevron-left"></i></button>
-        <div>
-           @*  <label class="form-label">Długość rezerwacji:</label> *@
-            <select id="weeksSelect" class="form-select w-auto d-inline-block ms-2">
-                <option value="1">1 tydzień</option>
-                <option value="2">2 tygodnie</option>
-                <option value="3">3 tygodnie</option>
-            </select>
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+        <!-- Przycisk poprzedni miesiąc -->
+        <button id="prevBtn" class="button-as-link">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <!-- Slider wyboru tygodni w centrum -->
+        <div id="weeksSliderWrapper" class="d-flex flex-column align-items-center mx-3">
+            <div class="slider-title mb-2 text-muted small fw-semibold">Wybierz ilość tygodni</div>
+            <input type="range" id="weeksSlider" min="1" max="3" step="1" value="1">
+            <div class="slider-labels d-flex justify-content-between w-100 mt-1 px-2">
+                <span class ="mt-2">1</span>
+                <span class="mt-2">2</span>
+                <span class="mt-2">3</span>
+            </div>
         </div>
-        <button id="nextBtn" class="button-as-link"><i class="bi bi-chevron-right"></i></button>
+
+        <!-- Przycisk następny miesiąc -->
+        <button id="nextBtn" class="button-as-link">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+
     </div>
 
     <div id="calendarWrapper" class="row py-4 g-4"></div>
@@ -128,7 +140,7 @@
     </div>
 
 
-
+    </div>
 
 @* ******************************** END  Calendar ******************************** *@
 
@@ -288,5 +300,15 @@
 </script>
 
 @section Scripts {
-    <script src="~/js/calendarGenerate4.js" asp-append-version="true"></script>
+
+<script src="~/js/calendarGenerate4.js" asp-append-version="true"></script>
+
+<script>
+            const weeksSlider = document.getElementById('weeksSlider');
+        weeksSlider.addEventListener('input', function() {
+            const selectedWeeks = this.value;
+            renderCalendar(selectedWeeks);
+        });
+</script>
+
 }

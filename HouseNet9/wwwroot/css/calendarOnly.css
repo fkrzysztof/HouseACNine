@@ -3,14 +3,33 @@
    (IZOLOWANY CSS)
    =============================== */
 
+
+
 /* wrapper zabezpieczający */
+/*    #calendarWrapper {
+        --cal-primary: #0d6efd;
+        --cal-success: #198754;
+        --cal-danger: #a8d0e6;
+        --cal-muted: #adb5bd;
+        --cal-bg-soft: #fff3cd;
+    }*/
+
+/*#calendarWrapper {
+    --cal-primary: #74b9ff;*/ /* delikatny błękit, zamiast mocnego niebieskiego */
+    /*--cal-success: #55efc4;*/ /* mięta / lekki zielony dla zaznaczonych dni */
+    /*--cal-danger: #fab1a0;*/ /* subtelny koral / łagodny czerwony dla zajętych dni */
+    /*--cal-muted: #b2bec3;*/ /* stonowana szarość dla dni przeszłych */
+    /*--cal-bg-soft: #ffeaa7;*/ /* bardzo jasny krem dla sobót / specjalnych dni */
+/*}*/
+
 #calendarWrapper {
-    --cal-primary: #0d6efd;
-    --cal-success: #198754;
-    --cal-danger: #e74c3c;
-    --cal-muted: #adb5bd;
-    --cal-bg-soft: #fff3cd;
+    --cal-primary: #74c0fc; /* jasny niebieski do hover i zakresu */
+    --cal-success: #a5d8ff; /* pastelowy błękit dla wybranych dni */
+    --cal-danger: #74c0fc1f; /* -delikatny błękit / zajęte dni */
+    --cal-muted: #a6c8ff; /* stonowany, przygaszony błękit dla dni przeszłych */
+    --cal-bg-soft: #e7f5ff; /* bardzo jasny niebieski podświetlający soboty / start turnusu  */
 }
+
 
     /* ===============================
    KOMÓRKI DNI
@@ -36,7 +55,7 @@
     /* dni zajęte */
     #calendarWrapper .day-cell.reserved {
         background: var(--cal-danger);
-        color: #fff;
+        color: #000;
         cursor: not-allowed;
     }
 
@@ -207,7 +226,7 @@
 
      /*zaznaczony zakres – „piguła” */
     #calendarWrapper .day-cell.selected {
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 3px 8px rgba(0,0,0,.25);
+       /* box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 3px 8px rgba(0,0,0,.25);*/
     }
 
    /*  hover zakres */
@@ -227,11 +246,12 @@
 
 
 
+
     /*navigation calendar*/
     .button-as-link {
         background: none; /* usuwa tło */
         border: none; /* usuwa obramowanie */
-        padding: 0; /* usuwa padding */
+        padding: 0px; /* usuwa padding */
         margin: 0; /* usuwa margines */
         color: #0d6efd; /* kolor linku (Bootstrap primary) */
         text-decoration: underline; /* podkreślenie jak link */
@@ -243,3 +263,111 @@
             font-size: 3rem;
             color: #3e3d36;
         }
+
+
+
+
+/* ===============================
+   NAWIGACJA KALENDARZA
+   =============================== */
+.d-flex.justify-content-between.align-items-center.mb-4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Przyciski nawigacji */
+.button-as-link {
+    background: none;
+    border: none;
+    color: #74c0fc;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+}
+
+    .button-as-link:hover {
+        color: #1c7ed6;
+        transform: translateY(-1px);
+    }
+
+    .button-as-link:active {
+        transform: scale(0.95);
+    }
+
+    .button-as-link i {
+        font-size: 1.8rem;
+    }
+
+/* ===============================
+   PASEK SUWAKU – DŁUGOŚĆ POBYTU
+   =============================== */
+#weeksSliderWrapper {
+    max-width: 300px; /* szeroki i elegancki */
+    width: 100%;
+}
+
+.slider-title {
+    font-size: 0.85rem;
+    color: #495057; /* stonowany szary */
+    text-align: center;
+}
+
+#weeksSlider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    background: #cfe2ff; /* jasny błękit tła */
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    #weeksSlider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #74c0fc;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(116,192,252,0.35);
+        transition: background 0.2s, transform 0.1s;
+    }
+
+        #weeksSlider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: #1c7ed6;
+        }
+
+    #weeksSlider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #74c0fc;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(116,192,252,0.35);
+        transition: background 0.2s, transform 0.1s;
+    }
+
+.slider-labels span {
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Responsywność – na małych ekranach elementy układają się w pionie */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+    }
+
+    #weeksSliderWrapper {
+        margin: 0.5rem 0;
+    }
+}

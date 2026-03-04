@@ -238,28 +238,83 @@ namespace HouseRent.Controllers
             }
 
             // ------------------- Przekierowanie po zakończeniu -------------------
-            return RedirectToAction("ThanksForTheReservation");
-        
+            return RedirectToAction("ThanksForTheReservation", new
+            {
+                id = rentalHouse.RentalHouseID
+            });
+
         }
 
-        //get
-        //ThanksForTheReservation podziekowanie/potwierdzenie/instrukcja
-        public IActionResult ThanksForTheReservation(RentalHouse rentalHouse)
+
+
+        // --------------------------------------------------------
+        // GET: Rental/ThanksForTheReservation/5
+        // --------------------------------------------------------
+        public async Task<IActionResult> ThanksForTheReservation(int id)
         {
+            var rental = await _context.RentalHouses
+                .Include(r => r.RentalClient)
+                .FirstOrDefaultAsync(f => f.RentalHouseID == id);
 
-            return View(rentalHouse);
+            if (rental == null)
+                return NotFound();
+
+            var house = await _context.Houses
+                .Include(h => h.Contacts)
+                    .ThenInclude(c => c.EmailAddresses)
+                .FirstOrDefaultAsync(h => h.HouseId == rental.HouseId);
+
+            if (house == null)
+                return NotFound();
+
+            HouseSettings? settings = null;
+
+            if (house.HouseSettingsId != null)
+            {
+                settings = await _context.HouseSettings
+                    .FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId);
+            }
+
+            if (settings == null)
+            {
+                settings = await _context.HouseSettings
+                    .FirstOrDefaultAsync(s => s.IsDefault);
+            }
+
+            if (settings == null)
+            {
+                // awaryjne ustawienia żeby widok nie padł
+                settings = new HouseSettings
+                {
+                    Currency = "PLN",
+                    DepositPercentage = 30
+                };
+            }
+
+            var paymentInfo = _paymentCalculator.Calculate(
+                rental.ToPay,
+                rental.From,
+                settings
+            );
+
+            ViewBag.RentalInfo = rental;
+            ViewBag.PaymentInfo = paymentInfo;
+            ViewBag.SettingsInfo = settings;
+
+            return View(rental.RentalClient);
         }
-
-
-        //CreateReservationRequest
-        public class ReservationRequest
-        {
-            public int HouseId { get; set; }
-            public DateTime From { get; set; }
-            public DateTime To { get; set; }
-        }
-
-
-
     }
+
+
+    //CreateReservationRequest
+    public class ReservationRequest
+    {
+        public int HouseId { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+    }
+
+
+
+
 }

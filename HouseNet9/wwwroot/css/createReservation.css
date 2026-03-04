@@ -1,0 +1,42 @@
+﻿
+/* Kolory motywu */
+.text-primary-dark {
+    color: #1f2d3d !important;
+}
+
+.text-accent-gold {
+    color: #c6a75e !important;
+}
+
+.btn-primary-dark {
+    background-color: #1f2d3d;
+    color: #fff;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary-dark:hover {
+        background-color: #c6a75e;
+        color: #1f2d3d;
+    }
+
+/* Premium cards */
+.card-premium {
+    border-radius: 14px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Sticky summary panel */
+.sticky-summary {
+    position: sticky;
+    top: 110px;
+    z-index: 10;
+}
+
+@media (max-width: 1199px) {
+    .sticky-summary {
+        position: static;
+    }
+}
+

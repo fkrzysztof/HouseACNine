@@ -5,10 +5,9 @@
     const today = new Date(new Date().setHours(0, 0, 0, 0));
     let confirmedRanges = [];
 
+    // globalne wybrane daty
     let selectedStart = null;
     let selectedEnd = null;
-
-    const weeksSlider = document.getElementById('weeksSlider');
 
     /* ================== HELPERS ================== */
 
@@ -22,8 +21,8 @@
         let d = new Date(date);
         while (d.getDay() !== 6) d.setDate(d.getDate() - 1);
         return d;
-    }
 
+    }
     function isRangeFree(start, end) {
         if (start < today) return false;
         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -34,6 +33,7 @@
 
     async function loadReservedDates(start, end) {
         try {
+            //const res = await fetch(`/api/calendar/reserved?start=${start.toISOString()}&end=${end.toISOString()}`);
             const res = await fetch(
                 `/api/calendar/reserved?houseId=${houseId}&start=${start.toISOString()}&end=${end.toISOString()}`
             );
@@ -48,7 +48,6 @@
     /* ================== CALENDAR RENDER ================== */
 
     async function renderCalendar() {
-        const weeks = parseInt(weeksSlider.value); // pobieramy wartość slidera
         const fetchStart = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
         const fetchEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
         await loadReservedDates(fetchStart, fetchEnd);
@@ -58,11 +57,11 @@
 
         for (let m = 0; m < 2; m++) {
             const monthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + m, 1);
-            wrapper.appendChild(generateMonth(monthDate, weeks));
+            wrapper.appendChild(generateMonth(monthDate));
         }
     }
 
-    function generateMonth(date, weeks) {
+    function generateMonth(date) {
         const monthDiv = document.createElement('div');
         monthDiv.className = 'col-12 col-md-6';
 
@@ -108,8 +107,8 @@
                 cell.classList.add('saturday-split');
 
             if (!cell.classList.contains('reserved') && !cell.classList.contains('past-day')) {
-                cell.addEventListener('click', () => confirmWeek(cellDate, weeks));
-                cell.addEventListener('mouseenter', () => highlightWeek(cellDate, weeks));
+                cell.addEventListener('click', () => confirmWeek(cellDate));
+                cell.addEventListener('mouseenter', () => highlightWeek(cellDate));
                 cell.addEventListener('mouseleave', removeHover);
             }
 
@@ -130,9 +129,10 @@
 
     /* ================== HOVER ================== */
 
-    function highlightWeek(date, weeks) {
+    function highlightWeek(date) {
         removeHover();
 
+        const weeks = parseInt(document.getElementById('weeksSelect').value);
         let start = (date.getDay() === 6) ? new Date(date) : getPreviousSaturday(date);
         let end = new Date(start);
         end.setDate(end.getDate() + weeks * 7 - 1);
@@ -160,7 +160,8 @@
         }
     }
 
-    function confirmWeek(date, weeks) {
+    function confirmWeek(date) {
+        const weeks = parseInt(document.getElementById('weeksSelect').value);
         selectedStart = (date.getDay() === 6) ? new Date(date) : getPreviousSaturday(date);
         selectedEnd = new Date(selectedStart);
         selectedEnd.setDate(selectedEnd.getDate() + weeks * 7 - 1);
@@ -192,7 +193,9 @@
 
     /* ================== INFO PANEL ================== */
 
+
     function showReservationInfo(data) {
+
         document.getElementById('resStart').textContent = data.start;
         document.getElementById('resEnd').textContent = data.end;
         document.getElementById('resDays').textContent = data.days;
@@ -202,7 +205,10 @@
         info.classList.remove('d-none');
 
         const btn = document.getElementById('btnContinue');
+
         btn.onclick = () => {
+
+
             if (!selectedStart || !selectedEnd) {
                 alert("Brak wybranego terminu");
                 return;
@@ -217,13 +223,19 @@
                     to: formatDate(selectedEnd)
                 })
             })
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) throw new Error();
+                    return r.json();
+                })
                 .then(resp => {
-                    if (resp.redirectUrl) window.location.href = resp.redirectUrl;
+                    if (resp.redirectUrl)
+                        window.location.href = resp.redirectUrl;
                 })
                 .catch(() => alert("Termin zajęty"));
         };
     }
+
+
 
     /* ================== NAVIGATION ================== */
 
@@ -237,12 +249,5 @@
         renderCalendar();
     };
 
-    /* ================== SLIDER EVENT ================== */
-
-    weeksSlider.addEventListener('input', () => {
-        renderCalendar();
-    });
-
-    /* ================== INIT ================== */
     renderCalendar();
 });
