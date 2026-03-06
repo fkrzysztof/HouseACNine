@@ -1,3 +1,4 @@
+using HouseNet9.BackgroundJobs;
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Services;
@@ -32,6 +33,8 @@ builder.Services.AddScoped<RentalCollisionService>();
 builder.Services.AddScoped<IPaymentCalculator, PaymentCalculator>();
 //renderowanie maila
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
+//praca w tle
+builder.Services.AddHostedService<ReservationPaymentService>();
 
 //emial
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

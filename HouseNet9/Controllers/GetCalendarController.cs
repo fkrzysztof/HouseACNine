@@ -129,6 +129,46 @@ namespace HouseRent.Controllers
             _context.Add(rentalClient);
             await _context.SaveChangesAsync();
 
+            //var rentalHouse = new RentalHouse
+            //{
+            //    HouseId = houseId,
+            //    From = from,
+            //    To = to,
+            //    RentalClientId = rentalClient.RentalClientId,
+            //    RentalStatusID = 5, // Do zapłaty
+            //    CreationDate = DateTime.Now,
+            //    IsActive = true
+            //};
+
+            ////naliczanie aktualnej ceny całkowitej wynajmu
+            //rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
+
+            //_context.Add(rentalHouse);
+            //await _context.SaveChangesAsync();
+
+            // pobranie domu z kontaktami do miala
+            //var house = await _context.Houses
+            //    .Include(h => h.Contacts)
+            //        .ThenInclude(c => c.EmailAddresses)
+            //    .FirstOrDefaultAsync(h => h.HouseId == houseId);
+
+            //if (house == null)
+            //    return NotFound();
+            //*************************************** Send email **************************************
+
+            ////sprawdzam settings, jak nie ma ustawionego to znaczy ze uzywa domyślnych ustawien.
+            //var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+            //                                             : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+
+            // Obliczamy zaliczkę (30%)
+
+            //var payment = _paymentCalculator.Calculate(
+            //            rentalHouse.ToPay,
+            //            rentalHouse.From,
+            //            settings
+            //        );
+
+
             var rentalHouse = new RentalHouse
             {
                 HouseId = houseId,
@@ -140,13 +180,10 @@ namespace HouseRent.Controllers
                 IsActive = true
             };
 
-            //naliczanie aktualnej ceny całkowitej wynajmu
+            // naliczanie ceny całkowitej
             rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
 
-            _context.Add(rentalHouse);
-            await _context.SaveChangesAsync();
-
-            // pobranie domu z kontaktami do miala
+            // pobranie settings
             var house = await _context.Houses
                 .Include(h => h.Contacts)
                     .ThenInclude(c => c.EmailAddresses)
@@ -154,19 +191,30 @@ namespace HouseRent.Controllers
 
             if (house == null)
                 return NotFound();
-            //*************************************** Send email **************************************
 
-            //sprawdzam settings, jak nie ma ustawionego to znaczy ze uzywa domyślnych ustawien.
-            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
-                                                         : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+            var settings = house.HouseSettingsId != null
+                ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
 
-            // Obliczamy zaliczkę (30%)
-            //var deposit = rentalHouse.ToPay * 0.3m;
+            if (settings == null)
+                throw new Exception("Brak konfiguracji płatności.");
+
+            // obliczenie płatności
             var payment = _paymentCalculator.Calculate(
-                        rentalHouse.ToPay,
-                        rentalHouse.From,
-                        settings
-                    );
+                rentalHouse.ToPay,
+                rentalHouse.From,
+                settings
+            );
+
+            // 🔴 TU ZAPISUJESZ POLA DO BAZY
+            rentalHouse.DepositAmount = payment.Deposit;
+            rentalHouse.DepositDueDate = payment.DepositDueDate;
+            rentalHouse.RemainingAmount = payment.Remaining;
+            rentalHouse.RemainingDueDate = payment.RemainingDueDate;
+
+            _context.Add(rentalHouse);
+            await _context.SaveChangesAsync();
+
 
             // Tworzymy model emaila z wszystkimi danymi
             var emailModel = new NewReservationEmailViewModel

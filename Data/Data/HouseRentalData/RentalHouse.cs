@@ -27,10 +27,43 @@ namespace Data.Data.HouseRentalData
             }
         }
 
-        
+
+        // ---------------- PŁATNOŚCI ----------------
+
+
         [Column(TypeName = "money")]
-        [Display(Name = "Do zapłaty")]
+        [Display(Name = "Cena wynajmu")]
         public decimal ToPay { get; set; }
+
+        [Column(TypeName = "money")]
+        [Display(Name = "Zaliczka")]
+        public decimal DepositAmount { get; set; }
+
+        [Display(Name = "Termin zaliczki")]
+        [DataType(DataType.Date)]
+        public DateTime? DepositDueDate { get; set; }
+
+        [Column(TypeName = "money")]
+        [Display(Name = "Pozostała kwota")]
+        public decimal RemainingAmount { get; set; }
+
+        [Display(Name = "Termin płatności całości")]
+        [DataType(DataType.Date)]
+        public DateTime? RemainingDueDate { get; set; }
+
+        [Display(Name = "Data zapłaty zaliczki")]
+        public DateTime? DepositPaidDate { get; set; }
+
+        [Display(Name = "Data zapłaty całości")]
+        public DateTime? RemainingPaidDate { get; set; }
+
+        [Display(Name = "Przypomnienie o zaliczce wysłane")]
+        public bool DepositReminderSent { get; set; }
+
+        [Display(Name = "Przypomnienie o płatności całości wysłane")]
+        public bool RemainingReminderSent { get; set; }
+
+
 
         //[Display(Name = "Klient")]
         //[ForeignKey("RentalClientId")]

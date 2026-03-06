@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260306093625_add-payitems-in-rentalHouses")]
+    partial class addpayitemsinrentalHouses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -457,7 +460,7 @@ namespace HouseNet9.Migrations
                     b.Property<decimal>("DepositAmount")
                         .HasColumnType("money");
 
-                    b.Property<DateTime?>("DepositDueDate")
+                    b.Property<DateTime>("DepositDueDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DepositPaidDate")
@@ -478,7 +481,7 @@ namespace HouseNet9.Migrations
                     b.Property<decimal>("RemainingAmount")
                         .HasColumnType("money");
 
-                    b.Property<DateTime?>("RemainingDueDate")
+                    b.Property<DateTime>("RemainingDueDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("RemainingPaidDate")
