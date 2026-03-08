@@ -24,6 +24,16 @@ namespace Data.Data.HouseRentalData
         [StringLength(50, ErrorMessage = "Country name is too long")]
         public required string Country { get; set; }
 
+        //FullAddress
+        [NotMapped]
+        public string FullAddress
+        {
+            get
+            {
+                return $"{Street}, {PostalCode} {City}, {Country}";
+            }
+        }
+
         public int ContactId { get; set; }
 
         [ForeignKey("ContactId")]

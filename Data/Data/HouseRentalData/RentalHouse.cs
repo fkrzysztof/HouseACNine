@@ -1,12 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Data.HouseRentalData
 {
+    [Index(nameof(ReservationNumber), IsUnique = true)]
     public class RentalHouse
     {
         [Key]
         public int RentalHouseID { get; set; }
+
+        [Required]
+        [MaxLength(20)]
+        public string ReservationNumber { get; set; } = null!;
 
         [Display(Name = "Dom")]
         public int? HouseId { get; set; }
