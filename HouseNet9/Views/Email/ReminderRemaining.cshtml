@@ -1,0 +1,27 @@
+﻿@model HouseNet9.ViewModels.NewReservationEmailViewModel
+@{
+    Layout = "Email/_EmailLayout";
+}
+
+<p>@Model.CustomMessage</p>
+
+<h3>Pozostała kwota</h3>
+
+<p>
+Kwota: <b>@Model.Remaining @Model.Currency</b><br />
+Termin: <b>@Model.RemainingDueDate.ToShortDateString()</b>
+</p>
+
+<h3>Dane do przelewu</h3>
+
+<p>
+Bank: @Model.BankName<br />
+IBAN: @Model.BankAccountIban<br />
+SWIFT: @Model.BankAccountSwift<br />
+Właściciel: @Model.BankAccountOwner
+</p>
+
+<p>
+Tytuł przelewu:<br />
+<b>@Model.PaymentReference</b>
+</p>

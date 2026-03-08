@@ -3,6 +3,7 @@
     public class NewReservationEmailViewModel
     {
         public string HouseName { get; set; } = "";
+        public string ReservationNumber { get; set; } = "";
         public string? HouseLogoUrl { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
@@ -24,5 +25,17 @@
         public List<ContactEmailModel>? Contacts { get; set; } = new();
         public string Currency { get; set; } = "€";
         public decimal DepositPercentage { get; set; }
+
+        // --- NOWE pola dla powiadomień ---
+        // --- Pole dla tytułu i treści maila ---
+        public string? MessageTitle { get; set; }
+        public string? CustomMessage { get; set; }
+
+        // --- Dane do przelewu ---
+        public string? BankName { get; set; }
+        public string? BankAccountIban { get; set; }
+        public string? BankAccountSwift { get; set; }
+        public string? BankAccountOwner { get; set; }
+        public string? PaymentReference { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using HouseNet9.BackgroundJobs;
+using HouseNet9.BackgroundService;
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Services;
@@ -7,6 +8,7 @@ using Mail;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +36,25 @@ builder.Services.AddScoped<IPaymentCalculator, PaymentCalculator>();
 //renderowanie maila
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 //praca w tle
-builder.Services.AddHostedService<ReservationPaymentService>();
+//builder.Services.AddHostedService<ReservationPaymentService>();
+
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("ReservationPaymentJob");
+
+    q.AddJob<ReservationPaymentJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("ReservationPaymentTrigger")
+        .WithSimpleSchedule(x => x
+            .WithIntervalInMinutes(1)//.WithIntervalInHours(6)
+            .RepeatForever()));
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+
 
 //emial
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

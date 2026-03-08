@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Data.Data.HouseRentalData.RentalHouse>
+@{
+    Layout = null; // albo użyj layoutu, jeśli chcesz
+}
+
+<h2>Lista rezerwacji do podglądu</h2>
+
+<table style="width:100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>Numer rezerwacji</th>
+            <th>Dom</th>
+            <th>Od</th>
+            <th>Do</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var r in Model)
+        {
+            <tr style="border-bottom:1px solid #ccc;">
+                <td>@r.ReservationNumber ?? "TEST123"</td>
+                <td>@r.House?.Name</td>
+                <td>@r.From.ToShortDateString()</td>
+                <td>@r.To.ToShortDateString()</td>
+                <td>
+                    <a href="/email/preview/deposit/@r.ReservationNumber">Przypomnienie zaliczki</a> |
+                    <a href="/email/preview/remaining/@r.ReservationNumber">Przypomnienie pozostałej kwoty</a> |
+                    <a href="/email/preview/depositconfirmed/@r.ReservationNumber">Potwierdzenie zaliczki</a> |
+                    <a href="/email/preview/fullpaymentconfirmed/@r.ReservationNumber">Pełna płatność</a> |
+                    <a href="/email/preview/cancelled/@r.ReservationNumber">Anulowana</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

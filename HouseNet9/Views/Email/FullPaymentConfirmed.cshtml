@@ -1,0 +1,11 @@
+﻿@model HouseNet9.ViewModels.NewReservationEmailViewModel
+@{
+    Layout = "Email/_EmailLayout";
+}
+
+<p>@Model.CustomMessage</p>
+
+<p>
+Łączna zapłacona kwota:<br />
+<b>@Model.TotalPrice @Model.Currency</b>
+</p>

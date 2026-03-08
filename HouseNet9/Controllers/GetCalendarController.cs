@@ -206,14 +206,36 @@ namespace HouseRent.Controllers
                 settings
             );
 
-            // 🔴 TU ZAPISUJESZ POLA DO BAZY
+            // Zapis dodanych pol 
             rentalHouse.DepositAmount = payment.Deposit;
             rentalHouse.DepositDueDate = payment.DepositDueDate;
             rentalHouse.RemainingAmount = payment.Remaining;
             rentalHouse.RemainingDueDate = payment.RemainingDueDate;
 
-            _context.Add(rentalHouse);
-            await _context.SaveChangesAsync();
+
+            //dodanie numeru i zapis rezerwacji 
+            bool saved = false;
+
+            while (!saved)
+            {
+                try
+                {
+                    rentalHouse.ReservationNumber = ReservationNumberGenerator.Generate();
+
+                    _context.RentalHouses.Add(rentalHouse);
+                    await _context.SaveChangesAsync();
+
+                    saved = true;
+                }
+                catch (DbUpdateException)
+                {
+                    // kolizja - generujemy nowy numer
+                }
+            }
+
+
+            //_context.Add(rentalHouse);
+            //await _context.SaveChangesAsync();
 
 
             // Tworzymy model emaila z wszystkimi danymi
