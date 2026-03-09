@@ -1,0 +1,94 @@
+﻿@model HouseNet9.ViewModels.NewReservationEmailViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.MessageTitle</title>
+</head>
+
+<body style="margin:0; padding:40px 20px; background:#f2f2f2; font-family: Arial, Helvetica, sans-serif; color:#333; line-height:1.6;">
+
+    <div style="max-width:700px; margin:auto; background:white; padding:40px; border-radius:10px; box-shadow:0 4px 14px rgba(0,0,0,0.06);">
+
+        @* Logo domu *@
+        @if (!string.IsNullOrEmpty(Model.HouseLogoUrl))
+        {
+            <div style="text-align:center; margin-bottom:30px;">
+                <img src="~/uploads/@Model.HouseLogoUrl" style="max-height:80px;" />
+            </div>
+        }
+
+        @* Tytuł maila *@
+        <h2 style="margin-top:0; margin-bottom:30px; font-weight:600;">
+            @Model.MessageTitle
+        </h2>
+
+        @* Treść maila *@
+        <div style="margin-bottom:35px;">
+            @RenderBody()
+        </div>
+
+        <hr style="border:none; border-top:1px solid #e5e5e5; margin:35px 0;" />
+
+        @* Dane rezerwacji *@
+        <h3 style="margin-bottom:15px;">Dane rezerwacji</h3>
+        <p style="margin:6px 0;"><b>Numer rezerwacji:</b> @Model.ReservationNumber</p>
+        <p style="margin:6px 0;"><b>Dom:</b> @Model.HouseName</p>
+        <p style="margin:6px 0;"><b>Pobyt:</b> @Model.From.ToShortDateString() - @Model.To.ToShortDateString()</p>
+
+        <div style="height:25px;"></div>
+
+        @* Dane klienta *@
+        <h3 style="margin-bottom:15px;">Klient</h3>
+        <p style="margin:6px 0;">@Model.ClientFullName</p>
+        <p style="margin:6px 0;">@Model.ClientEmail</p>
+        <p style="margin:6px 0;">@Model.ClientPhone</p>
+
+        <hr style="border:none; border-top:1px solid #e5e5e5; margin:35px 0;" />
+
+        @* Kontakty do domu *@
+        <h3 style="margin-bottom:20px;">Kontakt</h3>
+        @if (Model.Contacts != null)
+        {
+            foreach (var contact in Model.Contacts)
+            {
+                <div style="margin-bottom:25px; padding-bottom:18px; border-bottom:1px solid #f0f0f0;">
+                    <p style="margin:0 0 8px 0; font-weight:600; font-size:15px;">@contact.Name</p>
+
+                    @if (contact.Addresses != null)
+                    {
+                        foreach (var address in contact.Addresses)
+                        {
+                            <p style="margin:4px 0;">📍 @address</p>
+                        }
+                    }
+
+                    @if (contact.Phones != null)
+                    {
+                        foreach (var phone in contact.Phones)
+                        {
+                            <p style="margin:4px 0;">☎ @phone</p>
+                        }
+                    }
+
+                    @if (contact.Emails != null)
+                    {
+                        foreach (var email in contact.Emails)
+                        {
+                            <p style="margin:4px 0;">✉ @email</p>
+                        }
+                    }
+                </div>
+            }
+        }
+
+        @* Stopka maila *@
+        <div style="margin-top:40px; font-size:12px; color:#888; text-align:center;">
+            Wiadomość została wygenerowana automatycznie przez system rezerwacji.
+        </div>
+
+    </div>
+
+</body>
+</html>

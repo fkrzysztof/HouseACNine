@@ -42,7 +42,7 @@ namespace HouseNet9.Controllers
                 "Przypomnienie o zaliczce",
                 $"Prosimy o wpłatę zaliczki ({reservation.DepositAmount} {reservation.House?.Settings?.Currency}) przed {reservation.DepositDueDate?.ToShortDateString()}");
 
-            return View("~/Views/Email/ReminderDeposit", model);
+            return View("~/Views/Email/ReminderDeposit.cshtml", model);
         }
 
         // --- Podgląd pozostałej kwoty ---
@@ -56,7 +56,7 @@ namespace HouseNet9.Controllers
                 "Przypomnienie o pozostałej kwocie",
                 $"Prosimy o wpłatę pozostałej kwoty ({reservation.RemainingAmount} {reservation.House?.Settings?.Currency}) przed {reservation.RemainingDueDate?.ToShortDateString()}");
 
-            return View("~/Views/Email/ReminderRemaining", model);
+            return View("~/Views/Email/ReminderRemaining.cshtml", model);
         }
 
         // --- Podgląd potwierdzenia zaliczki ---
@@ -70,7 +70,7 @@ namespace HouseNet9.Controllers
                 "Potwierdzenie otrzymania zaliczki",
                 $"Otrzymaliśmy zaliczkę ({reservation.DepositAmount} {reservation.House?.Settings?.Currency}). Dziękujemy!");
 
-            return View("~/Views/Email/DepositConfirmed", model);
+            return View("~/Views/Email/DepositConfirmed.cshtml", model);
         }
 
         // --- Podgląd potwierdzenia pełnej płatności ---
@@ -84,7 +84,7 @@ namespace HouseNet9.Controllers
                 "Potwierdzenie pełnej płatności",
                 $"Otrzymaliśmy pełną płatność ({reservation.ToPay} {reservation.House?.Settings?.Currency}). Dziękujemy!");
 
-            return View("~/Views/Email/FullPaymentConfirmed", model);
+            return View("~/Views/Email/FullPaymentConfirmed.cshtml", model);
         }
 
         // --- Podgląd anulowania ---
@@ -98,7 +98,7 @@ namespace HouseNet9.Controllers
                 "Rezerwacja anulowana",
                 $"Twoja rezerwacja ({reservation.From.ToShortDateString()} – {reservation.To.ToShortDateString()}) została anulowana.");
 
-            return View("~/Views/Email/ReservationCancelled", model);
+            return View("~/Views/Email/ReservationCancelled.cshtml", model);
         }
 
         // Pomocnicza metoda ładowania rezerwacji po numerze
@@ -123,30 +123,58 @@ namespace HouseNet9.Controllers
         // Pomocnicza metoda budowania ViewModel
         private NewReservationEmailViewModel BuildEmailModel(RentalHouse reservation, string title, string message)
         {
-            var settings = reservation.House?.Settings;
+            var settings = reservation.House?.Settings
+               ?? _context.HouseSettings.FirstOrDefault(s => s.IsDefault);
 
             return new NewReservationEmailViewModel
             {
                 HouseName = reservation.House?.Name ?? "",
+                HouseLogoUrl = settings?.LogoFileName,
+
                 ReservationNumber = reservation.ReservationNumber ?? "TEST123",
+
                 From = reservation.From,
                 To = reservation.To,
+
                 TotalPrice = reservation.ToPay,
                 Deposit = reservation.DepositAmount,
                 DepositDueDate = reservation.DepositDueDate ?? DateTime.Today,
+
                 Remaining = reservation.RemainingAmount,
                 RemainingDueDate = reservation.RemainingDueDate ?? DateTime.Today,
+
                 ClientFullName = reservation.RentalClient?.FullName ?? "Jan Kowalski",
                 ClientEmail = reservation.RentalClient?.Email ?? "test@example.com",
                 ClientPhone = reservation.RentalClient?.Phone ?? "123456789",
+
+                ClientStreet = reservation.RentalClient?.Street ?? "",
+                ClientNumber = reservation.RentalClient?.Number ?? "",
+                ClientZIPCode = reservation.RentalClient?.ZIPCode ?? "",
+                ClientCity = reservation.RentalClient?.City ?? "",
+                ClientCountry = reservation.RentalClient?.Country ?? "",
+
+                CreatedAt = reservation.CreationDate,
+
+                Contacts = reservation.House?.Contacts?.Select(c => new ContactEmailModel
+                {
+                    Name = c.Name,
+                    Emails = c.EmailAddresses?.Select(e => e.Email).ToList(),
+                    Phones = c.PhoneNumbers?.Select(p => p.Number).ToList(),
+                    Addresses = c.Addresses?.Select(a => a.FullAddress).ToList()
+                }).ToList(),
+
+                Currency = settings?.Currency ?? "€",
+                DepositPercentage = settings?.DepositPercentage ?? 30,
+
+                MessageTitle = title,
+                CustomMessage = message,
+
                 BankName = settings?.BankName,
                 BankAccountIban = settings?.BankAccountIban,
                 BankAccountSwift = settings?.BankAccountSwift,
                 BankAccountOwner = settings?.BankAccountName,
-                PaymentReference = $"Rezerwacja {reservation.ReservationNumber ?? "TEST123"}",
-                Currency = settings?.Currency ?? "€",
-                MessageTitle = title,
-                CustomMessage = message
+
+                PaymentReference = $"Rezerwacja {reservation.ReservationNumber ?? "TEST123"}"
             };
         }
     }
