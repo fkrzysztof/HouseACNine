@@ -1,10 +1,25 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.RentalHouse>
 @Html.AntiForgeryToken()
 <script>
-    const changeStatusUrl = '@Url.Action("ChangeStatusAjax", "RentalHouse")';
+    const changeStatusUrl = '@Url.Action("ChangeStatusSelect", "RentalHouse")';
 </script>
-<script src="~/js/rentalhouse.js"></script>
 
+
+<div id="status-toast"
+     style="
+     position:fixed;
+     bottom:20px;
+     right:20px;
+     background:#198754;
+     color:white;
+     padding:10px 16px;
+     border-radius:6px;
+     font-size:14px;
+     opacity:0;
+     transition:opacity 0.3s ease;
+     z-index:9999;">
+    Status zapisany
+</div>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Lista Rezerwacji</h4>
@@ -87,22 +102,13 @@
 
                     <td>
                         @{
-                            // Funkcja mapująca status na kolor koła
-                            Func<string, string> statusColor = name => name switch
-                            {
-                                "Zapłacono całość" => "green",
-                                "Do zapłaty" => "yellow",
-                                "Zaliczka" => "blue",
-                                "Wynajem własny" => "black",
-                                _ => "gray"
-                            };
 
-                            var color = statusColor(item.RentalStatus?.Name);
+                            var color = item.RentalStatus?.Color ?? "gray";
                             var statuses = ViewBag.Statuses as List<Data.Data.HouseRentalData.RentalStatus>;
                         }
 
                         @* Jeśli wynajem własny -> czarne kółko z napisem *@
-                        @if (item.RentalStatus?.Name == "Wynajem własny")
+                        @if (item.RentalStatusID == 8)
                         {
                             <span class="badge bg-dark d-inline-flex align-items-center justify-content-center"
                                   style="width: 100%; min-width: 100px; padding: 0.5rem; font-size: 0.9rem;">
@@ -112,25 +118,19 @@
                         }
                         else
                         {
-                             <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
                             <!-- Koło jako wskaźnik statusu -->
-                            <span style="
-                    display:inline-block;
-                    width:15px;
-                    height:15px;
-                    border-radius:50%;
-                    background-color:@color;
-                    border:none;
-                "></span>
+                                <span class="status-indicator"
+                                      style="
+                                      display:inline-block;
+                                      width:15px;
+                                      height:15px;
+                                      border-radius:50%;
+                                      background-color:@color;
+                                      ">
+                                </span>
 
                             <!-- Select do zmiany statusu -->
-@*                             <select class="form-select status-select" data-id="@item.RentalHouseID" style="width:auto;">
-                                @foreach (var status in statuses)
-                                {
-                                    @Html.Raw($"<option value='{status.RentalStatusID}' {(item.RentalStatusID == status.RentalStatusID ? "selected='selected'" : "")}>{status.Name}</option>")
-                                }
-                            </select> *@
-
                             <select class="form-select status-select"
                                     data-id="@item.RentalHouseID"
                                     id="status_@item.RentalHouseID"
@@ -176,6 +176,10 @@
 
 </div>
 
+
+
+
+
 @section Scripts {
-<script src="~/js/rentalhouse.js"></script>
+<script src="~/js/rentalhouse.js" asp-append-version="true"></script>
 }

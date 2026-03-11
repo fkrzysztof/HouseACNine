@@ -1,6 +1,7 @@
 ﻿using Data.Data.HouseRentalData;
 using HouseNet9.Data;
 using HouseNet9.Helpers;
+using HouseNet9.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +12,13 @@ namespace HouseNet9.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly RentalCalculatorService _calculator;
+        private readonly IReservationNotificationService _notificationService;
 
-        public RentalHouseController(ApplicationDbContext context)
+        public RentalHouseController(ApplicationDbContext context, IReservationNotificationService reservationNotificationService)
         {
             _context = context;
             _calculator = new RentalCalculatorService(_context);
+            _notificationService = reservationNotificationService;
         }
 
 
@@ -150,6 +153,9 @@ namespace HouseNet9.Controllers
         {
             var rental = await _context.RentalHouses
                 .Include(r => r.RentalStatus)
+                .Include(r => r.House)
+                .ThenInclude(h => h.Settings)
+                .Include(r => r.RentalClient)
                 .FirstOrDefaultAsync(r => r.RentalHouseID == model.Id);
 
             if (rental == null) return NotFound();
@@ -162,17 +168,24 @@ namespace HouseNet9.Controllers
             rental.RentalStatusID = status.RentalStatusID;
             await _context.SaveChangesAsync();
 
-            // Kolory dla wskaźnika
-            string badgeColor = status.Name switch
-            {
-                "Zapłacono całość" => "green",
-                "Do zapłaty" => "yellow",
-                "Zaliczka" => "blue",
-                "Wynajem własny" => "darkgray",
-                _ => "gray"
-            };
+            // Flaga informująca, czy wysłano mail
+            bool emailSent = false;
 
-            return Json(new { statusId = status.RentalStatusID, badgeColor });
+            //wysylanie maila
+            //if (status.RentalStatusID == 6) // Wpłacono zaliczkę
+            //{
+            //    await _notificationService.SendDepositConfirmedAsync(rental);
+            //    emailSent = true;
+            //}
+            //else if (status.RentalStatusID == 1) // Zapłacono całość
+            //{
+            //    await _notificationService.SendFullPaymentConfirmedAsync(rental);
+            //    emailSent = true;
+            //}
+
+            string badgeColor = status.Color;
+
+            return Json(new { statusId = status.RentalStatusID, badgeColor, emailSent });
         }
 
         // Model dla AJAX
@@ -216,4 +229,6 @@ namespace HouseNet9.Controllers
 
 
     }
+
+
 }

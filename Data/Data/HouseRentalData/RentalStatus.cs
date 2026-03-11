@@ -13,6 +13,8 @@ namespace Data.Data.HouseRentalData
 
         public ICollection<RentalHouse>? RentalHouses { get; set; }
 
+        public string Color { get; set; }
+
         public bool IsActive { get; set; }
     }
 }

@@ -36,8 +36,6 @@ builder.Services.AddScoped<IPaymentCalculator, PaymentCalculator>();
 //renderowanie maila
 builder.Services.AddScoped<IRazorViewToStringRenderer, RazorViewToStringRenderer>();
 //praca w tle
-//builder.Services.AddHostedService<ReservationPaymentService>();
-
 builder.Services.AddQuartz(q =>
 {
     var jobKey = new JobKey("ReservationPaymentJob");
@@ -53,6 +51,9 @@ builder.Services.AddQuartz(q =>
 });
 
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
+//wysylanie maili
+builder.Services.AddScoped<IReservationNotificationService, ReservationNotificationService>();
 
 
 
