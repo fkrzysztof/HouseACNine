@@ -1,25 +1,26 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace HouseNet9.Controllers
 {
-    public class DistanceController : Controller
+    public class DistanceController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly FileUploadService _fileUploadService;
 
-        public DistanceController(ApplicationDbContext context, FileUploadService fileUploadService)
+        public DistanceController(ApplicationDbContext context, FileUploadService fileUploadService, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _context = context;
             _fileUploadService = fileUploadService;
         }
 
         public IActionResult Index()
         {
 
-            return View(_context.Distances.Include(i => i.Image).ToList());
+            return View(_context.Distances.Where(w => w.House.HouseId == CurrentHouseId).Include(i => i.Image).ToList());
         }
 
         public IActionResult Create()
@@ -43,7 +44,7 @@ namespace HouseNet9.Controllers
                         MyFile myFile = new MyFile();
                         myFile.Path = filePath;
                         distance.Image = myFile;
-                        var house = await _context.Houses.Include(i => i.Distances).FirstOrDefaultAsync();
+                        var house = await _context.Houses.Where(w => w.HouseId == CurrentHouseId).Include(i => i.Distances).FirstOrDefaultAsync();
                         if (house != null && house.Distances != null)
                         {
                             house.Distances.Add(distance);

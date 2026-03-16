@@ -1,4 +1,5 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Services;
@@ -8,15 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseNet9.Controllers
 {
-    public class RentalHouseController : Controller
+    public class RentalHouseController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly RentalCalculatorService _calculator;
         private readonly IReservationNotificationService _notificationService;
 
-        public RentalHouseController(ApplicationDbContext context, IReservationNotificationService reservationNotificationService)
+        public RentalHouseController(ApplicationDbContext context, IReservationNotificationService reservationNotificationService, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _context = context;
             _calculator = new RentalCalculatorService(_context);
             _notificationService = reservationNotificationService;
         }
@@ -25,10 +25,9 @@ namespace HouseNet9.Controllers
         public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate, string? clientSearch)
         {
 
-            int idHouse = HttpContext.Session.GetInt32("CurrentHouseId") ?? 0;
 
             var query = _context.RentalHouses
-                .Where(w => w.HouseId == idHouse)
+                .Where(w => w.HouseId == CurrentHouseId)
                 .Include(r => r.House)
                 .Include(r => r.RentalClient)
                 .Include(r => r.RentalStatus)
@@ -66,33 +65,36 @@ namespace HouseNet9.Controllers
 
 
 
-            // GET: Create
-            public IActionResult Create()
+        // GET: Create
+        public IActionResult Create()
+        {
+            if (CurrentHouseId == null)
+                return RedirectToAction("Index", "House");
+
+            var model = new RentalHouse
             {
-                var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
-                if (houseId == null)
-                    return RedirectToAction("Index", "House");
+                HouseId = CurrentHouseId,
+                From = DateTime.Today,
+                To = DateTime.Today.AddDays(6) // domyślnie 6 dni
+            };
 
-                var model = new RentalHouse
-                {
-                    HouseId = houseId.Value,
-                    From = DateTime.Today,
-                    To = DateTime.Today.AddDays(6) // domyślnie 6 dni
-                };
-
-                return View(model);
-            }
+            return View(model);
+        }
 
         // POST: Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RentalHouse rentalHouse)
         {
-            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
-            if (houseId == null)
+
+            if (CurrentHouseId == null)
                 return RedirectToAction("Index", "House");
 
-            rentalHouse.HouseId = houseId.Value;
+            rentalHouse.HouseId = CurrentHouseId;
+            rentalHouse.ReservationNumber = "jakisnumer";
+            
+
+
 
             // 🔹 Walidacja dat
             if (rentalHouse.To <= rentalHouse.From)
@@ -124,28 +126,41 @@ namespace HouseNet9.Controllers
                 if (rentalHouse.RentalClientId == null)
                 {
                     rentalHouse.ToPay = 0;
-                    rentalHouse.RentalStatusID = await _context.RentalStatus
-                        .Where(s => s.Name == "Wynajem własny")
-                        .Select(s => s.RentalStatusID)
-                        .FirstOrDefaultAsync();
+                    rentalHouse.RentalStatusID = 8;
                 }
                 else
                 {
                     rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
-                    rentalHouse.RentalStatusID = await _context.RentalStatus
-                        .Where(s => s.Name == "Do zapłaty")
-                        .Select(s => s.RentalStatusID)
-                        .FirstOrDefaultAsync();
+                    rentalHouse.RentalStatusID = 5; //5 do zapłaty
                 }
 
-                _context.Add(rentalHouse);
-                await _context.SaveChangesAsync();
+                //dodanie numeru i zapis rezerwacji 
+                bool saved = false;
 
+                while (!saved)
+                {
+                    try
+                    {
+                        rentalHouse.ReservationNumber = ReservationNumberGenerator.Generate();
+
+                        _context.RentalHouses.Add(rentalHouse);
+                        await _context.SaveChangesAsync();
+
+                        saved = true;
+                    }
+                    catch (DbUpdateException)
+                    {
+                        // kolizja - generujemy nowy numer
+                    }
+
+                    
+                }
                 return RedirectToAction(nameof(Index));
+               
             }
-
             return View(rentalHouse);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -172,16 +187,16 @@ namespace HouseNet9.Controllers
             bool emailSent = false;
 
             //wysylanie maila
-            //if (status.RentalStatusID == 6) // Wpłacono zaliczkę
-            //{
-            //    await _notificationService.SendDepositConfirmedAsync(rental);
-            //    emailSent = true;
-            //}
-            //else if (status.RentalStatusID == 1) // Zapłacono całość
-            //{
-            //    await _notificationService.SendFullPaymentConfirmedAsync(rental);
-            //    emailSent = true;
-            //}
+            if (status.RentalStatusID == 6) // Wpłacono zaliczkę
+            {
+                await _notificationService.SendDepositConfirmedAsync(rental);
+                emailSent = true;
+            }
+            else if (status.RentalStatusID == 1) // Zapłacono całość
+            {
+                await _notificationService.SendFullPaymentConfirmedAsync(rental);
+                emailSent = true;
+            }
 
             string badgeColor = status.Color;
 
@@ -197,11 +212,7 @@ namespace HouseNet9.Controllers
 
 
 
-
-
-
-
-        // POST: RentalHouse/Delete/5
+        // POST: RentalHouse/Delete/5    IsActive 1/0
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -220,12 +231,6 @@ namespace HouseNet9.Controllers
         {
             return _context.RentalHouses.Any(e => e.RentalHouseID == id);
         }
-
-
-
-
-
-
 
 
     }

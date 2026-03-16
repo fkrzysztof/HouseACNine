@@ -1,4 +1,5 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,48 +7,45 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseNet9.Controllers
 {
-    public class RentalPricesController : Controller
+    public class RentalPricesController : BaseAdminController
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
 
-        public RentalPricesController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public RentalPricesController(ApplicationDbContext context, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _logger = logger;
-            _context = context;
         }
 
 
 
 
-        // ===========================
         // INDEX – ceny dla konkretnego domu
-        // ===========================
-        public async Task<IActionResult> Index(int houseId)
+        public async Task<IActionResult> Index()
         {
-            var house = await _context.Houses.FindAsync(houseId);
+
+            var house = await _context.Houses.FindAsync(CurrentHouseId);
             if (house == null) return NotFound();
 
             ViewBag.House = house;
 
             var list = await _context.RentalPrices
-                .Where(x => x.HouseId == houseId)
+                .Where(x => x.HouseId == CurrentHouseId)
                 .OrderByDescending(x => x.DateTimeFrom)
                 .ToListAsync();
 
             ViewBag.List = list;
 
             // model do formularza CREATE
-            return View(new RentalPrice { HouseId = houseId });
+            return View(new RentalPrice { HouseId = CurrentHouseId });
         }
 
-        // ===========================
         // CREATE
-        // ===========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RentalPrice rentalPrice)
         {
+            if (rentalPrice.HouseId != CurrentHouseId)
+                return NotFound();
+
             rentalPrice.IsActive = true;
 
             if (ModelState.IsValid)
@@ -106,7 +104,8 @@ namespace HouseNet9.Controllers
             _context.RentalPrices.Remove(rentalPrice);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), new { houseId });
+            //return RedirectToAction(nameof(Index), new { CurrentHouseId });
+            return RedirectToAction(nameof(Index));
         }
 
 

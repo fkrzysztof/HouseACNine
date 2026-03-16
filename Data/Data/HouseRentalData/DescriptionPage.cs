@@ -16,9 +16,9 @@ namespace Data.Data.HouseRentalData
         [Display(Name = "Opis")]
         public String? Description { get; set; }
 
+
         [ForeignKey("HouseId")]
         public House? House { get; set; }
-
 
         //IMG COL
         [NotMapped]

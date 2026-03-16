@@ -1,4 +1,5 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,18 +12,18 @@ using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
-    public class DescriptionPagesController : Controller
+    //sekcje
+    public class DescriptionPagesController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly FileUploadService _fileUploadService;
 
-        public DescriptionPagesController(ApplicationDbContext context, FileUploadService fileUploadService)
+        public DescriptionPagesController(ApplicationDbContext context, FileUploadService fileUploadService, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _context = context;
             _fileUploadService = fileUploadService;
         }
 
-        //UpdateImageOrder
+        //UpdateImageOrder - kolejnosc img
         [HttpPost]
         public async Task<IActionResult> UpdateImageOrder([FromBody] List<ImageOrderVM> model)
         {
@@ -44,7 +45,7 @@ namespace HouseNet9.Controllers
         // GET: DescriptionPages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DescriptionPages.Include(i => i.Images).ToListAsync());
+            return View(await _context.DescriptionPages.Where(w => w.House.HouseId == CurrentHouseId).Include(i => i.Images).ToListAsync());
         }
 
 
@@ -65,6 +66,7 @@ namespace HouseNet9.Controllers
             try
             {
                 var house = await _context.Houses
+                    .Where(w => w.HouseId == CurrentHouseId)
                     .Include(h => h.DescriptionPages)
                     .FirstOrDefaultAsync();
 
@@ -141,14 +143,9 @@ namespace HouseNet9.Controllers
         }
 
         // POST: DescriptionPages/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-      int id,
-      [Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage,
-      List<IFormFile> files)  // <- zmienione na List<IFormFile>
+        public async Task<IActionResult> Edit(int id,[Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, List<IFormFile> files)  // <- zmienione na List<IFormFile>
         {
             if (id != descriptionPage.DescriptionPageId)
                 return NotFound();

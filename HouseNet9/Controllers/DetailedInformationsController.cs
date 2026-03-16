@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
+using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Data.Data.HouseRentalData;
-using HouseNet9.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
-    public class DetailedInformationsController : Controller
+    public class DetailedInformationsController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly FileUploadService _fileUploadService;
 
-        public DetailedInformationsController(ApplicationDbContext context, FileUploadService fileUploadService)
+        public DetailedInformationsController(ApplicationDbContext context, FileUploadService fileUploadService, ILoggerFactory loggerFactory)
+        :base(context, loggerFactory)
         {
-            _context = context;
             _fileUploadService = fileUploadService;
         }
 
         // GET: DetailedInformations
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DetailedInformation.Include(i => i.Image).ToListAsync());
+            return View(await _context.DetailedInformation.Where(w => w.House.HouseId == CurrentHouseId).Include(i => i.Image).ToListAsync());
         }
 
         // GET: DetailedInformations/Details/5
@@ -71,7 +71,7 @@ namespace HouseNet9.Controllers
                         MyFile myFile = new MyFile();
                         myFile.Path = filePath;
                         detailedInformation.Image = myFile;
-                        var house = await _context.Houses.Include(i => i.DetailedInformation).FirstOrDefaultAsync();
+                        var house = await _context.Houses.Where(w => w.HouseId == CurrentHouseId).Include(i => i.DetailedInformation).FirstOrDefaultAsync();
                         if (house != null && house.DetailedInformation != null)
                         {
                             house.DetailedInformation.Add(detailedInformation);

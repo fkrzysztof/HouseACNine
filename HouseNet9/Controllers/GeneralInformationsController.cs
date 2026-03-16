@@ -2,17 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Data.Data.HouseRentalData;
 using HouseNet9.Data;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 
 namespace HouseNet9.Controllers
 {
-    public class GeneralInformationsController : Controller
+    public class GeneralInformationsController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly FileUploadService _fileUploadService;
 
-        public GeneralInformationsController(ApplicationDbContext context, FileUploadService fileUploadService)
+        public GeneralInformationsController(ApplicationDbContext context, FileUploadService fileUploadService, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _context = context;
             _fileUploadService = fileUploadService;
         }
 
@@ -20,7 +20,7 @@ namespace HouseNet9.Controllers
         public IActionResult Index()
         {
 
-            return View(_context.GeneralInformation.Include(i => i.Image).ToList());
+            return View(_context.GeneralInformation.Where(w => w.House.HouseId == CurrentHouseId).Include(i => i.Image).ToList());
         }
 
 
@@ -47,7 +47,7 @@ namespace HouseNet9.Controllers
                         MyFile myFile = new MyFile();
                         myFile.Path = filePath;
                         generalInformation.Image = myFile;
-                        var house = await _context.Houses.Include(i => i.GeneralInformation).FirstOrDefaultAsync();
+                        var house = await _context.Houses.Where(w => w.HouseId == CurrentHouseId).Include(i => i.GeneralInformation).FirstOrDefaultAsync();
                         if (house != null && house.GeneralInformation != null)
                         {
                             house.GeneralInformation.Add(generalInformation);
@@ -91,8 +91,6 @@ namespace HouseNet9.Controllers
         }
 
         // POST: GeneralInformations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("GeneralInformationId,Name")] GeneralInformation generalInformation, IFormFile? file, string? ImagePath)

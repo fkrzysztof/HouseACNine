@@ -2,30 +2,31 @@
 using Microsoft.EntityFrameworkCore;
 using Data.Data.HouseRentalData;
 using HouseNet9.Data;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 
 namespace HouseNet9.Controllers
 {
-    public class HousesController : Controller
+    public class HousesController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
-
-        public HousesController(ApplicationDbContext context)
+        public HousesController(ApplicationDbContext context, ILoggerFactory loggerFactory)
+        : base(context, loggerFactory)
         {
-            _context = context;
         }
 
         // GET: Rules
         public async Task<IActionResult> Rules()
         {
-            return View(await _context.Houses.FirstOrDefaultAsync());
+            var house = await _context.Houses
+                .FirstOrDefaultAsync(h => h.HouseId == CurrentHouseId);
+
+            return View(house);
         }
 
         // GET: Houses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Houses.ToListAsync());
+            return View(await _context.Houses.Where(w => w.IsActive).ToListAsync());
         }
-
 
 
         // GET: Houses/Create
@@ -35,8 +36,6 @@ namespace HouseNet9.Controllers
         }
 
         // POST: Houses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
@@ -65,22 +64,19 @@ namespace HouseNet9.Controllers
             }
 
             //zapis do sesji ID House
-            HttpContext.Session.SetInt32("CurrentHouseId", house.HouseId);
-            if (!String.IsNullOrEmpty(house.Name))
-            {
-                HttpContext.Session.SetString("CurrentHouseName", house.Name);
-            }
+            HttpContext.Session.SetInt32("AdminCurrentHouseId", house.HouseId);
+            HttpContext.Session.SetString("AdminCurrentHouseName", house.Name);
+
+
             return View(house);
         }
 
         // POST: Houses/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
         {
-            if (id != house.HouseId)
+            if (id != house.HouseId || house.HouseId != CurrentHouseId.Value)
             {
                 return NotFound();
             }
