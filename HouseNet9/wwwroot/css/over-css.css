@@ -217,39 +217,10 @@ nav a {
 }
 
 
-
-/*do create reservation*/
-
-/* Sticky panel podsumowania */
-/*.sticky-summary {
-    position: sticky;
-    top: 110px;*/ /* wysokość navbar + margines */
-    /*z-index: 10;*/ /* żeby był nad innymi elementami */
-/*}*/
-
-/* Wyłączamy sticky na mniejszych ekranach */
-/*@media (max-width: 1199px) {
-    .sticky-summary {
-        position: static;
-    }
-}*/
-
-/* Dodatkowe marginesy dla estetyki */
-/*.sticky-summary .card {
-    margin-bottom: 2rem;
-}*/
-
-
-/* Sticky summary panel */
-/*.sticky-summary {
-    position: sticky;
-    top: 110px;
-    z-index: 10;
+html {
+    scroll-behavior: smooth;
 }
 
-@media (max-width: 1199px) {
-    .sticky-summary {
-        position: static;
-    }
-}*/
-
+section {
+    scroll-margin-top: 100px;
+}

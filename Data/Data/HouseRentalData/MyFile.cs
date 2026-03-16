@@ -9,6 +9,8 @@ namespace Data.Data.HouseRentalData
         public int FileID { get; set; }
         public string? Path { get; set; }
 
+        public int Order { get; set; }
+
         //links ************************
 
         public int? GeneralInformationId { get; set; }

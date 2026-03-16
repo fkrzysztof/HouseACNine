@@ -1,4 +1,5 @@
 using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract;
 using HouseNet9.Data;
 using HouseNet9.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,15 +10,13 @@ using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+
+        public HomeController(ILoggerFactory loggerFactory, ApplicationDbContext context)
+        : base(context, loggerFactory)
         {
-            _logger = logger;
-            _context = context;
         }
 
 
@@ -30,7 +29,8 @@ namespace HouseNet9.Controllers
 
         public async Task<IActionResult> Index(int? id)
         {
-            var query = _context.Houses
+            IQueryable<House> query = _context.Houses
+                .Where(i => i.IsActive)
                 .Include(h => h.GeneralInformation)
                     .ThenInclude(g => g.Image)
                 .Include(h => h.DescriptionPages)
@@ -39,42 +39,51 @@ namespace HouseNet9.Controllers
                     .ThenInclude(d => d.Image)
                 .Include(h => h.Distances)
                     .ThenInclude(d => d.DistanceItems)
-                .AsQueryable();
+                .AsNoTracking();
 
             if (id.HasValue)
                 query = query.Where(h => h.HouseId == id.Value);
             else
-                query = query.OrderBy(h => h.HouseId).Take(1);
+                query = query.OrderBy(h => h.HouseId);
 
             var house = await query.FirstOrDefaultAsync();
 
             if (house == null)
                 return NotFound();
 
+            foreach (var descPage in house.DescriptionPages)
+            {
+                descPage.Images = descPage.Images
+                    .OrderBy(img => img.Order)
+                    .ToList();
+            }
 
-
-            //House? houseWithGenInfo = await _context.Houses
-            //     .Where(w => w.HouseId == id)
-            //    .Include(i => i.GeneralInformation)
-            //        .ThenInclude(i => i.Image)
-            //    .Include(i => i.DescriptionPages)
-            //        .ThenInclude(i => i.Images).Take(1)
-            //    .Include(i => i.Distances)
-            //        .ThenInclude(i => i.Image)
-            //    .Include(i => i.Distances)
-            //        .ThenInclude(i => i.DistanceItems)
-            //    .FirstOrDefaultAsync();
-
-
-            //if (houseWithGenInfo?.GeneralInformation == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //HttpContext.Session.SetInt32("CurrentHouseId", houseWithGenInfo.HouseId);
             return View(house);
-
         }
+
+
+        public async Task<IActionResult> More(int id, int houseId)
+        {
+
+            DescriptionPage? dp = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id)
+                .Include(i => i.Images)
+                .Include(i => i.House)
+                .FirstOrDefaultAsync();
+
+            GeneralInformation? gi = await _context.GeneralInformation.Where(w => w.House.HouseId == houseId)
+                .Include(i => i.Image)
+                .FirstOrDefaultAsync();
+
+            List<DetailedInformation> di = await _context.DetailedInformation.Where(w => w.House.HouseId == houseId)
+                .Include(i => i.Image)
+                .Include(i => i.DetailedInformationItems)
+                .ToListAsync();
+
+            ViewBag.Detailed = di;
+
+            return View(dp);
+        }
+
 
         public IActionResult Privacy()
         {
@@ -88,27 +97,5 @@ namespace HouseNet9.Controllers
         }
 
 
-        public async Task<IActionResult> More(int id, int houseId)
-        {
-
-            DescriptionPage? dp = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id)
-                .Include(i => i.Images)
-                .Include(i => i.House)
-                .FirstOrDefaultAsync();
-            
-            GeneralInformation? gi = await _context.GeneralInformation.Where(w => w.House.HouseId == houseId)
-                .Include(i => i.Image)
-                .FirstOrDefaultAsync();
-
-            List<DetailedInformation> di = await _context.DetailedInformation.Where(w => w.House.HouseId == houseId)
-                .Include(i => i.Image)
-                .Include(i => i.DetailedInformationItems)
-                .ToListAsync();
-
-            ViewBag.Detailed = di;
-            
-            return View(dp);
-        }
-
-        }
+    }
 }

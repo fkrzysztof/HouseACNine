@@ -11,219 +11,226 @@
     HouseSettings settings = ViewBag.SettingsInfo;
 }
 
-<div class="container my-5">
+<section id="thanks">
 
-    <!-- HEADER -->
-    <div class="text-center mb-5">
-        <h2 class="fw-semibold">Dziękujemy za zaufanie</h2>
-        <div class="text-muted">
-            Twoja rezerwacja została zapisana w systemie.
-            Wszystkie szczegóły wysłaliśmy na podany adres e-mail.
+
+
+    <div class="container my-5">
+
+        <!-- HEADER -->
+        <div class="text-center mb-5">
+            <h2 class="fw-semibold">Dziękujemy za zaufanie</h2>
+            <div class="text-muted">
+                Twoja rezerwacja @rental.ReservationNumber została zapisana w systemie.
+                Wszystkie szczegóły wysłaliśmy na podany adres e-mail.
+            </div>
+            <hr class="mt-4">
         </div>
-        <hr class="mt-4">
-    </div>
 
-    <div class="row g-4">
+        <div class="row g-4">
 
-        <!-- LEWA STRONA -->
-        <div class="col-xl-7">
+            <!-- LEWA STRONA -->
+            <div class="col-xl-7">
 
-            <div class="card border-0 shadow-sm" style="border-radius:14px;">
-                <div class="card-body p-5">
+                <div class="card border-0 shadow-sm" style="border-radius:14px;">
+                    <div class="card-body p-5">
 
-                    <!-- Opcjonalne zdjęcie -->
-@*                     <div class="mb-4 rounded overflow-hidden" style="height:220px;">
+                        <!-- Opcjonalne zdjęcie -->
+                        @*                     <div class="mb-4 rounded overflow-hidden" style="height:220px;">
                         <img src="/uploads/handshake.jpg"
                              class="w-100 h-100"
                              style="object-fit:cover;">
                     </div> *@
 
-@*                     <div class="mb-4 rounded overflow-hidden"
+                        @*                     <div class="mb-4 rounded overflow-hidden"
                          style="aspect-ratio: 16/9;">
                         <img src="/uploads/handshake.jpg"
                              class="w-100 h-100"
                              style="object-fit:cover;">
                     </div> *@
 
-                    <div class="mb-4 rounded overflow-hidden position-relative ratio ratio-16x9">
-                        <img src="/uploads/handshake.jpg"
-                             class="w-100 h-100"
-                             style="object-fit:cover;">
+                        <div class="mb-4 rounded overflow-hidden position-relative ratio ratio-16x9">
+                            <img src="/uploads/handshake.jpg"
+                                 class="w-100 h-100"
+                                 style="object-fit:cover;">
 
-                        <!-- Lekki ciemny overlay -->
-                        <div class="position-absolute top-0 start-0 w-100 h-100"
-                             style="background-color: rgba(0,0,0,0.3);"></div>
+                            <!-- Lekki ciemny overlay -->
+                            <div class="position-absolute top-0 start-0 w-100 h-100"
+                                 style="background-color: rgba(0,0,0,0.3);"></div>
 
-                        <!-- Opcjonalny tekst na overlay -->
-                        <!--
-                        <div class="position-absolute top-50 start-50 translate-middle text-white text-center">
-                            <h3>Podziękowanie za zaufanie</h3>
+                            <!-- Opcjonalny tekst na overlay -->
+                            <!--
+                            <div class="position-absolute top-50 start-50 translate-middle text-white text-center">
+                                <h3>Podziękowanie za zaufanie</h3>
+                            </div>
+                            -->
                         </div>
-                        -->
-                    </div>
 
-                    <h5 class="fw-semibold mb-4">Szczegóły rezerwacji</h5>
+                        <h5 class="fw-semibold mb-4">Szczegóły rezerwacji</h5>
 
-                    <!-- TERMIN -->
-                    <div class="mb-3">
-                        <div class="small text-muted">Termin pobytu</div>
-                        <div class="fw-semibold">
-                            @rental?.From.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))<br />
-                            @rental?.To.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))
+                        <!-- TERMIN -->
+                        <div class="mb-3">
+                            <div class="small text-muted">Termin pobytu</div>
+                            <div class="fw-semibold">
+                                @rental?.From.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))<br />
+                                @rental?.To.ToString("D", CultureInfo.CreateSpecificCulture("pl-PL"))
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- LICZBA NOCY -->
-                    <div class="mb-3">
-                        <div class="small text-muted">Liczba nocy</div>
-                        <div class="fw-semibold">
-                            @rental?.HowManyDaysFromSelect
+                        <!-- LICZBA NOCY -->
+                        <div class="mb-3">
+                            <div class="small text-muted">Liczba nocy</div>
+                            <div class="fw-semibold">
+                                @rental?.HowManyDaysFromSelect
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- DANE KLIENTA -->
-                    <div class="mb-4">
-                        <div class="small text-muted">Rezerwujący</div>
-                        <div class="fw-semibold">
-                            @Model.Name @Model.LastName
+                        <!-- DANE KLIENTA -->
+                        <div class="mb-4">
+                            <div class="small text-muted">Rezerwujący</div>
+                            <div class="fw-semibold">
+                                @Model.Name @Model.LastName
+                            </div>
+                            <div class="text-muted small">
+                                @Model.Email <br />
+                                @Model.Phone
+                            </div>
                         </div>
-                        <div class="text-muted small">
-                            @Model.Email <br />
-                            @Model.Phone
+
+                        <div class="alert alert-light border">
+                            📩 Potwierdzenie rezerwacji oraz wszystkie informacje
+                            dotyczące płatności zostały wysłane na Twój adres e-mail.
                         </div>
-                    </div>
 
-                    <div class="alert alert-light border">
-                        📩 Potwierdzenie rezerwacji oraz wszystkie informacje
-                        dotyczące płatności zostały wysłane na Twój adres e-mail.
                     </div>
-
                 </div>
+
             </div>
 
-        </div>
+            <!-- PRAWA STRONA – PŁATNOŚĆ -->
+            <div class="col-xl-5">
 
-        <!-- PRAWA STRONA – PŁATNOŚĆ -->
-        <div class="col-xl-5">
+                <div class="card border-0 shadow-sm" style="border-radius:14px;">
+                    <div class="card-body p-4">
 
-            <div class="card border-0 shadow-sm" style="border-radius:14px;">
-                <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3">Informacje o płatności</h6>
+                        <hr>
 
-                    <h6 class="fw-semibold mb-3">Informacje o płatności</h6>
-                    <hr>
+                        <!-- CAŁKOWITA KWOTA -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Łączna kwota</span>
+                            <span class="fw-bold fs-5">
+                                @paymentInfo.Total.ToString("N2") @settings.Currency
+                            </span>
+                        </div>
 
-                    <!-- CAŁKOWITA KWOTA -->
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Łączna kwota</span>
-                        <span class="fw-bold fs-5">
-                            @paymentInfo.Total.ToString("N2") @settings.Currency
-                        </span>
-                    </div>
-
-                    @if (paymentInfo.Remaining > 0)
-                    {
-                        <!-- ZALICZKA -->
-                        <div class="mt-4">
-                            <div class="small text-muted">
-                                Zaliczka (@settings.DepositPercentage%)
-                                do @paymentInfo.DepositDueDate.ToString("dd.MM.yyyy")
+                        @if (paymentInfo.Remaining > 0)
+                        {
+                            <!-- ZALICZKA -->
+                            <div class="mt-4">
+                                <div class="small text-muted">
+                                    Zaliczka (@settings.DepositPercentage%)
+                                    do @paymentInfo.DepositDueDate.ToString("dd.MM.yyyy")
+                                </div>
+                                <div class="fw-semibold">
+                                    @paymentInfo.Deposit.ToString("N2") @settings.Currency
+                                </div>
                             </div>
+
+                            <!-- POZOSTAŁA KWOTA -->
+                            <div class="mt-3">
+                                <div class="small text-muted">
+                                    Pozostała kwota do
+                                    @paymentInfo.RemainingDueDate.ToString("dd.MM.yyyy")
+                                    <br />
+                                    (najpóźniej @settings.FullPaymentDueDaysBeforeArrival dni przed przyjazdem)
+                                </div>
+                                <div class="fw-semibold">
+                                    @paymentInfo.Remaining.ToString("N2") @settings.Currency
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mt-4">
+                                <div class="small text-muted">
+                                    Termin płatności
+                                </div>
+                                <div class="fw-semibold">
+                                    @paymentInfo.DepositDueDate.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                        }
+
+                        <!-- DANE BANKOWE -->
+                        <div class="border-top pt-4 mt-4">
+
+                            <h6 class="fw-semibold mb-3">Dane do przelewu</h6>
+
+                            @if (!string.IsNullOrEmpty(settings.BankAccountName))
+                            {
+                                <div class="small text-muted">Odbiorca</div>
+                                <div class="fw-semibold">@settings.BankAccountName</div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(settings.BankName))
+                            {
+                                <div class="small text-muted mt-2">Bank</div>
+                                <div class="fw-semibold">@settings.BankName</div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(settings.BankAccountIban))
+                            {
+                                <div class="small text-muted mt-2">IBAN</div>
+                                <div class="fw-semibold">@settings.BankAccountIban</div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(settings.BankAccountSwift))
+                            {
+                                <div class="small text-muted mt-2">SWIFT</div>
+                                <div class="fw-semibold">@settings.BankAccountSwift</div>
+                            }
+
+                            <div class="small text-muted mt-2">Tytuł przelewu</div>
                             <div class="fw-semibold">
-                                @paymentInfo.Deposit.ToString("N2") @settings.Currency
+                                Rezerwacja
+                                @rental?.From.ToString("dd.MM.yyyy") -
+                                @rental?.To.ToString("dd.MM.yyyy")
                             </div>
+
                         </div>
 
-                        <!-- POZOSTAŁA KWOTA -->
-                        <div class="mt-3">
-                            <div class="small text-muted">
-                                Pozostała kwota do
-                                @paymentInfo.RemainingDueDate.ToString("dd.MM.yyyy")
-                                <br />
-                                (najpóźniej @settings.FullPaymentDueDaysBeforeArrival dni przed przyjazdem)
-                            </div>
-                            <div class="fw-semibold">
-                                @paymentInfo.Remaining.ToString("N2") @settings.Currency
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="mt-4">
-                            <div class="small text-muted">
-                                Termin płatności
-                            </div>
-                            <div class="fw-semibold">
-                                @paymentInfo.DepositDueDate.ToString("dd.MM.yyyy")
-                            </div>
-                        </div>
-                    }
-
-                    <!-- DANE BANKOWE -->
-                    <div class="border-top pt-4 mt-4">
-
-                        <h6 class="fw-semibold mb-3">Dane do przelewu</h6>
-
-                        @if (!string.IsNullOrEmpty(settings.BankAccountName))
+                        <!-- DODATKOWE INFORMACJE -->
+                        @if (!string.IsNullOrEmpty(rental?.Annotations))
                         {
-                            <div class="small text-muted">Odbiorca</div>
-                            <div class="fw-semibold">@settings.BankAccountName</div>
+                            <div class="alert alert-light border mt-4 small">
+                                @rental.Annotations
+                            </div>
                         }
 
-                        @if (!string.IsNullOrEmpty(settings.BankName))
-                        {
-                            <div class="small text-muted mt-2">Bank</div>
-                            <div class="fw-semibold">@settings.BankName</div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(settings.BankAccountIban))
-                        {
-                            <div class="small text-muted mt-2">IBAN</div>
-                            <div class="fw-semibold">@settings.BankAccountIban</div>
-                        }
-
-                        @if (!string.IsNullOrEmpty(settings.BankAccountSwift))
-                        {
-                            <div class="small text-muted mt-2">SWIFT</div>
-                            <div class="fw-semibold">@settings.BankAccountSwift</div>
-                        }
-
-                        <div class="small text-muted mt-2">Tytuł przelewu</div>
-                        <div class="fw-semibold">
-                            Rezerwacja
-                            @rental?.From.ToString("dd.MM.yyyy") -
-                            @rental?.To.ToString("dd.MM.yyyy")
-                        </div>
-
-                    </div>
-
-                    <!-- DODATKOWE INFORMACJE -->
-                    @if (!string.IsNullOrEmpty(rental?.Annotations))
-                    {
-                        <div class="alert alert-light border mt-4 small">
-                            @rental.Annotations
-                        </div>
-                    }
-
-                    <!-- DODATKOWE INFORMACJE 2 -->
+                        <!-- DODATKOWE INFORMACJE 2 -->
 
                         <div class="alert alert-light border mt-4 small">
                             Prosimy o dokonanie przelewu w terminie.
                             W przypadku braku wpłaty rezerwacja może zostać anulowana.
                         </div>
-                    }
+                        
 
+                    </div>
                 </div>
+
             </div>
 
         </div>
 
+
+        <!-- POWRÓT -->
+        <div class="text-center mt-5">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-dark px-4">
+                Powrót na stronę główną
+            </a>
+        </div>
+
     </div>
 
-    <!-- POWRÓT -->
-    <div class="text-center mt-5">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-dark px-4">
-            Powrót na stronę główną
-        </a>
-    </div>
-
-</div>
+</section>

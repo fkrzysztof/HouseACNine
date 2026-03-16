@@ -1,8 +1,6 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.DescriptionPage>
 
-
 @Html.AntiForgeryToken()
-
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Opis strony</h4>
@@ -11,74 +9,63 @@
     </a>
 </div>
 
-<!-- KONTENER DLA AJAX -->
-<div id="pages-list" data-delete-url="@Url.Action("DeleteItem", "DescriptionPages")">
-
+<div id="pages-list" class="row g-4" data-delete-url="@Url.Action("DeleteItem", "DescriptionPages")">
     @foreach (var item in Model)
     {
-        <div class="card text-center my-4 page-item" data-id="@item.DescriptionPageId">
-            <div class="card-header">
-                <ul class="nav nav-pills card-header-pills">
+        <div class="col-12 col-md-6 col-lg-4 page-item" data-id="@item.DescriptionPageId">
+            <div class="card h-100 shadow-sm">
 
-                    <li class="nav-item">
-@*                         <a class="nav-link" asp-action="Edit" asp-route-id="@item.DescriptionPageId">
-                            <img src="~/uploads/edit_square_24.svg" class="edit-options" />
-                        </a> *@
-
+                <!-- CARD HEADER -->
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                    <h5 class="mb-2 mb-md-0 text-truncate" title="@item.Title">@item.Title</h5>
+                    <div class="btn-group flex-wrap" role="group">
+                        <!-- Pełny przycisk Edytuj -->
                         <button type="button"
-                                class="nav-link btn btn-link p-0"
+                                class="btn btn-sm btn-outline-secondary mb-2 mb-md-0 me-0 me-md-1"
                                 onclick="location.href='@Url.Action("Edit", new { id = item.DescriptionPageId })'">
-                            <img src="~/uploads/edit_square_24.svg" class="edit-options" />
+                            <i class="bi bi-pencil-square me-1"></i> Edytuj
                         </button>
-                    
-                    
-                    </li>
-
-                    <li class="nav-item">
-                        <!-- AJAX DELETE BUTTON -->
+                        <!-- Pełny przycisk Usuń -->
                         <button type="button"
-                                class="nav-link btn btn-link p-0 delete-page"
-                                data-id="@item.DescriptionPageId"
-                                title="Usuń">
-                            <img src="~/uploads/delete_forever_24.svg" class="edit-options" />
+                                class="btn btn-sm btn-outline-danger"
+                                data-id="@item.DescriptionPageId">
+                            <i class="bi bi-trash-fill me-1"></i> Usuń
                         </button>
-                    </li>
+                    </div>
+                </div>
 
-                </ul>
-                <h3>@item.Title</h3>
-            </div>
-
-            <div class="card-body">
-
-                <h5 class="card-title">
-                    <div class="image-gallery">
-
+                <!-- CARD BODY -->
+                <div class="card-body d-flex flex-column">
+                    <!-- GALERIA ZDJĘĆ -->
+                    <div class="image-gallery mb-3">
                         @if (item.Images != null && item.Images.Any())
                         {
                             foreach (var image in item.Images)
                             {
-                                <img src="@Url.Content("~/uploads/" + image.Path)"
-                                     alt="Przesłany obraz"
-                                     style="width:100px; height:auto; margin-right:5px;" />
+                                <div class="image-item">
+                                    <img src="@Url.Content("~/uploads/" + image.Path)" alt="Zdjęcie" />
+                                </div>
                             }
                         }
                         else
                         {
-                            <img src="@Url.Content("~/uploads/no_photography_24dp.svg")"
-                                 alt="Brak obrazu"
-                                 style="width:100px; height:auto;" />
+                            <div class="image-item">
+                                <img src="@Url.Content("~/uploads/no_photography_24dp.svg")" alt="Brak zdjęcia" />
+                            </div>
                         }
-
                     </div>
-                </h5>
 
-                <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
-
+                    <!-- OPIS -->
+                    <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                </div>
             </div>
         </div>
     }
-
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/descriptionpage-list.css" />
+}
 
 @section Scripts {
     <script src="~/js/deletepage.js"></script>

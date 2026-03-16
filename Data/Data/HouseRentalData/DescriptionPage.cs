@@ -19,10 +19,6 @@ namespace Data.Data.HouseRentalData
         [ForeignKey("HouseId")]
         public House? House { get; set; }
 
-        //IMG
-        //[NotMapped]
-        //public IFormFile? FormFileItem { get; set; }
-        //public MyFile? Image { get; set; }
 
         //IMG COL
         [NotMapped]

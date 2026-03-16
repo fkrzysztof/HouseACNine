@@ -22,6 +22,25 @@ namespace HouseNet9.Controllers
             _fileUploadService = fileUploadService;
         }
 
+        //UpdateImageOrder
+        [HttpPost]
+        public async Task<IActionResult> UpdateImageOrder([FromBody] List<ImageOrderVM> model)
+        {
+            foreach (var item in model)
+            {
+                var img = await _context.MyFiles.FindAsync(item.Id);
+
+                if (img != null)
+                {
+                    img.Order = item.Order;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         // GET: DescriptionPages
         public async Task<IActionResult> Index()
         {
@@ -101,7 +120,19 @@ namespace HouseNet9.Controllers
                 return NotFound();
             }
 
-            var descriptionPage = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id).Include(i => i.Images).FirstAsync();
+            var descriptionPage = await _context.DescriptionPages
+                .Where(w => w.DescriptionPageId == id)
+                .Select(dp => new DescriptionPage
+                {
+                    DescriptionPageId = dp.DescriptionPageId,
+                    Title = dp.Title,
+                    Description = dp.Description,
+                    Images = dp.Images
+                        .OrderBy(img => img.Order)
+                        .ToList()
+                })
+                .FirstAsync();
+
             if (descriptionPage == null)
             {
                 return NotFound();
@@ -252,5 +283,11 @@ namespace HouseNet9.Controllers
         }
 
 
+    }
+
+    public class ImageOrderVM
+    {
+        public int Id { get; set; }
+        public int Order { get; set; }
     }
 }

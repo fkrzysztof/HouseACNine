@@ -1,5 +1,6 @@
 ﻿using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace HouseNet9.Controllers.Abstract
@@ -7,34 +8,49 @@ namespace HouseNet9.Controllers.Abstract
     public class BaseController : Controller
     {
         protected readonly ApplicationDbContext _context;
+        protected readonly ILogger _logger;
 
-        public BaseController(ApplicationDbContext context)
+        public BaseController(ApplicationDbContext context, ILoggerFactory loggerFactory)
         {
             _context = context;
+            _logger = loggerFactory.CreateLogger(GetType());
         }
 
-        public override void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
+        public override async Task OnActionExecutionAsync(
+            ActionExecutingContext context,
+            ActionExecutionDelegate next)
         {
-            base.OnActionExecuting(context);
+            int? id = null;
 
-            // Pobierz aktualny HouseId z Session
-            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
+            if (context.RouteData.Values["id"] != null)
+                id = Convert.ToInt32(context.RouteData.Values["id"]);
 
-            //na chwile
-            houseId = 1;
+            var query = _context.Houses
+                .Where(h => h.IsActive)
+                .AsNoTracking();
 
-            if (houseId.HasValue)
+            if (id.HasValue)
+                query = query.Where(h => h.HouseId == id.Value);
+            else
+                query = query.OrderBy(h => h.HouseId);
+
+            var house = await query.FirstOrDefaultAsync();
+
+            if (house != null)
             {
-                // Pobierz kontakty dla tego domu
-                var contacts = _context.Contacts
-                    .Include(c => c.PhoneNumbers)
-                    .Include(c => c.EmailAddresses)
-                    .Include(c => c.Addresses)
-                    .Where(c => c.HouseId == houseId.Value)
-                    .ToList();
+                var settings = house.HouseSettingsId != null
+                    ? await _context.HouseSettings
+                        .FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                    : await _context.HouseSettings
+                        .FirstOrDefaultAsync(s => s.IsDefault);
 
-                ViewData["Contacts"] = contacts;
+                ViewBag.HouseName = house.Name;
+                ViewBag.ShortText = house.ShortText;
+                ViewBag.LongText = house.LongText;
+                ViewBag.Logo = settings?.LogoFileName;
             }
+
+            await next();
         }
     }
 }

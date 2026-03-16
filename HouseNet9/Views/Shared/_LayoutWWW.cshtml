@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>H</title>
+    <title>Re</title>
     <link rel="icon" type="image/x-icon" href="~/layout/assets/favicon.ico" />
 
     @* Icons *@
@@ -23,7 +23,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Corinthia:wght@400;700&display=swap" rel="stylesheet">
-    
+
+    @RenderSection("Styles", required: false)
+
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="~/layout/css/styles.css" rel="stylesheet" />
 
@@ -40,11 +42,8 @@
         <div class="container px-4 px-lg-5">
             
             @* Logo *@
-            
             <a class="navbar-brand" href="#page-top">
-
-                <img src="~/uploads/logo-hor.png" class="navbar-brand" style="height:72px;" />
-
+                <img src="~/uploads/@ViewBag.Logo" class="navbar-brand" style="height:72px;" />
             </a>
             
             
@@ -54,13 +53,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto">
-@*                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#signup">Contact</a></li> *@
 
-
-
-                    <li class="nav-item">
+@*                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="DescriptionPages" asp-action="Index">DescriptionPages</a>
                     </li>
                     <li class="nav-item">
@@ -77,41 +71,19 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Houses" asp-action="Index">Houses</a>
-                    </li>
+                    </li> *@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Contacts" asp-action="Index">Contact</a>
                     </li>
-
-               
-                
-                
-                
-                
-                
-                
-                
                 </ul>
             </div>
         </div>
     </nav>
-    <!-- Masthead-->
-@*     <header class="masthead">
-        <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
-            <div class="d-flex justify-content-center">
-                <div class="text-center">
-                    <h1 class="mx-auto my-0 text-uppercase">Grayscale</h1>
-                    <h2 class="text-white-50 mx-auto mt-2 mb-5">A free, responsive, one page Bootstrap theme created by Start Bootstrap.</h2>
-                    <a class="btn btn-primary" href="#about">Get Started</a>
-                </div>
-            </div>
-        </div>
-    </header> *@
 
 
     <div class="video-wrapper">
         <video autoplay muted loop playsinline class="video-bg">
             <source src="~/video/compressed_1211.webm" type="audio/webm" />
-          
         </video>
 
         <!-- tutaj twoja treść na wideo -->
@@ -122,8 +94,11 @@
 
                     <img src="~/layout/assets/img/logo.png" style="height: 32rem;" />
                         @* <h1 class="mx-auto my-0 text-uppercase">KING'S REST</h1> *@
-                    <h2 class="text-white mx-auto mt-2 mb-5" style="font-family:Corinthia;">A free, responsive, one page Bootstrap.</h2>
-                    <a class="btn btn-primary" href="#about">Get Started</a>
+
+                        @* Short txt *@
+                    <h2 class="text-white mx-auto mt-2 mb-5" style="font-family:Corinthia;">@ViewBag.HouseName</h2>
+                  
+                    <a class="btn btn-primary" href="#calendaranchor">Zarezerwuj teraz</a>
                 </div>
             </div>
         </div>

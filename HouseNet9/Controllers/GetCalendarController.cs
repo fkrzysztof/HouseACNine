@@ -1,4 +1,6 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers;
+using HouseNet9.Controllers.Abstract;
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Services;
@@ -11,27 +13,30 @@ using NuGet.Configuration;
 
 namespace HouseRent.Controllers
 {
-    public class GetCalendarController : Controller
+
+    public class GetCalendarController : BaseController
     {
-        private readonly ApplicationDbContext _context;
+
+
         private readonly IEmailService _emailService;
         private readonly RentalCalculatorService _calculator;
         private readonly RentalCollisionService _collisionService;
         private readonly IRazorViewToStringRenderer _razorRenderer;
         private readonly IPaymentCalculator _paymentCalculator;
 
-        public GetCalendarController(ApplicationDbContext context, IEmailService emailService, RentalCalculatorService calculator, 
-            RentalCollisionService collisionService, IRazorViewToStringRenderer razorRenderer,IPaymentCalculator paymentCalculator)
+
+        public GetCalendarController(ApplicationDbContext context, IEmailService emailService,
+            RentalCalculatorService calculator, RentalCollisionService collisionService,
+            IRazorViewToStringRenderer razorRenderer, IPaymentCalculator paymentCalculator,
+            ILoggerFactory loggerFactory)
+            : base(context, loggerFactory)
         {
-            _context = context;
             _emailService = emailService;
             _calculator = calculator;
             _collisionService = collisionService;
             _razorRenderer = razorRenderer;
             _paymentCalculator = paymentCalculator;
         }
-
-
 
         //http
         //CreateNewReservation Przygotowanie rezerwacji 1
@@ -53,7 +58,7 @@ namespace HouseRent.Controllers
             return Ok(new
             {
                 success = true,
-                redirectUrl = Url.Action("Create", "GetCalendar") // przekierowanie do Create
+                redirectUrl = Url.Action("Create", "GetCalendar") + "#reservationanchor" // przekierowanie do Create
             });
         }
 
