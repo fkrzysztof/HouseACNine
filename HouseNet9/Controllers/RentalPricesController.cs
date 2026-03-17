@@ -15,9 +15,6 @@ namespace HouseNet9.Controllers
         {
         }
 
-
-
-
         // INDEX – ceny dla konkretnego domu
         public async Task<IActionResult> Index()
         {
@@ -77,6 +74,7 @@ namespace HouseNet9.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, RentalPrice rentalPrice)
         {
+            rentalPrice.HouseId = CurrentHouseId;
             if (id != rentalPrice.RentalPriceID)
                 return NotFound();
 
@@ -99,7 +97,7 @@ namespace HouseNet9.Controllers
             var rentalPrice = await _context.RentalPrices.FindAsync(id);
             if (rentalPrice == null) return NotFound();
 
-            int houseId = rentalPrice.HouseId ?? 0;
+            //int houseId = rentalPrice.HouseId ?? 0;
 
             _context.RentalPrices.Remove(rentalPrice);
             await _context.SaveChangesAsync();

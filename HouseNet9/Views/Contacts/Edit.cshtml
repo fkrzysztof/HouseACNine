@@ -1,5 +1,5 @@
 ﻿@model Data.Data.HouseRentalData.Contact
-
+@Html.AntiForgeryToken()
 
 
 @section Scripts {
@@ -61,17 +61,22 @@
 
             <!-- FORMULARZ -->
             <form method="post" asp-action="Edit" asp-controller="Contacts">
-                @Html.AntiForgeryToken()
+                
                 <input type="hidden" name="ContactId" value="@Model.ContactId" />
 
                 <!-- Nagłówek -->
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <input type="text" name="Name" class="form-control form-control-lg" value="@Model.Name" />
                     <div>
-                        <a asp-action="Delete" asp-route-id="@Model.ContactId" class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('Czy na pewno chcesz usunąć ten kontakt?')">
+@*                         <a asp-action="Delete" asp-route-id="@Model.ContactId" class="btn btn-sm btn-outline-danger m-2">
                             Usuń kontakt
-                        </a>
+                        </a> *@
+                        <form asp-action="Delete" asp-route-id="@Model.ContactId" method="post" class="d-inline">
+                            
+                            <button type="submit" class="btn btn-sm btn-outline-danger m-2">
+                                Usuń kontakt
+                            </button>
+                        </form>
                     </div>
                 </div>
 

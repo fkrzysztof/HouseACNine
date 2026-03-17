@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Data.Data.HouseRentalData;
+﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
+using HouseNet9.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HouseNet9.Controllers
 {
-    public class ContactsController : Controller
+    public class ContactsController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
 
-        public ContactsController(ApplicationDbContext context)
+        public ContactsController(ApplicationDbContext context, ILoggerFactory loggerFactory)
+        :base(context, loggerFactory)
         {
-            _context = context;
         }
 
         // GET: Contacts
         public async Task<IActionResult> Index()
         {
             var contact = await _context.Contacts
+                .Where(w => w.HouseId == CurrentHouseId)
                 .Include(i => i.Addresses)
                 .Include(i => i.EmailAddresses)
                 .Include(i => i.PhoneNumbers)
@@ -31,22 +28,22 @@ namespace HouseNet9.Controllers
         }
 
         // GET: Contacts/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var contact = await _context.Contacts
-                .FirstOrDefaultAsync(m => m.ContactId == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
+        //    var contact = await _context.Contacts
+        //        .FirstOrDefaultAsync(m => m.ContactId == id);
+        //    if (contact == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(contact);
-        }
+        //    return View(contact);
+        //}
 
         // GET: Contacts/Create
         public async Task<IActionResult> Create()
@@ -55,26 +52,24 @@ namespace HouseNet9.Controllers
         }
 
         // POST: Contacts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Contact contact)
         {
-            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
+            var houseId = CurrentHouseId;
             if (!houseId.HasValue)
             {
                 return BadRequest("Nie wybrano domu.");
             }
 
             // Wymuszamy poprawny HouseId
-            contact.HouseId = houseId.Value;
+            contact.HouseId = CurrentHouseId;
 
             if (ModelState.IsValid)
             {
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Details", "Houses", new { id = houseId.Value });
+                return RedirectToAction(nameof(Index));
             }
 
             return View(contact);
@@ -122,7 +117,7 @@ namespace HouseNet9.Controllers
             contactInDb.Name = model.Name;
 
             // ===== Ustawienie domu =====
-            var houseId = HttpContext.Session.GetInt32("CurrentHouseId");
+            var houseId = CurrentHouseId;
             if (houseId.HasValue)
                 contactInDb.HouseId = houseId.Value;
 
@@ -217,67 +212,15 @@ namespace HouseNet9.Controllers
             await _context.SaveChangesAsync();
 
             // Przekierowanie do strony domu
-            return RedirectToAction("Details", "Houses", new { id = houseId });
+            //return RedirectToAction("Details", "Houses", new { id = houseId });
+            return RedirectToAction(nameof(Index));
         }
 
 
-        // POST: Contacts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("ContactId,Name")] Contact contact)
-        //{
-        //    if (id != contact.ContactId)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(contact);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!ContactExists(contact.ContactId))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(contact);
-        //}
-
-        // GET: Contacts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var contact = await _context.Contacts
-                .FirstOrDefaultAsync(m => m.ContactId == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
-
-            return View(contact);
-        }
-
-        // POST: Contacts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        //Contacts/Delete/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int? id)
         {
             var contact = await _context.Contacts.FindAsync(id);
             if (contact != null)

@@ -91,9 +91,23 @@ namespace HouseNet9.Controllers
                 return RedirectToAction("Index", "House");
 
             rentalHouse.HouseId = CurrentHouseId;
-            rentalHouse.ReservationNumber = "jakisnumer";
-            
-
+           // rentalHouse.ReservationNumber = ReservationNumberGenerator.Generate();
+            rentalHouse.CreationDate = DateTime.Now;
+            rentalHouse.IsActive = true;
+            //klient
+            rentalHouse.RentalClientId = null;
+            rentalHouse.RentalClient = null;
+            //platnosci
+            rentalHouse.ToPay = 0;
+            rentalHouse.RentalStatusID = 8; //wynajem własny
+            rentalHouse.DepositAmount = 0;
+            rentalHouse.DepositDueDate = null;
+            rentalHouse.RemainingAmount = 0;
+            rentalHouse.RemainingDueDate = null;
+            rentalHouse.DepositPaidDate = null;
+            rentalHouse.RemainingPaidDate = null;
+            rentalHouse.DepositReminderSent = true;
+            rentalHouse.RemainingReminderSent = false;
 
 
             // 🔹 Walidacja dat
@@ -117,24 +131,10 @@ namespace HouseNet9.Controllers
                 return View(rentalHouse);
             }
 
+            ModelState.Remove(nameof(RentalHouse.ReservationNumber));
             if (ModelState.IsValid)
             {
-                rentalHouse.CreationDate = DateTime.Now;
-                rentalHouse.IsActive = true;
 
-                // 🔹 Właściciel czy klient?
-                if (rentalHouse.RentalClientId == null)
-                {
-                    rentalHouse.ToPay = 0;
-                    rentalHouse.RentalStatusID = 8;
-                }
-                else
-                {
-                    rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
-                    rentalHouse.RentalStatusID = 5; //5 do zapłaty
-                }
-
-                //dodanie numeru i zapis rezerwacji 
                 bool saved = false;
 
                 while (!saved)
@@ -150,11 +150,11 @@ namespace HouseNet9.Controllers
                     }
                     catch (DbUpdateException)
                     {
-                        // kolizja - generujemy nowy numer
+                        // kolizja – próbujemy jeszcze raz
+                        _context.Entry(rentalHouse).State = EntityState.Detached;
                     }
-
-                    
                 }
+
                 return RedirectToAction(nameof(Index));
                
             }
