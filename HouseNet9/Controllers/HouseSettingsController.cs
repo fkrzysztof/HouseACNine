@@ -1,45 +1,57 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
+using System.Runtime;
 
 namespace HouseNet9.Controllers
 {
-    public class HouseSettingsController : Controller
+    public class HouseSettingsController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
         private readonly FileUploadService _fileUploadService;
 
-        public HouseSettingsController(ApplicationDbContext context, FileUploadService fileUploadService)
+        public HouseSettingsController(ApplicationDbContext context, FileUploadService fileUploadService, ILoggerFactory loggerFactory)
+        :base(context, loggerFactory)
         {
-            _context = context;
             _fileUploadService = fileUploadService;
         }
 
         // =========================================
         // DETAILS – pobiera settings dla domu
         // =========================================
-        public async Task<IActionResult> Details(int houseId)
+        public async Task<IActionResult> Details()
         {
+            if (CurrentHouseId is not int houseId)
+            {
+                return RedirectToAction("Index", "Houses");
+            }
+
             var settings = await GetSettingsForHouseAsync(houseId);
-            ViewBag.HouseId = houseId;
-            return View(settings);
+            //ViewBag.HouseId = CurrentHouseId;
+                return View(settings);
         }
 
         // =========================================
         // CREATE – tworzenie nowych ustawień
         // =========================================
-        public IActionResult Create(int houseId)
+        public IActionResult Create()
         {
-            ViewBag.HouseId = houseId;
+            //ViewBag.HouseId = CurrentHouseId;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int houseId, HouseSettings settings, IFormFile logoFile)
+        public async Task<IActionResult> Create(HouseSettings settings, IFormFile logoFile)
         {
+            //tworzymy houseId
+            if (CurrentHouseId is not int houseId)
+            {
+                return RedirectToAction("Index", "Houses");
+            }
+
             settings.IsDefault = false;
             if (!ModelState.IsValid)
                 return View(settings);
@@ -62,14 +74,20 @@ namespace HouseNet9.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Details), new { houseId });
+            return RedirectToAction(nameof(Details));
         }
 
         // =========================================
         // EDIT – edycja ustawień
         // =========================================
-        public async Task<IActionResult> Edit(int id, int houseId)
+        public async Task<IActionResult> Edit(int id)
         {
+            //tworzymy houseId
+            if (CurrentHouseId is not int houseId)
+            {
+                return RedirectToAction("Index", "Houses");
+            }
+
             var settings = await _context.HouseSettings
                 .FirstOrDefaultAsync(s => s.Id == id);
 
@@ -82,10 +100,11 @@ namespace HouseNet9.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int houseId, HouseSettings settings)
+        public async Task<IActionResult> Edit(int id, HouseSettings settings)
         {
             if (id != settings.Id)
                 return BadRequest();
+
 
             var existing = await _context.HouseSettings
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -95,7 +114,7 @@ namespace HouseNet9.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.HouseId = houseId;
+                //ViewBag.HouseId = houseId;
                 return View(settings);
             }
 
@@ -122,7 +141,7 @@ namespace HouseNet9.Controllers
 
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Details), new { houseId });
+            return RedirectToAction(nameof(Details));
         }
 
         // =========================================
@@ -159,8 +178,15 @@ namespace HouseNet9.Controllers
         // =========================================
         // REVERT TO DEFAULT – przywraca domyślne ustawienia dla domu
         // =========================================
-        public async Task<IActionResult> RevertToDefault(int houseId)
+        
+        public async Task<IActionResult> RevertToDefault()
         {
+            //tworzymy houseId
+            if (CurrentHouseId is not int houseId)
+            {
+                return RedirectToAction("Index", "Houses");
+            }
+
             var house = await _context.Houses
                 .Include(h => h.Settings)
                 .FirstOrDefaultAsync(h => h.HouseId == houseId);
@@ -185,7 +211,7 @@ namespace HouseNet9.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Details), new { houseId });
+            return RedirectToAction(nameof(Details));
         }
 
         // =========================================

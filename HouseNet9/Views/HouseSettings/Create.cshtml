@@ -1,7 +1,7 @@
 ﻿@model Data.Data.HouseRentalData.HouseSettings
 @{
     ViewBag.Title = "Dodaj ustawienia domu";
-    var houseId = ViewBag.HouseId;
+    //var houseId = ViewBag.HouseId;
 }
 
 @section Scripts {
@@ -11,7 +11,7 @@
 <h2>Dodaj ustawienia indywidualne obiektu</h2>
 
 <form asp-action="Create" asp-controller="HouseSettings" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="houseId" value="@houseId" />
+   @*  <input type="hidden" name="houseId" value="@houseId" /> *@
 
     <div class="mb-3">
         <label class="form-label">Procent zadatku (%)</label>

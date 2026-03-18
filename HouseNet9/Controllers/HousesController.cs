@@ -28,6 +28,24 @@ namespace HouseNet9.Controllers
             return View(await _context.Houses.Where(w => w.IsActive).ToListAsync());
         }
 
+        //SelectHouse
+        ///przekierowanie do edycji 
+        //+ zapis/aktualizacja sesji
+        public async Task<IActionResult> SelectHouse(int id)
+        {
+            var house = await _context.Houses.FindAsync(id);
+            if (house == null)
+            {
+                return NotFound();
+            }
+
+            // ustawiam sesję
+            HttpContext.Session.SetInt32("AdminCurrentHouseId", house.HouseId);
+            HttpContext.Session.SetString("AdminCurrentHouseName", house.Name);
+
+            // przekierowanie do edit
+            return RedirectToAction("Edit");
+        }
 
         // GET: Houses/Create
         public IActionResult Create()
@@ -49,24 +67,16 @@ namespace HouseNet9.Controllers
             return View(house);
         }
 
-        // GET: Houses/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if(CurrentHouseId == null)
+                return RedirectToAction(nameof(Index));
 
-            var house = await _context.Houses.FindAsync(id);
+            var house = await _context.Houses.FindAsync(CurrentHouseId);
             if (house == null)
             {
                 return NotFound();
             }
-
-            //zapis do sesji ID House
-            HttpContext.Session.SetInt32("AdminCurrentHouseId", house.HouseId);
-            HttpContext.Session.SetString("AdminCurrentHouseName", house.Name);
-
 
             return View(house);
         }
@@ -99,7 +109,7 @@ namespace HouseNet9.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Edit), new { id = CurrentHouseId });
             }
             return View(house);
         }

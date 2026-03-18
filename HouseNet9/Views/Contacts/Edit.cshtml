@@ -1,5 +1,4 @@
 ﻿@model Data.Data.HouseRentalData.Contact
-@Html.AntiForgeryToken()
 
 
 @section Scripts {
@@ -61,7 +60,7 @@
 
             <!-- FORMULARZ -->
             <form method="post" asp-action="Edit" asp-controller="Contacts">
-                
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="ContactId" value="@Model.ContactId" />
 
                 <!-- Nagłówek -->
@@ -71,12 +70,12 @@
 @*                         <a asp-action="Delete" asp-route-id="@Model.ContactId" class="btn btn-sm btn-outline-danger m-2">
                             Usuń kontakt
                         </a> *@
-                        <form asp-action="Delete" asp-route-id="@Model.ContactId" method="post" class="d-inline">
-                            
-                            <button type="submit" class="btn btn-sm btn-outline-danger m-2">
+@*                          <form asp-action="Delete" asp-route-id="@Model.ContactId" method="post" class="d-inline">
+                            @Html.AntiForgeryToken() *@
+                        <button type="submit" name="submitType" value="delete" class="btn btn-sm btn-outline-danger m-2">
                                 Usuń kontakt
                             </button>
-                        </form>
+                @*         </form>  *@
                     </div>
                 </div>
 
@@ -144,9 +143,10 @@
                     </div>
 
                     <!-- Zapis -->
-                    <button type="submit" class="btn btn-success mt-2">💾 Zapisz zmiany</button>
+                    <button type="submit" name="submitType" value="save" class="btn btn-success mt-2">💾 Zapisz zmiany</button>
                 </div>
             </form>
+            <span>tu!!!</span>
         </div>
     </div>
 </div>

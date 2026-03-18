@@ -74,9 +74,6 @@
         @{
             var controllerNow = ViewContext.RouteData.Values["controller"]?.ToString();
             var actionNow = ViewContext.RouteData.Values["action"]?.ToString();
-
-            var houseIdFromSession = Context.Session.GetInt32("CurrentHouseId") ?? 0;
-            var houseNameFromSession = Context.Session.GetString("CurrentHouseName") ?? "Nie wybrano domu";
         }
 
         @if (controllerNow == "DescriptionPages" ||
@@ -92,8 +89,8 @@
         {
             <div class="row">
                 <div class="col-12">
-                    <h5>Edycja domu: @houseNameFromSession</h5>
-                    @await Component.InvokeAsync("HouseTabs", new { houseId = houseIdFromSession })
+                    <h5 class="my-4">Edycja domu: @Context.Session.GetString("AdminCurrentHouseName")</h5>
+                    @await Component.InvokeAsync("HouseTabs", new { houseId = 999 })
 
                 </div>
                 @if((actionNow != "Edit" && controllerNow != "Houses") &&

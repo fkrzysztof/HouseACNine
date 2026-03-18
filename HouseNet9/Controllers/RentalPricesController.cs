@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace HouseNet9.Controllers
 {
@@ -22,10 +23,10 @@ namespace HouseNet9.Controllers
             var house = await _context.Houses.FindAsync(CurrentHouseId);
             if (house == null) return NotFound();
 
-            ViewBag.House = house;
+            //ViewBag.House = house;
 
             var list = await _context.RentalPrices
-                .Where(x => x.HouseId == CurrentHouseId)
+                .Where(x => x.HouseId == CurrentHouseId && x.IsActive)
                 .OrderByDescending(x => x.DateTimeFrom)
                 .ToListAsync();
 
@@ -50,15 +51,18 @@ namespace HouseNet9.Controllers
                 _context.RentalPrices.Add(rentalPrice);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), new { houseId = rentalPrice.HouseId });
+                var list = await _context.RentalPrices
+                                .Where(x => x.HouseId == CurrentHouseId)
+                                .OrderByDescending(x => x.DateTimeFrom)
+                                .ToListAsync();
+                ViewBag.List = list;
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index), new { houseId = rentalPrice.HouseId });
+            return View(rentalPrice);
         }
 
-        // ===========================
         // EDIT GET
-        // ===========================
         public async Task<IActionResult> Edit(int id)
         {
             var rentalPrice = await _context.RentalPrices.FindAsync(id);
@@ -67,9 +71,7 @@ namespace HouseNet9.Controllers
             return View(rentalPrice);
         }
 
-        // ===========================
         // EDIT POST
-        // ===========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, RentalPrice rentalPrice)
@@ -83,36 +85,24 @@ namespace HouseNet9.Controllers
                 _context.Update(rentalPrice);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index), new { houseId = rentalPrice.HouseId });
+                return RedirectToAction(nameof(Index));
             }
 
             return View(rentalPrice);
         }
 
-        // ===========================
-        // DELETE
-        // ===========================
+        // DELETE   IsActive 1/0
         public async Task<IActionResult> Delete(int id)
         {
             var rentalPrice = await _context.RentalPrices.FindAsync(id);
-            if (rentalPrice == null) return NotFound();
+            if (rentalPrice == null) 
+                return NotFound();
 
-            //int houseId = rentalPrice.HouseId ?? 0;
-
-            _context.RentalPrices.Remove(rentalPrice);
+            rentalPrice.IsActive = false;
             await _context.SaveChangesAsync();
 
-            //return RedirectToAction(nameof(Index), new { CurrentHouseId });
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
-
-
-
-
 
 
     }

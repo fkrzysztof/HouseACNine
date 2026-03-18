@@ -17,7 +17,7 @@ namespace Data.Data.HouseRentalData
         public required string City { get; set; }
 
         [Required(ErrorMessage = "Postal code is required")]
-        [RegularExpression(@"^\d{2}-\d{3}$", ErrorMessage = "Postal code must be in format 00-000")]
+        //[RegularExpression(@"^\d{2}-\d{3}$", ErrorMessage = "Postal code must be in format 00-000")]
         public required string PostalCode { get; set; }
 
         [Required(ErrorMessage = "Country is required")]

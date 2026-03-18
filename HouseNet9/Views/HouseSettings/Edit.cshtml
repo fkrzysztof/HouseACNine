@@ -1,7 +1,7 @@
 ﻿@model Data.Data.HouseRentalData.HouseSettings
 @{
     ViewBag.Title = "Edytuj ustawienia domu";
-    var houseId = ViewBag.HouseId;
+    // var houseId = ViewBag.HouseId;
 }
 @section Scripts {
     <script src="~/js/imagepreview.js"></script>
@@ -19,7 +19,7 @@
   </div>
 
 <form asp-action="Edit" asp-controller="HouseSettings" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="houseId" value="@houseId" />
+    @* <input type="hidden" name="houseId" value="@houseId" /> *@
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">

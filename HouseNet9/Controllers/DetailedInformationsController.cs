@@ -194,7 +194,7 @@ namespace HouseNet9.Controllers
         }
 
 
-        public async Task<IActionResult> DeleteDetailedInformationItem(int DetailedInformationItemId, int DetailedInformationItem)
+        public async Task<IActionResult> DeleteDetailedInformationItem(int DetailedInformationItemId, int DetailedInformationId)
         {
             var detailedInformationItem = await _context.DetailedInformationItems.FirstOrDefaultAsync(f =>  f.DetailedInformationItemId == DetailedInformationItemId);
             if (detailedInformationItem != null)
@@ -203,9 +203,8 @@ namespace HouseNet9.Controllers
             }
 
             await _context.SaveChangesAsync();
-            //return RedirectToAction(nameof(Details), new { DetailedInformationItem });
-            //return RedirectToAction(Ind);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = DetailedInformationId });
+
         }
 
 
