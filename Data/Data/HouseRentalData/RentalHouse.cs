@@ -29,7 +29,7 @@ namespace Data.Data.HouseRentalData
                 if (To.Date <= From.Date)
                     return 0;
 
-                return (To.Date - From.Date).Days;
+                return (To.Date - From.Date).Days + 1;
             }
         }
 

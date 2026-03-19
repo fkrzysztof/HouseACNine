@@ -1,25 +1,5 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.RentalHouse>
 @Html.AntiForgeryToken()
-<script>
-    const changeStatusUrl = '@Url.Action("ChangeStatusSelect", "RentalHouse")';
-</script>
-
-
-<div id="status-toast"
-     style="
-     position:fixed;
-     bottom:20px;
-     right:20px;
-     background:#198754;
-     color:white;
-     padding:10px 16px;
-     border-radius:6px;
-     font-size:14px;
-     opacity:0;
-     transition:opacity 0.3s ease;
-     z-index:9999;">
-    Status zapisany
-</div>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="mb-0">Lista Rezerwacji</h4>
@@ -32,154 +12,171 @@
 
     <!-- FILTRY -->
     <form method="get" class="row g-2 mb-3">
-
-        <!-- Od -->
         <div class="col-md-3">
-            <label for="fromDate" class="form-label">Od:</label>
-            <input type="date"
-                   name="fromDate"
-                   id="fromDate"
-                   class="form-control"
-                   value="@ViewData["FromDate"]" />
+            <label class="form-label">Od:</label>
+            <input type="date" name="fromDate" class="form-control" value="@ViewData["FromDate"]" />
         </div>
-
-        <!-- Do -->
         <div class="col-md-3">
-            <label for="toDate" class="form-label">Do:</label>
-            <input type="date"
-                   name="toDate"
-                   id="toDate"
-                   class="form-control"
-                   value="@ViewData["ToDate"]" />
+            <label class="form-label">Do:</label>
+            <input type="date" name="toDate" class="form-control" value="@ViewData["ToDate"]" />
         </div>
-
-        <!-- Wyszukiwanie klienta -->
         <div class="col-md-4">
-            <label for="clientSearch" class="form-label">Klient:</label>
-            <input type="text"
-                   name="clientSearch"
-                   id="clientSearch"
-                   class="form-control"
+            <label class="form-label">Klient:</label>
+            <input type="text" name="clientSearch" class="form-control"
                    placeholder="Wpisz imię lub nazwisko..."
                    value="@ViewData["ClientSearch"]" />
         </div>
-
-        <!-- Przyciski -->
         <div class="col-md-2 align-self-end d-grid gap-2">
-            <button type="submit" class="btn btn-primary">
-                Filtruj
-            </button>
-
-            <a asp-action="Index"
-               class="btn btn-outline-secondary">
-                Reset
-            </a>
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
         </div>
-
     </form>
 
-    <!-- TABELA -->
-<table class="table table-striped table-hover align-middle">
-    <thead class="table-dark">
-        <tr>
-          @*   <th>Dom</th> *@
-            <th>Klient</th>
-            <th>Status</th>
-            <th>Od</th>
-            <th>Do</th>
-            <th>Nocy</th>
-            <th>Do zapłaty</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-         @*        <td>@item.House?.Name</td> *@
-                <td>@item.RentalClient?.FullName</td>
+    <!-- PRZEŁĄCZNIKI AKTYWNE / USUNIĘTE / WSZYSTKIE -->
+@{
+    var showStatusVal = ViewData["ShowStatus"]?.ToString() ?? "active";
+}
 
+<div class="mb-3">
+    <a asp-action="Index" asp-route-showStatus="active" 
+       class="btn btn-sm @(showStatusVal == "active" ? "btn-success" : "btn-outline-success")">
+        Aktywne
+    </a>
 
-                    <td>
-                        @{
+    <a asp-action="Index" asp-route-showStatus="inactive" 
+       class="btn btn-sm @(showStatusVal == "inactive" ? "btn-danger" : "btn-outline-danger")">
+        Usunięte
+    </a>
 
-                            var color = item.RentalStatus?.Color ?? "gray";
-                            var statuses = ViewBag.Statuses as List<Data.Data.HouseRentalData.RentalStatus>;
-                        }
-
-                        @* Jeśli wynajem własny -> czarne kółko z napisem *@
-                        @if (item.RentalStatusID == 8)
-                        {
-                            <span class="badge bg-dark d-inline-flex align-items-center justify-content-center"
-                                  style="width: 100%; min-width: 100px; padding: 0.5rem; font-size: 0.9rem;">
-                                Wynajem własny
-                            </span>
-                            
-                        }
-                        else
-                        {
-                            <div class="d-flex align-items-center gap-2">
-                            <!-- Koło jako wskaźnik statusu -->
-                                <span class="status-indicator"
-                                      style="
-                                      display:inline-block;
-                                      width:15px;
-                                      height:15px;
-                                      border-radius:50%;
-                                      background-color:@color;
-                                      ">
-                                </span>
-
-                            <!-- Select do zmiany statusu -->
-                            <select class="form-select status-select"
-                                    data-id="@item.RentalHouseID"
-                                    id="status_@item.RentalHouseID"
-                                    name="status_@item.RentalHouseID"
-                                    style="width:auto;">
-                                @foreach (var status in statuses)
-                                {
-                                    @Html.Raw($"<option value='{status.RentalStatusID}' {(item.RentalStatusID == status.RentalStatusID ? "selected='selected'" : "")}>{status.Name}</option>")
-                                }
-                            </select>
-                            </div>
-
-                        }
-                    </td>
-
-
-
-
-
-                <td>@item.From.ToString("yyyy-MM-dd")</td>
-                <td>@item.To.ToString("yyyy-MM-dd")</td>
-                <td>@item.HowManyDaysFromSelect</td>
-                <td>@item.ToPay.ToString("C")</td>
-                <td>
-                    <div class="d-flex gap-2">
-                        <form asp-action="Delete" asp-route-id="@item.RentalHouseID" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-outline-danger text-end"
-                                    onclick="return confirm('Czy na pewno chcesz dezaktywować tę rezerwację?');">
-                                Usuń
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-
-    <h3 class="text-end">
-        Suma: @((ViewData["SumPrice"] as decimal?)?.ToString("F2") ?? "0.00")
-    </h3>
-
+    <a asp-action="Index" asp-route-showStatus="all" 
+       class="btn btn-sm @(showStatusVal == "all" ? "btn-secondary" : "btn-outline-secondary")">
+        Wszystkie
+    </a>
 </div>
 
+    <!-- TABELA -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nr</th>
+                    <th>Klient</th>
+                    <th>Status</th>
+                    <th>Od</th>
+                    <th>Do</th>
+                    <th>Nocy</th>
+                    <th>Do zapłaty</th>
+                    <th>Zaliczka</th>
+                    <th>Pozostało</th>
+                    <th></th>
+                </tr>
+            </thead>
 
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="@(item.IsActive ? "" : "opacity-50")">
+                        <td>@item.ReservationNumber</td>
 
+                        <td>
+                            @if (item.RentalClient != null)
+                            {
+                                <button class="btn btn-sm btn-outline-info mx-2 show-client-details"
+                                        data-bs-toggle="modal" data-bs-target="#clientModal"
+                                        data-fullname="@item.RentalClient.FullName"
+                                        data-email="@item.RentalClient.Email"
+                                        data-phone="@item.RentalClient.Phone"
+                                        data-address="@item.RentalClient.FullAddress"
+                                        data-reservation="@item.ReservationNumber"
+                                        data-status="@item.RentalStatus?.Name"
+                                        data-annotations="@item.Annotations"
+                                        data-depositreminder="@item.DepositReminderSent"
+                                        data-remainingreminder="@item.RemainingReminderSent">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            }
+                            @item.RentalClient?.FullName
+                        </td>
 
+                        <td>
+                            @{
+                                var color = item.RentalStatus?.Color ?? "gray";
+                                var statuses = ViewBag.Statuses as List<Data.Data.HouseRentalData.RentalStatus>;
+                            }
 
-@section Scripts {
-<script src="~/js/rentalhouse.js" asp-append-version="true"></script>
-}
+                            @if (item.RentalStatusID == 8)
+                            {
+                                <span class="badge bg-dark w-100">Wynajem własny</span>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="width:15px; height:15px; border-radius:50%; background:@color;"></span>
+
+                                    <select class="form-select status-select"
+                                            data-id="@item.RentalHouseID"
+                                            style="width:auto;">
+                                        @foreach (var status in statuses)
+                                        {
+                                            @Html.Raw($"<option value='{status.RentalStatusID}' {(item.RentalStatusID == status.RentalStatusID ? "selected" : "")}>{status.Name}</option>")
+                                        }
+                                    </select>
+                                </div>
+                            }
+                        </td>
+
+                        <td>@item.From.ToString("yyyy-MM-dd")</td>
+                        <td>@item.To.ToString("yyyy-MM-dd")</td>
+                        <td>@item.HowManyDaysFromSelect</td>
+
+                        <td>@item.ToPay.ToString("C")</td>
+
+                        <td>
+                            @if (item.DepositPaidDate != null)
+                            {
+                                @item.DepositAmount.ToString("C") <i class="bi bi-check-lg text-success mx-2"></i>
+                            }
+                            else
+                            {
+                                @item.DepositAmount.ToString("C")
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.RemainingPaidDate != null)
+                            {
+                                @item.RemainingAmount.ToString("C") <i class="bi bi-check-lg text-success mx-2"></i>
+                            }
+                            else
+                            {
+                                @item.RemainingAmount.ToString("C")
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <form asp-action="Delete" asp-route-id="@item.RentalHouseID" method="post">
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Usunąć rezerwację?');">
+                                        Usuń
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="Restore" asp-route-id="@item.RentalHouseID" method="post">
+                                    <button class="btn btn-sm btn-outline-success">Przywróć</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h4 class="text-end">
+        Suma: @((ViewData["SumPrice"] as decimal?)?.ToString("F2") ?? "0.00") @ViewBag.Currency
+    </h4>
+</div>

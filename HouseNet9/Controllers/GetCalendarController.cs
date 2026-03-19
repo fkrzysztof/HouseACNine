@@ -188,6 +188,12 @@ namespace HouseRent.Controllers
             // naliczanie ceny całkowitej
             rentalHouse.ToPay = await _calculator.CalculatePriceAsync(rentalHouse);
 
+            //dodaje informacje do adnotacji
+            var rentalStatusName = _context.RentalStatus.FirstOrDefault(f => f.RentalStatusID == 5).Name;
+            if (rentalStatusName != null)
+            {
+                rentalHouse.Annotations += $"{DateTime.Now:yyyy-MM-dd HH:mm} - zmiana statusu na: {rentalStatusName}\n";
+            }
             // pobranie settings
             var house = await _context.Houses
                 .Include(h => h.Contacts)
@@ -342,29 +348,33 @@ namespace HouseRent.Controllers
             if (house == null)
                 return NotFound();
 
-            HouseSettings? settings = null;
+            //HouseSettings? settings = null;
 
-            if (house.HouseSettingsId != null)
-            {
-                settings = await _context.HouseSettings
-                    .FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId);
-            }
+            //if (house.HouseSettingsId != null)
+            //{
+            //    settings = await _context.HouseSettings
+            //        .FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId);
+            //}
 
-            if (settings == null)
-            {
-                settings = await _context.HouseSettings
-                    .FirstOrDefaultAsync(s => s.IsDefault);
-            }
+            //if (settings == null)
+            //{
+            //    settings = await _context.HouseSettings
+            //        .FirstOrDefaultAsync(s => s.IsDefault);
+            //}
 
-            if (settings == null)
-            {
-                // awaryjne ustawienia żeby widok nie padł
-                settings = new HouseSettings
-                {
-                    Currency = "PLN",
-                    DepositPercentage = 30
-                };
-            }
+            //if (settings == null)
+            //{
+            //    // awaryjne ustawienia żeby widok nie padł
+            //    settings = new HouseSettings
+            //    {
+            //        Currency = "PLN",
+            //        DepositPercentage = 30
+            //    };
+            //}
+
+
+                var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                                 : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
 
             var paymentInfo = _paymentCalculator.Calculate(
                 rental.ToPay,

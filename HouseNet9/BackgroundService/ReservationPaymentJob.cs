@@ -64,7 +64,8 @@ namespace HouseNet9.BackgroundService
                 {
                     if (cancelledStatus != null)
                         reservation.RentalStatusID = cancelledStatus.RentalStatusID;
-
+                    
+                    reservation.Annotations += $"{DateTime.Now:yyyy-MM-dd HH:mm} - usunięto automatycznie rezerwację\n";
                     await _notificationService.SendReservationCancelledAsync(reservation);
                 }
 

@@ -33,8 +33,6 @@
                     return;
                 }
 
-                //ViewBag.AdminCurrentHouseName = CurrentHouseName;
-
                 await next();
             }
         }

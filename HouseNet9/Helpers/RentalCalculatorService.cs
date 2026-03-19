@@ -22,7 +22,7 @@ namespace HouseNet9.Helpers
             if (rental.To.Date <= rental.From.Date)
                 return 0;
 
-            int nights = (rental.To.Date - rental.From.Date).Days;
+            int nights = (rental.To.Date - rental.From.Date).Days +1; //bo ostatni dzien to ostatni noclega nie checkout
 
             var prices = await _context.RentalPrices
                 .Where(p => p.HouseId == rental.HouseId && p.IsActive)
@@ -34,7 +34,7 @@ namespace HouseNet9.Helpers
 
             decimal total = 0;
 
-            for (var date = rental.From.Date; date < rental.To.Date; date = date.AddDays(1))
+            for (var date = rental.From.Date; date <= rental.To.Date; date = date.AddDays(1))
             {
                 var priceForDay = prices
                     .LastOrDefault(p =>
@@ -47,10 +47,10 @@ namespace HouseNet9.Helpers
 
                 decimal dailyPrice;
 
-                if (nights >= 13)
-                    dailyPrice = priceForDay.TwoWeeks / 13m;
+                if (nights >= 14)
+                    dailyPrice = priceForDay.TwoWeeks / 14m;
                 else
-                    dailyPrice = priceForDay.OneWeek / 6m;
+                    dailyPrice = priceForDay.OneWeek / 7m;
 
                 total += dailyPrice;
             }

@@ -22,17 +22,32 @@ namespace HouseNet9.Controllers
         }
 
 
-        public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate, string? clientSearch)
+        public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate, string? clientSearch, string? showStatus)
         {
-
-
             var query = _context.RentalHouses
                 .Where(w => w.HouseId == CurrentHouseId)
                 .Include(r => r.House)
                 .Include(r => r.RentalClient)
                 .Include(r => r.RentalStatus)
-                .Where(r => r.IsActive == true)
+                //.Where(r => r.IsActive == true)
                 .AsQueryable();
+
+            // Filtr statusu
+            switch (showStatus)
+            {
+                case "active":
+                    query = query.Where(r => r.IsActive == true);
+                    break;
+                case "inactive":
+                    query = query.Where(r => r.IsActive == false);
+                    break;
+                case "all":
+                default:
+                    // brak filtra - wszystkie
+                    break;
+            }
+
+            ViewData["ShowStatus"] = showStatus ?? "active"; // domyślnie aktywne
 
             ViewBag.Statuses = await _context.RentalStatus
                                 .OrderBy(s => s.RentalStatusID)
@@ -55,9 +70,15 @@ namespace HouseNet9.Controllers
 
             query = query.OrderByDescending(r => r.CreationDate);
 
+            var house = await _context.Houses.FirstOrDefaultAsync(h => h.HouseId == CurrentHouseId);
+            if (house != null)
+            {
+                var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+                                                 : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
+                ViewBag.Currency = settings?.Currency;
+            }
             ViewData["ClientSearch"] = clientSearch;
             ViewData["SumPrice"] = query.Sum(p => p.ToPay);
-
 
             return View(await query.ToListAsync());
         }
@@ -180,7 +201,10 @@ namespace HouseNet9.Controllers
 
             if (status == null) return NotFound();
 
+
             rental.RentalStatusID = status.RentalStatusID;
+            //dodanie informaci do adnotacji
+            rental.Annotations += $"{DateTime.Now:yyyy-MM-dd HH:mm} - zmiana statusu na: {status.Name}\n";
             await _context.SaveChangesAsync();
 
             // Flaga informująca, czy wysłano mail
@@ -189,11 +213,15 @@ namespace HouseNet9.Controllers
             //wysylanie maila
             if (status.RentalStatusID == 6) // Wpłacono zaliczkę
             {
+                rental.DepositPaidDate = DateTime.Now;
                 await _notificationService.SendDepositConfirmedAsync(rental);
+                
                 emailSent = true;
             }
             else if (status.RentalStatusID == 1) // Zapłacono całość
             {
+                rental.DepositPaidDate ??= DateTime.Now;
+                rental.RemainingPaidDate = DateTime.Now;
                 await _notificationService.SendFullPaymentConfirmedAsync(rental);
                 emailSent = true;
             }
@@ -220,9 +248,26 @@ namespace HouseNet9.Controllers
             var rentalHouse = await _context.RentalHouses.FindAsync(id);
             if (rentalHouse == null) return NotFound();
 
+            rentalHouse.Annotations += $"{DateTime.Now:yyyy-MM-dd HH:mm} - usunięto rezerwację\n";
+
             rentalHouse.IsActive = false;
             _context.Update(rentalHouse);
             await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Restore/Delete    IsActive 1/0
+        [HttpPost]
+        public async Task<IActionResult> Restore(int id)
+        {
+            var rental = await _context.RentalHouses.FindAsync(id);
+            if (rental != null)
+            {
+                rental.Annotations += $"{DateTime.Now:yyyy-MM-dd HH:mm} - przywrócono rezerwację\n";
+                rental.IsActive = true;
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToAction(nameof(Index));
         }
