@@ -1,12 +1,13 @@
 ﻿namespace HouseNet9.Controllers.Abstract
 {
     using global::HouseNet9.Data;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
 
     namespace HouseNet9.Controllers.Admin
     {
-        //[Authorize]
+        [Authorize]
         public class BaseAdminController : Controller
         {
             protected readonly ApplicationDbContext _context;

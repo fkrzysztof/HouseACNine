@@ -25,9 +25,19 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false) //true na serwer
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false) //true na serwer
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+//Role
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); // <-- Razor Pages JEST KONIECZNE DO IDENTITY
 
 builder.Services.AddScoped<FileUploadService>();
 builder.Services.AddScoped<RentalCalculatorService>();
@@ -109,4 +119,43 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-app.Run();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string adminRole = "Admin";
+    string adminEmail = "admin@example.com";
+    string adminPassword = "Haslo123!";
+
+    // 1️⃣ Tworzymy rolę, jeśli jeszcze nie istnieje
+    if (!await roleManager.RoleExistsAsync(adminRole))
+    {
+        await roleManager.CreateAsync(new IdentityRole(adminRole));
+    }
+
+    // 2️⃣ Sprawdzamy, czy użytkownik istnieje
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new IdentityUser
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        // 3️⃣ Jeśli udało się utworzyć użytkownika, przypisujemy rolę
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, adminRole);
+        }
+    }
+}
+await app.RunAsync();
+//app.Run();

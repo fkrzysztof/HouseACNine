@@ -1,0 +1,11 @@
+﻿@{
+    // Wybór layoutu w zależności od roli użytkownika
+    if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+    {
+        Layout = "_LayoutEdit"; // dla admina
+    }
+    else
+    {
+        Layout = "_LayoutWWW";  // dla klienta
+    }
+}

@@ -1,31 +1,18 @@
 ﻿@{
+    //Layout = "_Layout"; // centralny layout
+
     // Pobranie nazwy kontrolera i akcji
-    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    // var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    // var action = ViewContext.RouteData.Values["action"]?.ToString();
 
-    // Domyślny layout
-    //Layout = "_LayoutEdit";
 
-    // Wybór layoutu w zależności od kontrolera (i opcjonalnie akcji)
-    switch (controller)
-    {
-        case "Home":
-            Layout = "_LayoutWWW";  // wszystkie akcje Home używają Layout1
-            break;
-        case "GetCalendar":
-            Layout = "_LayoutWWW";  // wszystkie akcje GetCalendar używają Layout2
-            break;
-        default: Layout = "_LayoutEdit"; break;
-    }
+ }
 
-    // Jeśli chcesz uwzględnić też akcję
-    /*
-    if(controller == "GetCalendar" && action == "Create")
-    {
-        Layout = "_LayoutSpecial"; // np. layout tylko dla Create
-    }
-    */
+
+@{
+    Layout = (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+        ? "_LayoutEdit"
+        : "_LayoutWWW";
 }
-
 
 
