@@ -25,7 +25,13 @@ namespace HouseNet9.Controllers
         // GET: Houses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Houses.Where(w => w.IsActive).ToListAsync());
+            // return View(await _context.Houses.Where(w => w.IsActive).ToListAsync());
+            var houses = _context.Houses
+        .Include(h => h.DescriptionPages)
+            .ThenInclude(dp => dp.Images)
+        .ToList();
+            return View(houses);
+
         }
 
         //SelectHouse

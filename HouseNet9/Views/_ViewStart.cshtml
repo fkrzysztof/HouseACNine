@@ -1,18 +1,39 @@
-﻿@{
-    //Layout = "_Layout"; // centralny layout
-
-    // Pobranie nazwy kontrolera i akcji
-    // var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-    // var action = ViewContext.RouteData.Values["action"]?.ToString();
-
-
- }
-
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
-    Layout = (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
-        ? "_LayoutEdit"
-        : "_LayoutWWW";
+    // Pobranie kontrolera i akcji
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    // Kontrolery, które zawsze mają _LayoutWWW (Home, GetCalendar)
+    var alwaysWWWControllers = new[] { "Home", "GetCalendar" };
+
+    // Domyślnie layout www
+    Layout = "_LayoutWWW";
+
+    // Jeśli kontroler nie jest w alwaysWWWControllers
+    if (!alwaysWWWControllers.Contains(controller, StringComparer.OrdinalIgnoreCase))
+    {
+        // Sprawdzenie, czy użytkownik jest zalogowany i admin
+        var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+        var isAdmin = false;
+
+        if (isAuthenticated)
+        {
+            // Pobieramy użytkownika z bazy
+            var user = UserManager.GetUserAsync(User).Result;
+            if (user != null)
+            {
+                // Sprawdzamy, czy użytkownik ma rolę Admin
+                isAdmin = UserManager.IsInRoleAsync(user, "Admin").Result;
+            }
+        }
+
+        if (isAdmin)
+        {
+            Layout = "_LayoutEdit"; // admin na stronach innych niż Home/GetCalendar
+        }
+    }
 }
-
-

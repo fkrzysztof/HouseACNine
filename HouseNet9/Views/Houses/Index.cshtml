@@ -1,25 +1,86 @@
 ﻿@model IEnumerable<Data.Data.HouseRentalData.House>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">Obiekty</h4>
-    <a asp-action="Create" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Dodaj
+    <h3 class="fw-bold">Obiekty</h3>
+    <a asp-action="Create" class="btn btn-success shadow-sm">
+        <i class="bi bi-plus-lg"></i> Dodaj obiekt
     </a>
 </div>
 
-<div class="row">
+<div class="row g-4">
     @foreach (var item in Model)
     {
-        <div class="col-lg-6">
-            <div class="card m-2">
-                <div class="card-body">
-                    <span>@Html.DisplayFor(modelItem => item.Name)</span><span class="float-end">
-                        <a class="nav-link" asp-action="SelectHouse" asp-route-id="@item.HouseId"><img src="~/uploads/edit_square_24.svg" class="edit-options" /></a>
-                    </span>
+        var images = item.DescriptionPages?
+        .SelectMany(dp => dp.Images)
+        .OrderBy(i => i.Order)
+        .ToList();
+
+        var carouselId = $"carousel_{item.HouseId}";
+
+        <div class="col-md-6 col-xl-4">
+            <div class="card house-card h-100 border-0 shadow-sm">
+
+                <!-- GALERIA -->
+                @if (images != null && images.Any())
+                {
+                    <div id="@carouselId" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+
+                            @for (int i = 0; i < images.Count; i++)
+                            {
+                                <div class="carousel-item @(i == 0 ? "active" : "")">
+                                    <img src="~/uploads/@images[i].Path"
+                                         class="d-block w-100 house-img"
+                                         alt="Zdjęcie domu">
+                                </div>
+                            }
+
+                        </div>
+
+                        <!-- strzałki -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="no-image d-flex align-items-center justify-content-center">
+                        Brak zdjęcia
+                    </div>
+                }
+
+                <!-- 📄 BODY -->
+                <div class="card-body d-flex flex-column justify-content-between">
+
+                    <div>
+                        <h5 class="card-title fw-semibold">@item.Name</h5>
+
+                        <p class="text-muted small">
+                            @(item.ShortText ?? "Brak opisu")
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="SelectHouse"
+                           asp-route-id="@item.HouseId"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Zarządzaj
+                        </a>
+
+                        <span class="badge bg-success">Aktywny</span>
+                    </div>
+
                 </div>
             </div>
         </div>
     }
 </div>
 
-
+@section Scripts {
+    <link href="~/css/houses.css" rel="stylesheet" />
+}

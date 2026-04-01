@@ -1,12 +1,13 @@
 ﻿@{
-    // Wybór layoutu w zależności od roli użytkownika
-    if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var alwaysWWWControllers = new[] { "Home", "GetCalendar" };
+
+    if (!alwaysWWWControllers.Contains(controller, StringComparer.OrdinalIgnoreCase))
     {
-        Layout = "_LayoutEdit"; // dla admina
+        Layout = "_LayoutEdit"; // wszystkie inne strony mają layout edit
     }
     else
     {
-        Layout = "_LayoutWWW";  // dla klienta
+        Layout = "_LayoutWWW"; // Home i GetCalendar zawsze layout www
     }
 }
-

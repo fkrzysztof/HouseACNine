@@ -1,0 +1,22 @@
+﻿.house-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+    .house-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+.house-img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.no-image {
+    height: 220px;
+    background: #f1f1f1;
+    color: #888;
+    font-size: 14px;
+}
