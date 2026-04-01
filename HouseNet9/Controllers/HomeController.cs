@@ -2,6 +2,8 @@ using Data.Data.HouseRentalData;
 using HouseNet9.Controllers.Abstract;
 using HouseNet9.Data;
 using HouseNet9.Models;
+using HouseNet9.ViewModels;
+using Mail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +12,15 @@ using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
+
     public class HomeController : BaseController
     {
 
-
-        public HomeController(ILoggerFactory loggerFactory, ApplicationDbContext context)
+        private readonly IEmailService _emailService;
+        public HomeController(ILoggerFactory loggerFactory, ApplicationDbContext context, IEmailService emailService)
         : base(context, loggerFactory)
         {
+            _emailService = emailService;
         }
 
 
@@ -82,6 +86,47 @@ namespace HouseNet9.Controllers
             ViewBag.Detailed = di;
 
             return View(dp);
+        }
+
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SendEmail(ContactFooterVM vm)
+        {
+            var model = vm.Form;
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Uzupełnij poprawnie formularz!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Tworzymy treść maila
+            var subject = $"Nowa wiadomość od {model.Name}";
+            var body = $@"
+            Imię: {model.Name} <br />
+            Email: {model.Email} <br />
+            Wiadomość: <br />
+            {model.Message}
+            ";
+
+            try
+            {
+                // Wysyłamy maila 
+                _emailService.SendEmailAsync("kontakt@twojadomena.pl", subject, body);
+
+                TempData["Success"] = "Wiadomość wysłana!";
+            }
+            catch (Exception ex)
+            {
+                // Możesz zalogować błąd
+                _logger.LogError(ex, "Błąd wysyłania maila z formularza kontaktowego.");
+                TempData["Error"] = "Wystąpił błąd podczas wysyłania wiadomości.";
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
 

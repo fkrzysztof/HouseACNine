@@ -1,55 +1,138 @@
-﻿@model List<Data.Data.HouseRentalData.Contact>
+﻿@using HouseNet9.ViewModels
+@model ContactFooterVM
 
-<div class="row my-4">
-    @if (Model?.Any() == true)
-    {
-        foreach (var contact in Model)
-        {
-            <div class="col-4">
-                <strong>@contact.Name</strong><br />
 
-                @if (contact.Addresses?.Any() == true)
-                {
-                    foreach (var address in contact.Addresses)
+
+
+@* ********************************** Formularz kontaktowy ********************************** *@
+<section class="signup-section" id="signup">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-md-10 col-lg-8 mx-auto text-center">
+                <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
+                <h2 class="text-white mb-5">Subscribe to receive updates!</h2>
+
+                <form asp-controller="Home" asp-action="SendEmail" method="post">
+                    @Html.AntiForgeryToken()
+
+                    @* Alert dla formularza *@
+                    @if (TempData["Success"] != null)
                     {
-                        @address.Street
-        
-                        <br />
-                        @address.PostalCode @address.City
-        
-                        <br />
-                        @address.Country
-        
-                        <br />
+                        <div class="alert alert-success text-center">
+                            @TempData["Success"]
+                        </div>
                     }
-                }
 
-                @if (contact.EmailAddresses?.Any() == true)
-                {
-                    foreach (var email in contact.EmailAddresses)
+                    @if (TempData["Error"] != null)
                     {
-                        @email.Email
-        
-                        <br />
+                        <div class="alert alert-danger text-center">
+                            @TempData["Error"]
+                        </div>
                     }
-                }
 
-                @if (contact.PhoneNumbers?.Any() == true)
-                {
-                    foreach (var phone in contact.PhoneNumbers)
-                    {
-                        @phone.Number
-        
-                        <br />
-                    }
-                }
+                    <div class="row input-group-newsletter">
+
+                        <div class="col-md-6 my-2">
+                            <input asp-for="Form.Name" class="form-control" placeholder="Imię" />
+                            <span asp-validation-for="Form.Name" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <input asp-for="Form.Email" class="form-control" placeholder="Email" />
+                            <span asp-validation-for="Form.Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-12 my-2">
+                            <textarea asp-for="Form.Message" class="form-control" placeholder="Wiadomość" style="height:200px;"></textarea>
+                            <span asp-validation-for="Form.Message" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <button class="btn btn-primary w-100" type="submit">Wyślij</button>
+                        </div>
+
+                    </div>
+                </form>
+
             </div>
-        }
-    }
-    else
-    {
-        <div class="col-4">
-            <p>Brak danych kontaktowych dla tego domu.</p>
         </div>
-    }
-</div>
+    </div>
+</section>
+
+<div class="w-100" style="height: 10px; background-color: black; clip-path: polygon(50% 100%, 0 0, 100% 0);">
+
+@* <footer class="bg-white position-relative"> *@
+<footer class="bg-white position-relative">
+    <div class="container py-4">
+        <div class="row">
+            @if (Model.Contacts?.Any() == true)
+            {
+                foreach (var contact in Model.Contacts)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="p-3 h-100">
+                            <h5 class="fw-bold">@contact.Name</h5>
+
+                            @* Adresy *@
+                            @if (contact.Addresses?.Any() == true)
+                            {
+                                <div class="mb-2">
+                                    <strong>Adres:</strong><br />
+                                    @foreach (var addr in contact.Addresses)
+                                    {
+                                        <text>
+                                            @addr.Street, @addr.PostalCode @addr.City<br />
+                                            @addr.Country<br />
+                                        </text>
+                                    }
+                                </div>
+                            }
+
+                            @* Email *@
+                            @if (contact.EmailAddresses?.Any() == true)
+                            {
+                                <div class="mb-2">
+                                    <strong>Email:</strong><br />
+                                    @foreach (var em in contact.EmailAddresses)
+                                    {
+                                        <text>
+                                            <a href="mailto:@em.Email">@em.Email</a><br />
+                                        </text>
+                                    }
+                                </div>
+                            }
+
+                            @* Telefony *@
+                            @if (contact.PhoneNumbers?.Any() == true)
+                            {
+                                <div class="mb-2">
+                                    <strong>Telefon:</strong><br />
+                                    @foreach (var ph in contact.PhoneNumbers)
+                                    {
+                                        <text>
+                                            <a href="tel:@ph.Number">@ph.Number</a><br />
+                                        </text>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <p>Brak danych kontaktowych dla tego domu.</p>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/Privacy" class="me-3">Polityka prywatności</a>
+            <span>© 2026 HouseNet9</span>
+        </div>
+    </div>
+
+    @* Czarny trójkąt dekoracyjny *@
+@*     <div class="position-absolute w-100 top-0" style="height: 10px; background-color: black; clip-path: polygon(50% 100%, 0 0, 100% 0);"> *@
+    </div>
+</footer>
