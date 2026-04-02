@@ -1,0 +1,24 @@
+﻿@model HouseNet9.ViewModels.CommentModerationViewModel
+
+<h3>Moderacja komentarza</h3>
+
+<div class="mb-3">
+    <label>Opinia klienta</label>
+    <p class="p-2 border bg-light">@Model.ClientText</p>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" asp-for="IsApproved" class="form-check-input" id="IsApproved" />
+        <label class="form-check-label" for="IsApproved">Zatwierdzony</label>
+    </div>
+
+    <div class="mb-3">
+        <label>Dopisz komentarz admina</label>
+        <textarea class="form-control" asp-for="AdminText" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Zapisz zmiany</button>
+</form>

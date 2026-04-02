@@ -12,7 +12,7 @@
                 <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
                 <h2 class="text-white mb-5">Subscribe to receive updates!</h2>
 
-                <form asp-controller="Home" asp-action="SendEmail" method="post">
+                <form asp-controller="Home" asp-action="SendEmail" method="post" class="form-signup">
                     @Html.AntiForgeryToken()
 
                     @* Alert dla formularza *@
@@ -58,10 +58,7 @@
     </div>
 </section>
 
-<div class="w-100" style="height: 10px; background-color: black; clip-path: polygon(50% 100%, 0 0, 100% 0);">
-
-@* <footer class="bg-white position-relative"> *@
-<footer class="bg-white position-relative">
+<footer class="bg-white">
     <div class="container py-4">
         <div class="row">
             @if (Model.Contacts?.Any() == true)
@@ -132,7 +129,4 @@
         </div>
     </div>
 
-    @* Czarny trójkąt dekoracyjny *@
-@*     <div class="position-absolute w-100 top-0" style="height: 10px; background-color: black; clip-path: polygon(50% 100%, 0 0, 100% 0);"> *@
-    </div>
 </footer>

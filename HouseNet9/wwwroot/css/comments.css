@@ -1,0 +1,51 @@
+﻿/*.comment-card {
+    transition: 0.2s;
+    border-radius: 12px;
+}
+
+    .comment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+
+
+.comment-card {
+    border-radius: 0.5rem;
+    transition: transform 0.2s;
+}
+
+    .comment-card:hover {
+        transform: translateY(-3px);
+    }
+
+.comment-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s;
+}
+
+.text-warning span {
+    color: gold;
+    font-size: 1.2rem;
+}*/
+
+.comment-card {
+    border-radius: 0.5rem;
+    transition: transform 0.2s;
+}
+
+    .comment-card:hover {
+        transform: translateY(-3px);
+    }
+
+.comment-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s;
+}
+
+.text-warning span {
+    color: gold;
+    font-size: 1.2rem;
+}

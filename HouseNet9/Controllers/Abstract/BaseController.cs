@@ -48,7 +48,7 @@ namespace HouseNet9.Controllers.Abstract
                 ViewBag.ShortText = house.ShortText;
                 ViewBag.LongText = house.LongText;
                 ViewBag.Logo = settings?.LogoFileName;
-                ViewBag.IdHouse = id;
+                ViewBag.IdHouse = house.HouseId;
             }
 
             await next();
