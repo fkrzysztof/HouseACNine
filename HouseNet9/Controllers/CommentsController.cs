@@ -1,10 +1,12 @@
 ﻿using Data.Data.HouseRentalData;
 using HouseNet9.Data;
+using HouseNet9.Helpers;
 using HouseNet9.Models;
 using HouseNet9.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace HouseNet9.Controllers
 {
@@ -98,7 +100,7 @@ namespace HouseNet9.Controllers
 
         // POST
         [HttpPost]
-        public IActionResult Add(Comment model)
+        public async Task<IActionResult> Add(Comment model)
         {
             // Sprawdzenie, czy komentarz dla tej rezerwacji już istnieje
             var exists = _context.Comments
@@ -113,6 +115,9 @@ namespace HouseNet9.Controllers
             // Ustawienie IsApproved domyślnie
             model.IsApproved = model.Rating > 2; // tylko komentarze z >2 gwiazdkami są automatycznie zatwierdzone
             model.CreatedAt = DateTime.Now;
+
+            var reservation = await _context.RentalHouses.Include(i => i.RentalClient).FirstOrDefaultAsync(f => f.ReservationNumber == model.ReservationCode);
+            model.CountryCode = CountryHelper.GetCountryCode(reservation.RentalClient.Country);
 
             _context.Comments.Add(model);
             _context.SaveChanges();

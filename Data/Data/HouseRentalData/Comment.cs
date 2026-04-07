@@ -36,6 +36,8 @@ namespace Data.Data.HouseRentalData
 
         public string? AdminText { get; set; }
 
+        public string CountryCode { get; set; } // np. "PL", "DE", "US"
+
 
     }
 }
