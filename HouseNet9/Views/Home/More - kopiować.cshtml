@@ -1,0 +1,84 @@
+﻿@model Data.Data.HouseRentalData.DescriptionPage
+@using Data.Data.HouseRentalData
+<section class="projects-section bg-light" id="projects">
+    <div class="container px-4 px-lg-5">
+        <!-- Project One Row-->
+        @if (Model != null)
+        {
+            <div class="row mb-5 mb-lg-0 justify-content-center">
+
+
+                <div class="col-lg-6">
+
+
+                    @*  <div class="bg-black text-center h-100 project"> *@
+                    <div class="row bg-black text-center">
+                        <div class="col-12">
+                            <div class="project-text w-100 my-auto text-center text-lg-left">
+                                <h4 class="text-white">@Model.Title</h4>
+                                <p class="mb-0 text-white-50">@Model.Description</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    @* *************************  DetailedInformation ************************* *@
+                    @{
+                        List<DetailedInformation> di = ViewBag.Detailed;
+                    }
+                    <div class="row  my-4">
+                        <div class="col-12 px-0">
+                            <div class="card-columns">
+                                @foreach (DetailedInformation information in di)
+                                {
+                                    <div class="card my-2">
+                                        <div class="card-body">
+                                            <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (information.Image == null ? "no_photography_24dp.svg" : information.Image.Path))" alt="Przesłany obraz" />@information.Name</h5>
+                                            @foreach (DetailedInformationItem detailedInformationItem in information.DetailedInformationItems)
+                                            {
+                                                <div class="d-flex align-items-center">  <img src="~/uploads/check_24dp.svg" class="mr-2" />@detailedInformationItem.Description</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @* ************************* END  DetailedInformation ************************* *@
+
+
+
+
+                </div>
+                <div class="col-lg-6 gallery">
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (MyFile img in Model.Images)
+                    {
+                        <img class="circle-foto thumb" src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" data-index="@i" />
+                        i++;
+                    }
+                </div>
+
+
+
+            </div>
+        }
+    </div>
+
+</section>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-img" id="modalImg">
+    <div class="nav prev">&#10094;</div>
+    <div class="nav next">&#10095;</div>
+</div>
+
+@section scripts {
+    <script src="~/js/gallery.js"></script>
+}

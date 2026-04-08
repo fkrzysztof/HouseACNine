@@ -1,4 +1,5 @@
-﻿@model Data.Data.HouseRentalData.DescriptionPage
+﻿@using Data.Enums
+@model Data.Data.HouseRentalData.DescriptionPage
 
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="row">
@@ -19,6 +20,28 @@
                 <label asp-for="Description" class="form-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="10"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            @* Dodatkowe info *@
+            <div class="mb-3">
+                <label class="form-label">Sekcje</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="General"
+                           @(Model.EnabledSections.HasFlag(SectionType.General) ? "checked" : "")>
+                    <label class="form-check-label">Główne informacje</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="Detailed"
+                           @(Model.EnabledSections.HasFlag(SectionType.Detailed) ? "checked" : "")>
+                    <label class="form-check-label">Szczegółowe informacje</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="Distance"
+                           @(Model.EnabledSections.HasFlag(SectionType.Distance) ? "checked" : "")>
+                    <label class="form-check-label">Odległości</label>
+                </div>
             </div>
 
             <hr />

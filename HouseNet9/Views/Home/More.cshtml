@@ -1,17 +1,13 @@
 ﻿@model Data.Data.HouseRentalData.DescriptionPage
 @using Data.Data.HouseRentalData
+@using Data.Enums
+
 <section class="projects-section bg-light" id="projects">
     <div class="container px-4 px-lg-5">
-        <!-- Project One Row-->
         @if (Model != null)
         {
             <div class="row mb-5 mb-lg-0 justify-content-center">
-
-
-                <div class="col-lg-6">
-
-
-                    @*  <div class="bg-black text-center h-100 project"> *@
+                <div class="col-lg-6 py-2">
                     <div class="row bg-black text-center">
                         <div class="col-12">
                             <div class="project-text w-100 my-auto text-center text-lg-left">
@@ -21,64 +17,107 @@
                         </div>
                     </div>
 
-
-
-
-                    @* *************************  DetailedInformation ************************* *@
-                    @{
-                        List<DetailedInformation> di = ViewBag.Detailed;
+                    @* ----------------- General Information -----------------*@
+                    @if (Model.EnabledSections.HasFlag(SectionType.General) && ViewBag.General != null)
+                    {
+                        <div class="my-4">
+                            <h5>Główne informacje</h5>
+                            <div class="d-flex align-items-center">
+                                <img src="@Url.Content("~/uploads/" + (ViewBag.General.Image?.Path ?? "no_photography_24dp.svg"))" class="mr-2" />
+                                @ViewBag.General.Name
+                            </div>
+                        </div>
                     }
-                    <div class="row  my-4">
-                        <div class="col-12 px-0">
-                            <div class="card-columns">
-                                @foreach (DetailedInformation information in di)
+
+                    @* ----------------- Detailed Information -----------------*@
+                    @if (Model.EnabledSections.HasFlag(SectionType.Detailed))
+                    {
+                        var di = ViewBag.Detailed as List<DetailedInformation>;
+                        if (di != null && di.Count > 0)
+                        {
+                            <div class="row my-4">
+                                <div class="col-12 px-0">
+                                    <div class="card-columns">
+                                        @foreach (DetailedInformation information in di)
+                                        {
+                                            <div class="card my-2">
+                                                <div class="card-body">
+                                                    <h5 class="card-title d-flex align-items-center">
+                                                        <img class="mr-2" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" />
+                                                        @information.Name
+                                                    </h5>
+                                                    @foreach (DetailedInformationItem item in information.DetailedInformationItems)
+                                                    {
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="~/uploads/check_24dp.svg" class="mr-2" />
+                                                            @item.Description
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+
+
+
+
+                    @* ----------------- Distance -----------------*@
+                    @if (Model.EnabledSections.HasFlag(SectionType.Distance))
+                    {
+                        var distances = ViewBag.Distances as List<Distance>;
+                        if (distances != null && distances.Count > 0)
+                        {
+                            <div class="my-4">
+                                <h5>Odległości</h5>
+                                @foreach (Distance d in distances)
                                 {
-                                    <div class="card my-2">
-                                        <div class="card-body">
-                                            <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (information.Image == null ? "no_photography_24dp.svg" : information.Image.Path))" alt="Przesłany obraz" />@information.Name</h5>
-                                            @foreach (DetailedInformationItem detailedInformationItem in information.DetailedInformationItems)
+                                    <div class="d-flex align-items-center mb-2">
+                                        <img src="@Url.Content("~/uploads/" + (d.Image?.Path ?? "no_photography_24dp.svg"))" class="mr-2" />
+                                        <strong>@d.Name</strong>
+                                        <ul>
+                                            @foreach (var di in d.DistanceItems)
                                             {
-                                                <div class="d-flex align-items-center">  <img src="~/uploads/check_24dp.svg" class="mr-2" />@detailedInformationItem.Description</div>
+                                                <li>@di.NameInfo - @di.DistanceInfo</li>
                                             }
-                                        </div>
+                                        </ul>
                                     </div>
                                 }
                             </div>
-                        </div>
-                    </div>
-                    @* ************************* END  DetailedInformation ************************* *@
-
-
-
+                        }
+                    }
 
                 </div>
+
                 <div class="col-lg-6 gallery">
                     @{
                         int i = 1;
                     }
                     @foreach (MyFile img in Model.Images)
                     {
-                        <img class="circle-foto thumb" src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" data-index="@i" />
+                        <img class="circle-foto thumb" src="@Url.Content("~/uploads/" + (img?.Path ?? "no_photography_24dp.svg"))" data-index="@i" />
                         i++;
                     }
                 </div>
-
-
-
             </div>
         }
     </div>
-
 </section>
-
-<!-- Modal -->
-<div id="modal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-img" id="modalImg">
-    <div class="nav prev">&#10094;</div>
-    <div class="nav next">&#10095;</div>
-</div>
 
 @section scripts {
     <script src="~/js/gallery.js"></script>
 }
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/more.css" />
+}
+
+
+
+

@@ -1,4 +1,5 @@
 using Data.Data.HouseRentalData;
+using Data.Enums;
 using HouseNet9.Controllers.Abstract;
 using HouseNet9.Data;
 using HouseNet9.Models;
@@ -66,28 +67,81 @@ namespace HouseNet9.Controllers
         }
 
 
+        //public async Task<IActionResult> More(int id, int houseId)
+        //{
+
+        //    DescriptionPage? dp = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id)
+        //        .Include(i => i.Images)
+        //        .Include(i => i.House)
+        //        .FirstOrDefaultAsync();
+
+        //    GeneralInformation? gi = await _context.GeneralInformation.Where(w => w.House.HouseId == houseId)
+        //        .Include(i => i.Image)
+        //        .FirstOrDefaultAsync();
+
+        //    List<DetailedInformation> di = await _context.DetailedInformation.Where(w => w.House.HouseId == houseId)
+        //        .Include(i => i.Image)
+        //        .Include(i => i.DetailedInformationItems)
+        //        .ToListAsync();
+
+        //    ViewBag.Detailed = di;
+
+        //    return View(dp);
+        //}
+
+
         public async Task<IActionResult> More(int id, int houseId)
         {
-
-            DescriptionPage? dp = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id)
+            // Pobierz descriptionPage wraz z obrazami i flagami
+            DescriptionPage? dp = await _context.DescriptionPages
+                .Where(w => w.DescriptionPageId == id)
                 .Include(i => i.Images)
                 .Include(i => i.House)
                 .FirstOrDefaultAsync();
 
-            GeneralInformation? gi = await _context.GeneralInformation.Where(w => w.House.HouseId == houseId)
-                .Include(i => i.Image)
-                .FirstOrDefaultAsync();
+            if (dp == null)
+                return NotFound();
 
-            List<DetailedInformation> di = await _context.DetailedInformation.Where(w => w.House.HouseId == houseId)
-                .Include(i => i.Image)
-                .Include(i => i.DetailedInformationItems)
-                .ToListAsync();
+            // General Information tylko jeśli flaga jest włączona
+            List<GeneralInformation> gi = new List<GeneralInformation>();
+            //GeneralInformation? gi = null;
+            if (dp.EnabledSections.HasFlag(SectionType.General))
+            {
+                gi = await _context.GeneralInformation
+                    .Where(w => w.House.HouseId == houseId)
+                    .Include(i => i.Image)
+                    .ToListAsync();
+            }
 
+            // Detailed Information tylko jeśli flaga jest włączona
+            List<DetailedInformation> di = new List<DetailedInformation>();
+            if (dp.EnabledSections.HasFlag(SectionType.Detailed))
+            {
+                di = await _context.DetailedInformation
+                    .Where(w => w.House.HouseId == houseId)
+                    .Include(i => i.Image)
+                    .Include(i => i.DetailedInformationItems)
+                    .ToListAsync();
+            }
+
+            // Distance tylko jeśli flaga jest włączona
+            List<Distance> distances = new List<Distance>();
+            if (dp.EnabledSections.HasFlag(SectionType.Distance))
+            {
+                distances = await _context.Distances
+                    .Where(w => w.House.HouseId == houseId)
+                    .Include(d => d.Image)
+                    .Include(d => d.DistanceItems)
+                    .ToListAsync();
+            }
+
+            // Przekaz do ViewBag lub ViewModel
+            ViewBag.General = gi;
             ViewBag.Detailed = di;
+            ViewBag.Distances = distances;
 
             return View(dp);
         }
-
 
 
 

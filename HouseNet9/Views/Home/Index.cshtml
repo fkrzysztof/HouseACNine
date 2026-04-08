@@ -143,12 +143,25 @@
                 foreach (DescriptionPage descriptionPage in Model.DescriptionPages)
                 {
                     <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
-                        <div class="col-lg-6 @(xy == true ? "order-first" : "order-last") ">
+                       @* <div class="col-lg-6 @(xy == true ? "order-first" : "order-last") ">
                             @foreach (MyFile img in descriptionPage.Images.Take(2))
                             {
                                 <img class="circle-foto" src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" alt="..." />
                             }
                         </div>
+                        *@
+
+<div class="col-lg-6 @(xy ? "order-first" : "order-last")">
+    <div class="circle-wall">
+        @foreach (MyFile img in descriptionPage.Images.Take(12))
+        {
+            <div class="circle-wrapper">
+                <img src="@Url.Content("~/uploads/" + (img?.Path ?? "no_photography_24dp.svg"))" alt="..." />
+            </div>
+        }
+    </div>
+</div>
+
 
                         <div class="col-lg-6">
                             <div class="bg-black text-center h-100 project">
@@ -260,5 +273,9 @@
             renderCalendar(selectedWeeks);
         });
 </script>
+
+
+
+
 
 }

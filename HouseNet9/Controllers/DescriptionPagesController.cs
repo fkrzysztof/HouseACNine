@@ -1,4 +1,5 @@
 ﻿using Data.Data.HouseRentalData;
+using Data.Enums;
 using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using Microsoft.AspNetCore.Http;
@@ -58,10 +59,23 @@ namespace HouseNet9.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage,List<IFormFile> files)
+        public async Task<IActionResult> Create([Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, List<IFormFile> files, List<SectionType> SelectedSections)
         {
             if (!ModelState.IsValid)
                 return View(descriptionPage);
+
+            //informacje w postaji flag czy pokazac info distance/generalInfo/detailedInfo
+            SectionType sections = SectionType.None;
+
+            if (SelectedSections != null)
+            {
+                foreach (var section in SelectedSections)
+                {
+                    sections |= section;
+                }
+            }
+
+            descriptionPage.EnabledSections = sections;
 
             try
             {
@@ -129,11 +143,23 @@ namespace HouseNet9.Controllers
                     DescriptionPageId = dp.DescriptionPageId,
                     Title = dp.Title,
                     Description = dp.Description,
+                    EnabledSections = dp.EnabledSections, // 🔥 TO JEST KLUCZ
                     Images = dp.Images
-                        .OrderBy(img => img.Order)
-                        .ToList()
-                })
-                .FirstAsync();
+                    .OrderBy(img => img.Order)
+                    .ToList()
+                }).FirstAsync();
+            
+            
+            //.Select(dp => new DescriptionPage
+            //{
+            //    DescriptionPageId = dp.DescriptionPageId,
+            //    Title = dp.Title,
+            //    Description = dp.Description,
+            //    Images = dp.Images
+            //        .OrderBy(img => img.Order)
+            //        .ToList()
+            //})
+            //.FirstAsync();
 
             if (descriptionPage == null)
             {
@@ -145,10 +171,12 @@ namespace HouseNet9.Controllers
         // POST: DescriptionPages/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,[Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, List<IFormFile> files)  // <- zmienione na List<IFormFile>
+        public async Task<IActionResult> Edit(int id,[Bind("DescriptionPageId,Title,Description")] DescriptionPage descriptionPage, List<IFormFile> files, List<SectionType> SelectedSections)  // <- zmienione na List<IFormFile>
         {
             if (id != descriptionPage.DescriptionPageId)
                 return NotFound();
+
+
 
             if (!ModelState.IsValid)
                 return View(descriptionPage);
@@ -166,6 +194,19 @@ namespace HouseNet9.Controllers
                 // Aktualizacja pól
                 existingPage.Title = descriptionPage.Title;
                 existingPage.Description = descriptionPage.Description;
+
+                SectionType sections = SectionType.None;
+
+                if (SelectedSections != null)
+                {
+                    foreach (var section in SelectedSections)
+                    {
+                        sections |= section;
+                    }
+                }
+
+                existingPage.EnabledSections = sections;
+
 
                 // --- Obsługa nowych plików ---
                 if (files != null && files.Any())

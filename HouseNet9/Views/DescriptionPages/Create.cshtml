@@ -23,6 +23,25 @@
                 <textarea class="form-control" asp-for="Description" rows="10"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
+            @* Dodatkowe info *@
+            <div class="mb-3">
+                <label class="form-label">Sekcje</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="General" id="secGeneral">
+                    <label class="form-check-label" for="secGeneral">Główne informacje</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="Detailed" id="secDetailed">
+                    <label class="form-check-label" for="secDetailed">Szczegółowe informacje</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedSections" value="Distance" id="secDistance">
+                    <label class="form-check-label" for="secDistance">Odległości</label>
+                </div>
+            </div>
 
         </div>
 

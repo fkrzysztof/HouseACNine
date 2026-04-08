@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Enums;
 
 namespace Data.Data.HouseRentalData
 {
@@ -24,6 +25,8 @@ namespace Data.Data.HouseRentalData
         [NotMapped]
         public List<IFormFile>? FormFileItems { get; set; }
         public ICollection<MyFile> Images { get; set; } = new List<MyFile>();
+
+        public SectionType EnabledSections { get; set; } = SectionType.None;
 
     }
 }
