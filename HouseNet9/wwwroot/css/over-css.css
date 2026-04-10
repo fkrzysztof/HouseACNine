@@ -135,6 +135,7 @@ nav a {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 10px;
+    align-content: start;
 }
 
     .gallery img {
@@ -228,61 +229,124 @@ section {
 
 
 
-
-
-
-
-
-
-
-
-
-
 /*
 nowe description*/
-
-.circle-wall {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* dopasowanie do szerokości diva */
-    grid-auto-rows: 120px;
-    gap: 10px; /* odstęp między kółkami */
-    width: 100%;
-    height: 400px; /* wysokość diva */
-    padding: 10px;
+/*.photo-masonry {
+    column-count: 2; 
+    column-gap: 12px;
 }
 
-.circle-wrapper {
-    border-radius: 50%;
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    border-radius: 12px;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
 }
 
-    .circle-wrapper img {
+    .masonry-item img {
         width: 100%;
-        height: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .masonry-item:hover img {
+        transform: scale(1.03);
+    }
+
+    .masonry-item img {
+        border-radius: 12px;
+    }
+
+.photo-masonry {
+    column-count: 2;
+    column-fill: balance;
+}
+
+*/
+
+
+
+.photo-masonry {
+    column-count: 2;
+    column-gap: 12px;
+}
+
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    /* standardowe zdjęcia */
+    .masonry-item img {
+        width: 100%;
+        display: block;
         object-fit: cover;
-        border-radius: 50%;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        aspect-ratio: 4 / 3;
+        transition: transform 0.3s ease;
     }
 
-        .circle-wrapper img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-    /* Opcjonalnie różne rozmiary kółek */
-    .circle-wrapper:nth-child(3n+1) {
-        grid-row: span 2;
-        grid-column: span 2;
+    /* 🔥 wymuszone pionowe zdjęcia */
+    .masonry-item.vertical-force img {
+        aspect-ratio: 3 / 4; /* pion */
+        transform: scale(1.05);
     }
 
-    .circle-wrapper:nth-child(3n+2) {
-        grid-row: span 1;
-        grid-column: span 1;
+    /* hover */
+    .masonry-item:hover img {
+        transform: scale(1.08);
     }
 
-    .circle-wrapper:nth-child(3n+3) {
-        grid-row: span 1;
-        grid-column: span 2;
+
+
+
+
+  /*  do index*/
+.card-2-border {
+    border-radius: 0px 0px 0px 27px;
+    border-left: 2px solid #00000075;
+    border-right: 2px solid #00000000;
+    border-top: 2px solid #ffffff;
+    border-bottom: 2px solid #00000075;
+}
+
+
+
+/*nowe card-columns wycofane w bp5 efekt masonry */
+
+.card-columns-css {
+    column-count: 3; /* liczba kolumn */
+    column-gap: 60px;
+}
+
+    .card-columns-css .card {
+        break-inside: avoid; /* kluczowe */
+        margin-bottom: 60px;
+        width: 100%;
     }
+
+@media (max-width: 992px) {
+    .card-columns-css {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-columns-css {
+        column-count: 1;
+    }
+}
+
+
+
+section {
+    margin: 8em 0em 8em 0em;
+}
+
+
+.desc-page-textbox {
+    border-radius: 12px;
+    padding: 2em;
+}

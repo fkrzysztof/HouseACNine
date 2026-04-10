@@ -20,13 +20,30 @@
                     @* ----------------- General Information -----------------*@
                     @if (Model.EnabledSections.HasFlag(SectionType.General) && ViewBag.General != null)
                     {
-                        <div class="my-4">
-                            <h5>Główne informacje</h5>
-                            <div class="d-flex align-items-center">
-                                <img src="@Url.Content("~/uploads/" + (ViewBag.General.Image?.Path ?? "no_photography_24dp.svg"))" class="mr-2" />
-                                @ViewBag.General.Name
+                        var gi = ViewBag.General as List<GeneralInformation>;
+                            <div class="row my-4">
+                                <div class="col-12 px-0">
+                                      <div class="card-columns">
+                                        @foreach (GeneralInformation item in gi)
+                                        {
+                                            @:<div class="card p-4">
+                                                if (item.Image != null && item.Image.Path != null)
+                                                {
+                                                        <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                }
+                                                else
+                                                {
+                                                        <img src="@Url.Content("~/uploads/" + "no_photography_24dp.svg")" alt="Przesłany obraz" />
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                }
+                                            @:</div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        
+
                     }
 
                     @* ----------------- Detailed Information -----------------*@

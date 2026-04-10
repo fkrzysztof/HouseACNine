@@ -31,6 +31,7 @@
 
 
     <div class="container mt-5">
+        <h3 class="mb-4">Rezerwacja on-line</h3>
 
         <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
 
@@ -110,11 +111,9 @@
     </div>
 </section>
 
+<section>
+    <div class="container">
 
-@* *************************  DescriptionPages ************************* *@
-<section class="projects-section bg-light" id="descriptionpagesanchor">
-    <div class="container px-4 px-lg-5">
-        <!-- Featured Project Row-->
         <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
             <div class="col-xl-8 col-lg-7">
 
@@ -135,77 +134,88 @@
                 </div>
             </div>
         </div>
+</div>
+</section>
+
+
+@* *************************  DescriptionPages ************************* *@
+<section class=" bg-light" id="descriptionpagesanchor">
+    <div class="container-fluid px-4 px-lg-5">
+        <!-- Featured Project Row-->
+
         <!-- Project One Row-->
         @{
             bool xy = true;
-            int count = 0;
+
             if (Model != null && Model.DescriptionPages != null)
                 foreach (DescriptionPage descriptionPage in Model.DescriptionPages)
                 {
-                    <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
-                       @* <div class="col-lg-6 @(xy == true ? "order-first" : "order-last") ">
+                    <div class="row gx-3 my-5 mb-lg-0 justify-content-center">
+                        @*<div class="col-lg-6 @(xy == true ? "order-first" : "order-last") ">
                             @foreach (MyFile img in descriptionPage.Images.Take(2))
                             {
                                 <img class="circle-foto" src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" alt="..." />
                             }
                         </div>
                         *@
+@*
+    <div class="col-lg-6 @(xy == true ? "order-first" : "order-last")">
 
-<div class="col-lg-6 @(xy ? "order-first" : "order-last")">
-    <div class="circle-wall">
-        @foreach (MyFile img in descriptionPage.Images.Take(12))
-        {
-            <div class="circle-wrapper">
-                <img src="@Url.Content("~/uploads/" + (img?.Path ?? "no_photography_24dp.svg"))" alt="..." />
-            </div>
-        }
+        <div class="photo-masonry">
+
+            @{
+                var images = descriptionPage.Images?.Take(8).ToList() ?? new List<MyFile>();
+            }
+
+            @foreach (var img in images)
+            {
+                <div class="masonry-item">
+                    <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" />
+                </div>
+            }
+
+        </div>
+
     </div>
+
+    *@
+
+     <div class="col-lg-6 @(xy == true ? "order-first" : "order-last")">
+    <div class="photo-masonry">
+
+@{
+    var images = descriptionPage.Images?.Take(12).ToList() ?? new List<MyFile>();
+    int i = 0;
+}
+
+@foreach (var img in images)
+{
+    i++;
+
+    var isVerticalSlot = (i % 5 == 0);
+
+    <div class="masonry-item @(isVerticalSlot ? "vertical-force" : "")">
+        <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" />
+    </div>
+}
+
+</div>
 </div>
 
 
                         <div class="col-lg-6">
-                            <div class="bg-black text-center h-100 project">
+                            <div class="bg-black text-center h-100 project desc-page-textbox">
                                 <div class="">
                                     <div class="project-text w-100 my-auto text-center text-lg-left">
                                         <h4 class="text-white">@descriptionPage.Title</h4>
                                         <p class="mb-0 text-white-50">@descriptionPage.Description</p>
                                     </div>
-
-                                    @if (count == 0)
-                                    {
-                                        @* *************************  GeneralInformation ************************* *@
-                                        // <div class="d-flex flex-wrap justify-content-center my-4">
-                                        //     @{
-                                        //         if (Model != null && Model.GeneralInformation != null)
-                                        //             foreach (GeneralInformation item in Model.GeneralInformation)
-                                        //             {
-                                        //                 // @:<div class="card p-4 m-2 d-inline justify-content-center">
-                                        //                 @:<div class="card p-4 m-2 justify-content-center">
-                                        //                     if (item.Image != null && item.Image.Path != null)
-                                        //                     {
-                                        //                             <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
-                                        //                             @Html.DisplayFor(modelItem => item.Name)
-                                        //                     }
-                                        //                     else
-                                        //                     {
-                                        //                             <img src="@Url.Content("~/uploads/" + "no_photography_24dp.svg")" alt="Przesłany obraz" />
-                                        //                             @Html.DisplayFor(modelItem => item.Name)
-                                        //                     }
-                                        //                 @:</div>
-                                        //             }
-                                        //     }
-                                        // </div>
-                                    }
-
                                     <a class="" asp-area="" asp-controller="Home" asp-action="More" asp-route-id="@descriptionPage.DescriptionPageId" asp-route-houseId="@Model.HouseId">więcej >></a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     xy = !xy;
-                    count++;
-
-
                 }
         }
     </div>
@@ -216,12 +226,14 @@
 @* *************************  Distance ************************* *@   
 <section id="distanceanchor">
 
+     <h3 class="mb-4">Odległości</h3>
+
     <div class="row  my-4">
         <div class="col-12">
-            <div class="card-columns">
+            <div class="card-columns-css">
                 @foreach (Distance distance in Model.Distances)
                 {
-                    <div class="card card-2-border">
+                    <div class="card card-2-border p-4">
                         @* class="card" *@
                         <div class="card-body">
                             <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
@@ -241,17 +253,6 @@
     </div>
 
 </section>
-
-
-
-
-
-
-
-
-
-
-
 
 
 
