@@ -40,6 +40,32 @@ namespace HouseNet9.Controllers
             return PartialView("_CommentsList", comments);
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> List(bool? approved, int page = 1)
+        {
+            int pageSize = 10;
+
+            var query = _context.Comments.AsQueryable();
+
+            if (approved.HasValue)
+                query = query.Where(c => c.IsApproved == approved.Value);
+
+            var totalItems = await query.CountAsync();
+
+            var comments = await query
+                .OrderByDescending(c => c.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.Approved = approved;
+
+            return View(comments);
+        }
+
 
         // GET: /Comments/Moderate/5
         [Authorize(Roles = "Admin")]
@@ -74,25 +100,25 @@ namespace HouseNet9.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Komentarz został zaktualizowany.";
-            return RedirectToAction("Index", "Admin"); // np. lista komentarzy dla admina
+            return RedirectToAction("List", "Comments"); // np. lista komentarzy dla admina
         }
 
 
         // GET
-        public IActionResult Add(int id)
+        public IActionResult Add(int houseId, string reservationCode, string email)
         {
-            var reservation = _context.RentalHouses.Include(i => i.RentalClient).FirstOrDefault(f => f.RentalHouseID == id);
-
-            if (reservation == null)
-                return NotFound();
+            var reservation = _context.RentalHouses
+                .Include(i => i.RentalClient)
+                .FirstOrDefault(r => r.ReservationNumber == reservationCode
+                                  && r.RentalClient.Email == email);
 
             var model = new Comment
             {
-                ReservationCode = reservation.ReservationNumber,
-                Email = reservation.RentalClient.Email,
-                HouseId = (int)reservation.HouseId,
-                StayFrom = reservation.From,
-                AuthorName = reservation.RentalClient.Name // jeśli masz
+                HouseId = houseId,
+                ReservationCode = reservationCode,
+                Email = email,
+                AuthorName = reservation.RentalClient.Name,
+                StayFrom = reservation.From
             };
 
             return View(model);
@@ -100,6 +126,7 @@ namespace HouseNet9.Controllers
 
         // POST
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Comment model)
         {
             // Sprawdzenie, czy komentarz dla tej rezerwacji już istnieje
@@ -123,53 +150,103 @@ namespace HouseNet9.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = "Dziękujemy za opinię!";
-            return RedirectToAction("Thanks");
+            return RedirectToAction("Thanks", "Comments");
         }
 
 
 
-        public IActionResult Verify(int houseId)
+        //public IActionResult Verify(int houseId)
+        //{
+        //    ViewBag.HouseId = houseId;
+        //    return View();
+        //}
+
+
+        public IActionResult Index()
         {
-            ViewBag.HouseId = houseId;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Verify(int houseId, string reservationCode, string email)
+        //public IActionResult Verify(int houseId, string reservationCode, string email)
+        public IActionResult Index(string reservationCode, string email)
         {
+            //var reservation = _context.RentalHouses.Include(i => i.RentalClient)
+            //    .FirstOrDefault(r => r.ReservationNumber == reservationCode
+            //                         && r.RentalClient.Email == email
+            //                         && r.HouseId == houseId);
             var reservation = _context.RentalHouses.Include(i => i.RentalClient)
                 .FirstOrDefault(r => r.ReservationNumber == reservationCode
-                                     && r.RentalClient.Email == email
-                                     && r.HouseId == houseId);
+                                     && r.RentalClient.Email == email);
 
             if (reservation == null)
             {
                 ModelState.AddModelError("", "Nie znaleziono rezerwacji dla tego domu");
-                ViewBag.HouseId = houseId;
+                //ViewBag.HouseId = houseId;
+                ViewBag.HouseId = reservation.HouseId;
                 return View();
             }
 
             var now = DateTime.Now;
 
             // Sprawdzenie, czy pobyt się rozpoczął
-            if (reservation.From > now)
-            {
-                ModelState.AddModelError("", "Nie możesz jeszcze dodać opinii – pobyt jeszcze się nie rozpoczął.");
-                ViewBag.HouseId = houseId;
-                return View();
-            }
+            //if (reservation.From > now)
+            //{
+            //    ModelState.AddModelError("", "Nie możesz jeszcze dodać opinii – pobyt jeszcze się nie rozpoczął.");
+            //    ViewBag.HouseId = houseId;
+            //    return View();
+            //}
 
             // Sprawdzenie, czy komentarz mieści się w oknie 30 dni po zakończeniu pobytu
-            var endWindow = reservation.To.AddDays(30);
-            if (now > endWindow)
-            {
-                ModelState.AddModelError("", "Nie możesz dodać opinii – okres na wystawienie komentarza minął.");
-                ViewBag.HouseId = houseId;
-                return View();
-            }
+            //var endWindow = reservation.To.AddDays(30);
+            //if (now > endWindow)
+            //{
+            //    ModelState.AddModelError("", "Nie możesz dodać opinii – okres na wystawienie komentarza minął.");
+            //    ViewBag.HouseId = houseId;
+            //    return View();
+            //}
 
-            return RedirectToAction("Add", new { id = reservation.RentalHouseID });
+            return RedirectToAction("Add", new
+            {
+                houseId = reservation.HouseId,
+                reservationCode = reservation.ReservationNumber,
+                email = reservation.RentalClient.Email
+            });
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Approve(int id, bool? approved, int page = 1)
+        {
+            var comment = await _context.Comments.FindAsync(id);
+
+            if (comment == null)
+                return NotFound();
+
+            comment.IsApproved = true;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("List", new { approved, page });
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, bool? approved, int page = 1)
+        {
+            var comment = await _context.Comments.FindAsync(id);
+
+            if (comment == null)
+                return NotFound();
+
+            _context.Comments.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("List", new { approved, page });
+        }
+
 
     }
 

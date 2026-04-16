@@ -1,2 +1,32 @@
-﻿<h3>Dziękujemy za opinię!</h3>
-<p>Twoja opinia została dodana.</p>
+﻿@{
+    ViewData["Title"] = "Dziękujemy";
+}
+
+<div class="container py-5 text-center">
+
+    <div class="card shadow-sm border-0 mx-auto" style="max-width:500px;">
+        <div class="card-body">
+
+            <h2 class="mb-3">Dziękujemy za opinię! ⭐</h2>
+
+            <p class="text-muted">
+                Twoja opinia została zapisana i pomoże innym gościom w wyborze.
+            </p>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success mt-3">
+                    @TempData["Success"]
+                </div>
+            }
+
+@*             <hr />
+
+            <a href="/" class="btn btn-dark mt-2">
+                Wróć na stronę główną
+            </a> *@
+
+        </div>
+    </div>
+
+</div>

@@ -8,7 +8,8 @@
     <p><strong>Pobyt:</strong> @Model.StayFrom.ToString("MMMM yyyy")</p>
 </div>
 
-<form method="post">
+<form asp-action="Add" asp-controller="Comments" method="post">
+    @Html.AntiForgeryToken()
     <!-- Ukryte pola potrzebne do bindowania -->
     <input type="hidden" asp-for="HouseId" />
     <input type="hidden" asp-for="ReservationCode" />

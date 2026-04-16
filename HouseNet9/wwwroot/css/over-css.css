@@ -350,3 +350,61 @@ section {
     border-radius: 12px;
     padding: 2em;
 }
+
+.desc-page-section {
+/*    background-color: #e4e4e4;
+    background: linear-gradient(355deg, rgba(228, 228, 228, 1) 90%, rgba(255, 255, 255, 1) 84%);
+    padding: 12em;*/
+}
+
+
+/*tlo desc-page*/
+
+.section-triangle {
+    position: relative;
+    /*background: #f2f2f2;*/ /* środek biały */
+    background: #FFF;
+    padding: 100px 20px;
+    overflow: hidden;
+    /* background: linear-gradient(0deg, rgba(255, 255, 255, 1) 8%, rgb(228 228 228 / 39%) 66%);*/
+    background: linear-gradient(356deg, rgba(255, 255, 255, 1) 84%, rgba(228, 228, 228, 1) 98%);
+}
+
+    /* GÓRNY trójkąt */
+    .section-triangle::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: #fff; /* szary */
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+
+    /* DOLNY trójkąt */
+    .section-triangle::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: #fff; /* szary */
+        clip-path: polygon(100% 0%, 100% 100%, 0% 100%);
+    }
+
+
+/* tekst */
+.triangle-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    color: #555;
+}
+
+    /* góra */
+    .triangle-text.top {
+        top: 20px;
+    }
