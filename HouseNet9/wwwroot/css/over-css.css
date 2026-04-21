@@ -227,46 +227,6 @@ section {
 }
 
 
-
-
-/*
-nowe description*/
-/*.photo-masonry {
-    column-count: 2; 
-    column-gap: 12px;
-}
-
-.masonry-item {
-    break-inside: avoid;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-    .masonry-item img {
-        width: 100%;
-        height: auto;
-        display: block;
-        transition: transform 0.3s ease;
-    }
-
-    .masonry-item:hover img {
-        transform: scale(1.03);
-    }
-
-    .masonry-item img {
-        border-radius: 12px;
-    }
-
-.photo-masonry {
-    column-count: 2;
-    column-fill: balance;
-}
-
-*/
-
-
-
 .photo-masonry {
     column-count: 2;
     column-gap: 12px;
@@ -298,9 +258,6 @@ nowe description*/
     .masonry-item:hover img {
         transform: scale(1.08);
     }
-
-
-
 
 
   /*  do index*/
@@ -408,3 +365,187 @@ section {
     .triangle-text.top {
         top: 20px;
     }
+
+
+
+/*ICON* *********************************************************************************/
+
+/* ===== BASE ===== */
+.icon {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    object-fit: contain;
+    transition: all 0.2s ease-in-out;
+}
+
+/* ===== SIZES ===== */
+.icon-xs {
+    width: 1em;
+    height: 1em;
+}
+
+.icon-sm {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+.icon-md {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.icon-lg {
+    width: 2em;
+    height: 2em;
+}
+
+.icon-xl {
+    width: 3em;
+    height: 3em;
+}
+
+/* ===== COLORS (dla SVG działa najlepiej inline, ale tu fallback) ===== */
+.icon-muted {
+    opacity: 0.6;
+}
+
+.icon-light {
+    filter: brightness(1.2);
+}
+
+.icon-dark {
+    filter: brightness(0.6);
+}
+
+/* jeśli używasz jednokolorowych SVG */
+.icon-primary {
+    filter: invert(36%) sepia(98%) saturate(1500%) hue-rotate(190deg);
+}
+
+.icon-success {
+    filter: invert(55%) sepia(60%) saturate(500%) hue-rotate(90deg);
+}
+
+/* ===== SPACING ===== */
+.icon-left {
+    margin-right: 0.5rem;
+}
+
+.icon-right {
+    margin-left: 0.5rem;
+}
+
+/* ===== HOVER EFFECT ===== */
+.icon-hover:hover {
+    transform: scale(1.15);
+    opacity: 0.85;
+}
+
+/* ===== ICON IN CIRCLE ===== */
+.icon-circle {
+    background: #f1f1f1;
+    border-radius: 50%;
+    padding: 0.5em;
+}
+
+/* ===== ICON BADGE STYLE ===== */
+.icon-soft {
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 0.4em;
+}
+
+/* ===== ALIGN FIX ===== */
+.icon-align {
+    vertical-align: middle;
+}
+
+
+
+/*sekcje 1*/
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    position: relative;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+}
+
+    .section-title::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #c9a96e, #e6d3a3);
+        border-radius: 2px;
+    }
+
+  /*  sekcje 2*/
+
+
+.section-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 3rem 0;
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+    .section-divider::before,
+    .section-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .section-divider span {
+        padding: 0 1rem;
+    }
+
+
+/*    sekcje 3*/
+
+.triangle-title {
+    position: relative;
+    display: inline-block;
+    padding-left: 1.5rem;
+    font-weight: 600;
+    font-size: 2rem;
+}
+
+    .triangle-title::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 12px solid #c9a96e;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+    }
+
+   /* sekcje 4*/
+
+.section-soft {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+    .section-soft h2 {
+        margin-bottom: 1rem;
+    }
+
+
+   /* global*/
+section {
+    margin-bottom: 4rem;
+}

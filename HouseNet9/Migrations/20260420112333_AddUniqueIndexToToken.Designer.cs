@@ -4,6 +4,7 @@ using HouseNet9.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HouseNet9.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420112333_AddUniqueIndexToToken")]
+    partial class AddUniqueIndexToToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -178,7 +181,7 @@ namespace HouseNet9.Migrations
                     b.Property<int>("EnabledSections")
                         .HasColumnType("int");
 
-                    b.Property<int>("HouseId")
+                    b.Property<int?>("HouseId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -199,7 +202,7 @@ namespace HouseNet9.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetailedInformationId"));
 
-                    b.Property<int>("HouseId")
+                    b.Property<int?>("HouseId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -243,7 +246,7 @@ namespace HouseNet9.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DistanceID"));
 
-                    b.Property<int>("HouseId")
+                    b.Property<int?>("HouseId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -313,7 +316,7 @@ namespace HouseNet9.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GeneralInformationId"));
 
-                    b.Property<int>("HouseId")
+                    b.Property<int?>("HouseId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -896,9 +899,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
                         .WithMany("DescriptionPages")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HouseId");
 
                     b.Navigation("House");
                 });
@@ -907,9 +908,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
                         .WithMany("DetailedInformation")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HouseId");
 
                     b.Navigation("House");
                 });
@@ -927,9 +926,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
                         .WithMany("Distances")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HouseId");
 
                     b.Navigation("House");
                 });
@@ -958,9 +955,7 @@ namespace HouseNet9.Migrations
                 {
                     b.HasOne("Data.Data.HouseRentalData.House", "House")
                         .WithMany("GeneralInformation")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HouseId");
 
                     b.Navigation("House");
                 });

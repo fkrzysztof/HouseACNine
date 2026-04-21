@@ -1,0 +1,132 @@
+﻿@model Data.Data.HouseRentalData.Comment
+@{
+    Layout = "~/Views/Shared/_LayoutComments.cshtml";
+}
+
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+
+    <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
+
+
+        <h3>
+            @(ViewBag.IsEdit == true ? "Edytuj opinię" : "Twoja opinia")
+        </h3>
+
+        @if (ViewBag.IsEdit == true)
+        {
+            <div class="alert alert-info">
+                Edytujesz swoją opinię
+            </div>
+        }
+
+        @if (ViewBag.CanEdit == false)
+        {
+            <div class="alert alert-warning">
+                Czas na edycję opinii minął (14 dni od dodania)
+            </div>
+        }
+
+        <!-- Wyświetlamy info o pobycie i autorze -->
+        <div class="mb-3">
+            <p><strong>Autor:</strong> @Model.AuthorName</p>
+            <p><strong>Pobyt:</strong> @Model.StayFrom.ToString("MMMM yyyy")</p>
+        </div>
+
+        <form asp-action="@(ViewBag.IsEdit ? "Edit" : "Add")" method="post">
+            @Html.AntiForgeryToken()
+            @if (ViewBag.IsEdit == true)
+            {
+                <input type="hidden" name="token" value="@Context.Request.Query["token"]" />
+            }
+            <!-- Ukryte pola potrzebne do bindowania -->
+            <input type="hidden" asp-for="HouseId" />
+            <input type="hidden" asp-for="ReservationCode" />
+            <input type="hidden" asp-for="Email" />
+            <input type="hidden" asp-for="StayFrom" />
+            <input type="hidden" asp-for="AuthorName" />
+
+            <div class="mb-3">
+                <label class="form-label">Ocena</label>
+                <div id="star-container">
+                    @for (int i = 1; i <= 4; i++)
+                    {
+                        <span class="star" data-value="@i">★</span>
+                    }
+                </div>
+                <input type="hidden" asp-for="Rating" id="Rating" />
+            </div>
+
+            <style>
+                #star-container {
+                    display: inline-block;
+                    cursor: pointer;
+                }
+
+                .star {
+                    font-size: 1.5rem;
+                    color: #ddd;
+                    transition: color 0.2s;
+                    user-select: none;
+                }
+
+                    .star.hover, .star.selected {
+                        color: gold;
+                    }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    const stars = document.querySelectorAll('#star-container .star');
+                    const ratingInput = document.getElementById('Rating');
+
+                    // ⭐ KLUCZOWA ZMIANA: bierzemy wartość z modelu
+                    let selectedRating = parseInt(ratingInput.value || 0);
+
+                    function renderStars(value) {
+                        stars.forEach((s, i) => {
+                            s.classList.toggle('selected', i < value);
+                        });
+                    }
+
+                    // ⭐ INIT (EDYCJA)
+                    renderStars(selectedRating);
+
+                    stars.forEach((star, idx) => {
+
+                        // hover
+                        star.addEventListener('mouseover', () => {
+                            stars.forEach((s, i) => {
+                                s.classList.toggle('hover', i <= idx);
+                            });
+                        });
+
+                        star.addEventListener('mouseout', () => {
+                            stars.forEach(s => s.classList.remove('hover'));
+                            renderStars(selectedRating);
+                        });
+
+                        // click
+                        star.addEventListener('click', () => {
+                            selectedRating = idx + 1;
+                            ratingInput.value = selectedRating;
+                            renderStars(selectedRating);
+                        });
+                    });
+
+                });
+            </script>
+
+            <div class="mb-3">
+                <textarea class="form-control" asp-for="Text" placeholder="Twoja opinia"></textarea>
+            </div>
+
+            <button class="btn btn-dark w-100">
+                @(ViewBag.IsEdit ? "Zapisz zmiany" : "Zapisz opinię")
+            </button>
+        </form>
+
+
+    </div>
+</div>

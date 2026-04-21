@@ -18,7 +18,7 @@ namespace Data.Data.HouseRentalData
         public String? Description { get; set; }
 
 
-        [ForeignKey("HouseId")]
+        public int HouseId { get; set; }
         public House? House { get; set; }
 
         //IMG COL

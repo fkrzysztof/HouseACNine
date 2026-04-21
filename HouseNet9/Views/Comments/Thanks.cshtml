@@ -1,32 +1,28 @@
 ﻿@{
     ViewData["Title"] = "Dziękujemy";
 }
+@{
+    Layout = "~/Views/Shared/_LayoutComments.cshtml";
+}
 
-<div class="container py-5 text-center">
 
-    <div class="card shadow-sm border-0 mx-auto" style="max-width:500px;">
-        <div class="card-body">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
 
-            <h2 class="mb-3">Dziękujemy za opinię! ⭐</h2>
+    <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
 
-            <p class="text-muted">
-                Twoja opinia została zapisana i pomoże innym gościom w wyborze.
-            </p>
+        <h2 class="mb-3">Dziękujemy za opinię! ⭐</h2>
 
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success mt-3">
-                    @TempData["Success"]
-                </div>
-            }
+        <p class="text-muted">
+            Twoja opinia została zapisana i pomoże innym gościom w wyborze.
+        </p>
 
-@*             <hr />
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mt-3">
+                @TempData["Success"]
+            </div>
+        }
 
-            <a href="/" class="btn btn-dark mt-2">
-                Wróć na stronę główną
-            </a> *@
-
-        </div>
     </div>
-
 </div>
+

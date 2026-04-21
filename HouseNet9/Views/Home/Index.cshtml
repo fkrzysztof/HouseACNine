@@ -33,7 +33,10 @@
 
 
     <div class="container mt-5">
-        <h3 class="mb-4">Rezerwacja on-line</h3>
+
+        <h2 class="section-divider">
+            <span>Rezerwacja on-line</span>
+        </h2>
 
         <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
 
@@ -154,7 +157,12 @@
                 {
                     <div class="desc-page-section section-triangle">
 
-                        <div class="container"><h2 class="triangle-text top text-start">@descriptionPage.Title</h2></div>
+                        <div class="container">
+                            @* <h2 class="triangle-text top text-start">@descriptionPage.Title</h2> *@
+                        <h2 class="section-divider">
+                            <span>@descriptionPage.Title</span>
+                        </h2>
+                        </div>
 
                      <div class="container px-4 px-lg-5">
                     <div class="row gx-3 my-5 mb-lg-0 justify-content-center">
@@ -206,10 +214,53 @@
 </section>
 
 
+@* ----------------- Detailed Information -----------------*@
+<section id="detailedanchor">
+    <div class="container">
+
+        <h2 class="section-divider">
+            <span>Szczegółowe iformacje</span>
+        </h2>
+
+        @if (Model.DetailedInformation != null && Model.DetailedInformation.Count > 0)
+        {
+            <div class="row my-4">
+                <div class="col-12 px-0">
+                    <div class="card-columns-css">
+                        @foreach (DetailedInformation information in Model.DetailedInformation)
+                        {
+                            <div class="card card-2-border p-4">
+                                <div class="card-body">
+                                    <h5 class="card-title d-flex align-items-center">
+                                        <img class="icon icon-lg icon-left icon-hover" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" alt="@information.Name" />
+                                        @information.Name
+                                    </h5>
+                                    @if(information.DetailedInformationItems != null && information.DetailedInformationItems.Any())
+                                    foreach (DetailedInformationItem item in information.DetailedInformationItems)
+                                    {
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/uploads/check_24dp.svg" class="icon icon-sm icon-left icon-success" />
+                                            @item.Description
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+
 @* *************************  Distance ************************* *@   
 <section id="distanceanchor">
         <div class="container">
-     <h3 class="mb-4">Odległości</h3>
+
+        <h2 class="section-divider">
+            <span>Odległości</span>
+        </h2>
 
     <div class="row  my-4">
         <div class="col-12">

@@ -1,15 +1,30 @@
-﻿<h2>Dodaj opinię</h2>
+﻿@{
+    Layout = "~/Views/Shared/_LayoutComments.cshtml";
+}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
 
-<form method="post" autocomplete="off">
-    <input name="reservationCode"
-           class="form-control mb-2"
-           placeholder="Kod rezerwacji"
-           autocomplete="new-password" />
+    <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
 
-    <input name="email"
-           class="form-control mb-2"
-           placeholder="Email"
-           autocomplete="new-password" />
+        <h2 class="text-center mb-4">Dodaj opinię</h2>
 
-    <button class="btn btn-dark">Dalej</button>
-</form>
+        <form method="post" autocomplete="off">
+
+            <input name="reservationCode"
+                   class="form-control mb-3"
+                   placeholder="Kod rezerwacji"
+                   autocomplete="new-password" />
+
+            <input name="email"
+                   class="form-control mb-3"
+                   placeholder="Email"
+                   autocomplete="new-password" />
+
+            <button class="btn btn-dark w-100">
+                Dalej
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

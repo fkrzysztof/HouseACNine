@@ -19,7 +19,7 @@ namespace Data.Data.HouseRentalData
 
         public ICollection<DistanceItem>? DistanceItems { get; set; }
 
-        [ForeignKey("HouseId")]
+        public int HouseId { get; set; }
         public House? House { get; set; }
 
         //Img

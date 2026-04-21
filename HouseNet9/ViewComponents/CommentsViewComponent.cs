@@ -22,6 +22,30 @@ namespace HouseNet9.ViewComponents
                 .Take(count)
                 .ToListAsync();
 
+            //statystyka
+                var stats = await _context.Comments
+                    .Where(c => c.HouseId == houseId && c.IsApproved)
+                    .GroupBy(c => c.HouseId)
+                    .Select(g => new
+                    {
+                        Avg = g.Average(x => x.Rating),
+                        Count = g.Count()
+                    })
+                    .FirstOrDefaultAsync();
+
+                ViewBag.AvgRating = stats?.Avg ?? 0;
+                ViewBag.TotalComments = stats?.Count ?? 0;
+
+            string label = stats.Avg switch
+            {
+                >= 4.5 => "Znakomity",
+                >= 4.0 => "Bardzo dobry",
+                >= 3.5 => "Dobry",
+                _ => "Średni"
+            };
+
+            ViewBag.RatingLabel = label;
+
             return View(comments);
         }
     }

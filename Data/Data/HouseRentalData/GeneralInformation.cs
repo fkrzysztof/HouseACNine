@@ -18,7 +18,7 @@ namespace Data.Data.HouseRentalData
         public IFormFile? FormFileItem { get; set; }
         public MyFile? Image { get; set; }
 
-        [ForeignKey("HouseId")]
+        public int HouseId { get; set; }
         public House? House { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Data.Data.HouseRentalData
         public ICollection<DetailedInformationItem>? DetailedInformationItems { get; set; }
 
 
-        [ForeignKey("HouseId")]
+        public int HouseId { get; set; }
         public House? House { get; set; }
 
         //Img

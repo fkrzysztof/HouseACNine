@@ -150,49 +150,6 @@
     }
 
 
-
-
-
-    @* ********************************** Formularz kontaktowy ********************************** *@
-@*     <section class="signup-section" id="signup">
-        <div class="container px-4 px-lg-5">
-            <div class="row gx-4 gx-lg-5">
-                <div class="col-md-10 col-lg-8 mx-auto text-center">
-                    <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
-                    <h2 class="text-white mb-5">Subscribe to receive updates!</h2>
-
-                    <form class="form-signup" asp-action="SendEmail" method="post">
-                        @Html.AntiForgeryToken()
-
-                        <div class="row input-group-newsletter">
-                            <div class="col-md-4">
-                                <input asp-for="Name" class="form-control mb-2" placeholder="Imię" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
-
-                                <input asp-for="Email" class="form-control mt-2" placeholder="Email" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-
-                            <div class="col-md-8">
-                                <textarea asp-for="Message" class="form-control" placeholder="Wiadomość"></textarea>
-                                <span asp-validation-for="Message" class="text-danger"></span>
-                            </div>
-
-                            <div class="col-12 mt-3">
-                                <button class="btn btn-primary w-100" type="submit">Wyślij</button>
-                            </div>
-                        </div>
-                    </form>
-
-
-
-                </div>
-            </div>
-        </div>
-    </section> *@
-
-
-
     <script src="~/js/comment.js" asp-append-version="true"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

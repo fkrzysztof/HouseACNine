@@ -3,6 +3,47 @@
 
 <section>
     <div class="container my-5">
+
+
+        <div class="rating-box">
+
+            <div class="rating-number">
+                @ViewBag.AvgRating.ToString("0.0")
+            </div>
+
+            <div class="stars">
+                @{
+                    var rating = (double)ViewBag.AvgRating;
+                    var full = (int)Math.Floor(rating);
+                    var half = rating - full >= 0.5;
+                }
+
+                @for (int i = 0; i < full; i++)
+                {
+                    <span class="star full">★</span>
+                }
+
+                @if (half)
+                {
+                    <span class="star half">★</span>
+                }
+
+                @for (int i = full + (half ? 1 : 0); i < 5; i++)
+                {
+                    <span class="star empty">★</span>
+                }
+            </div>
+
+            <div class="count">
+                (@ViewBag.TotalComments opinii)
+            </div>
+
+            <span class="badge bg-success">@ViewBag.RatingLabel</span>
+
+        </div>
+
+
+
         <h3 class="mb-4">Opinie klientów</h3>
 
         <div>

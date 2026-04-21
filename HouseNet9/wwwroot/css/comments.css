@@ -49,3 +49,34 @@
     color: gold;
     font-size: 1.2rem;
 }
+
+/*statytyki*/
+
+.rating-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.star {
+    font-size: 1.2rem;
+}
+
+    .star.full {
+        color: gold;
+    }
+
+    .star.empty {
+        color: #ddd;
+    }
+
+    .star.half {
+        background: linear-gradient(90deg, gold 50%, #ddd 50%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }

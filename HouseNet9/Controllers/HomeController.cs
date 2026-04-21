@@ -26,35 +26,38 @@ namespace HouseNet9.Controllers
 
 
 
-        [Authorize]
-        public IActionResult Secret()
-        {
-            return Content("Zalogowany 👍");
-        }
-
         public async Task<IActionResult> Index(int? id)
         {
-            IQueryable<House> query = _context.Houses
-                .Where(i => i.IsActive)
-                .Include(h => h.GeneralInformation)
-                    .ThenInclude(g => g.Image)
-                .Include(h => h.DescriptionPages)
-                    .ThenInclude(d => d.Images)
-                .Include(h => h.Distances)
-                    .ThenInclude(d => d.Image)
-                .Include(h => h.Distances)
-                    .ThenInclude(d => d.DistanceItems)
+            // 1. Pobierz tylko House (minimum danych)
+            var houseQuery = _context.Houses
+                .Where(h => h.IsActive)
                 .AsNoTracking();
 
             if (id.HasValue)
-                query = query.Where(h => h.HouseId == id.Value);
+                houseQuery = houseQuery.Where(h => h.HouseId == id.Value);
             else
-                query = query.OrderBy(h => h.HouseId);
+                houseQuery = houseQuery.OrderBy(h => h.HouseId).Take(1);
 
-            var house = await query.FirstOrDefaultAsync();
+            var house = await houseQuery.FirstOrDefaultAsync();
 
             if (house == null)
                 return NotFound();
+
+            var houseId = house.HouseId;
+
+            // 2. GeneralInformation
+            house.GeneralInformation = await _context.GeneralInformation
+                .Where(g => g.HouseId == houseId)
+                .Include(g => g.Image)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 3. DescriptionPages + Images
+            house.DescriptionPages = await _context.DescriptionPages
+                .Where(d => d.HouseId == houseId)
+                .Include(d => d.Images)
+                .AsNoTracking()
+                .ToListAsync();
 
             foreach (var descPage in house.DescriptionPages)
             {
@@ -63,31 +66,25 @@ namespace HouseNet9.Controllers
                     .ToList();
             }
 
+            // 4. Distances + Items
+            house.Distances = await _context.Distances
+                .Where(d => d.HouseId == houseId)
+                .Include(d => d.Image)
+                .Include(d => d.DistanceItems)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // 5. DetailedInformation + Items
+            house.DetailedInformation = await _context.DetailedInformation
+                .Where(d => d.HouseId == houseId)
+                .Include(d => d.Image)
+                .Include(d => d.DetailedInformationItems)
+                .AsNoTracking()
+                .ToListAsync();
+
             return View(house);
         }
 
-
-        //public async Task<IActionResult> More(int id, int houseId)
-        //{
-
-        //    DescriptionPage? dp = await _context.DescriptionPages.Where(w => w.DescriptionPageId == id)
-        //        .Include(i => i.Images)
-        //        .Include(i => i.House)
-        //        .FirstOrDefaultAsync();
-
-        //    GeneralInformation? gi = await _context.GeneralInformation.Where(w => w.House.HouseId == houseId)
-        //        .Include(i => i.Image)
-        //        .FirstOrDefaultAsync();
-
-        //    List<DetailedInformation> di = await _context.DetailedInformation.Where(w => w.House.HouseId == houseId)
-        //        .Include(i => i.Image)
-        //        .Include(i => i.DetailedInformationItems)
-        //        .ToListAsync();
-
-        //    ViewBag.Detailed = di;
-
-        //    return View(dp);
-        //}
 
 
         public async Task<IActionResult> More(int id, int houseId)
