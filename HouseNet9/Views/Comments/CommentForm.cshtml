@@ -13,6 +13,8 @@
             @(ViewBag.IsEdit == true ? "Edytuj opinię" : "Twoja opinia")
         </h3>
 
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
         @if (ViewBag.IsEdit == true)
         {
             <div class="alert alert-info">
@@ -37,7 +39,7 @@
             @Html.AntiForgeryToken()
             @if (ViewBag.IsEdit == true)
             {
-                <input type="hidden" name="token" value="@Context.Request.Query["token"]" />
+                <input type="hidden" name="token" value="@ViewBag.Token" />
             }
             <!-- Ukryte pola potrzebne do bindowania -->
             <input type="hidden" asp-for="HouseId" />
@@ -45,16 +47,19 @@
             <input type="hidden" asp-for="Email" />
             <input type="hidden" asp-for="StayFrom" />
             <input type="hidden" asp-for="AuthorName" />
+            <input type="hidden" asp-for="CountryCode" />
 
             <div class="mb-3">
                 <label class="form-label">Ocena</label>
                 <div id="star-container">
-                    @for (int i = 1; i <= 4; i++)
+                    @for (int i = 1; i <= 5; i++)
                     {
                         <span class="star" data-value="@i">★</span>
                     }
                 </div>
                 <input type="hidden" asp-for="Rating" id="Rating" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+
             </div>
 
             <style>
@@ -120,6 +125,7 @@
 
             <div class="mb-3">
                 <textarea class="form-control" asp-for="Text" placeholder="Twoja opinia"></textarea>
+                <span asp-validation-for="Text" class="text-danger"></span>
             </div>
 
             <button class="btn btn-dark w-100">
@@ -130,3 +136,7 @@
 
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,31 @@
+﻿@model HouseNet9.ViewModels.EditRequestViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutComments.cshtml";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
+
+        <h3>Masz już opinię ⭐</h3>
+
+        <p class="text-muted">
+            Dla tej rezerwacji opinia została już dodana.
+        </p>
+
+        <p>
+            Jeśli chcesz ją edytować, kliknij poniżej — wyślemy Ci link do edycji na email.
+        </p>
+
+        <form asp-action="EditRequest" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="reservationCode" value="@Model.ReservationCode" />
+            <input type="hidden" name="email" value="@Model.Email" />
+
+            <button class="btn btn-dark w-100">
+                Wyślij link do edycji
+            </button>
+        </form>
+
+    </div>
+</div>

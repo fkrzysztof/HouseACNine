@@ -2,7 +2,9 @@
 using HouseNet9.Data;
 using HouseNet9.Helpers;
 using HouseNet9.Models;
+using HouseNet9.Services;
 using HouseNet9.ViewModels;
+using Mail;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,12 @@ namespace HouseNet9.Controllers
     public class CommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICommentNotificationService _commentNotificationService;
 
-        public CommentsController(ApplicationDbContext context)
+        public CommentsController(ApplicationDbContext context, ICommentNotificationService commentNotificationService)
         {
             _context = context;
+            _commentNotificationService = commentNotificationService;
         }
 
 
@@ -119,7 +123,17 @@ namespace HouseNet9.Controllers
             var comment = await _context.Comments
                 .FirstOrDefaultAsync(c => c.ReservationCode == reservationCode);
 
-            var model = comment ?? new Comment
+
+            if (comment != null)
+            {
+                return View("AlreadyExists", new EditRequestViewModel
+                {
+                    ReservationCode = reservationCode,
+                    Email = email
+                });
+            }
+
+            var model = new Comment
             {
                 HouseId = houseId,
                 ReservationCode = reservationCode,
@@ -128,9 +142,8 @@ namespace HouseNet9.Controllers
                 StayFrom = reservation.From
             };
 
-            ViewBag.IsEdit = comment != null;
-
             return View("CommentForm", model);
+
         }
 
         // POST
@@ -181,19 +194,15 @@ namespace HouseNet9.Controllers
             _context.Comments.Add(model);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Dziękujemy za opinię!";
+            TempData["Title"] = "Dziękujemy za opinię! ⭐";
+            TempData["Message"] = "Twoja opinia została zapisana i pomoże innym gościom.";
             return RedirectToAction("Thanks");
         }
 
 
-
-        [HttpGet]
-        public IActionResult EditRequest()
-        {
-            return View();
-        }
-
-
+       
+        
+        //Edycja komentarza z linka (token!)
         [HttpGet]
         public async Task<IActionResult> Edit(string token)
         {
@@ -201,12 +210,25 @@ namespace HouseNet9.Controllers
                 .Include(a => a.Comment)
                 .FirstOrDefaultAsync(a => a.Token == token);
 
-            if (access == null || access.IsUsed)
+            if (access == null)
+            {
+                ViewBag.Reason = "not_found";
                 return View("Expired");
+            }
+
+            if (access.IsUsed)
+            {
+                ViewBag.Reason = "used";
+                return View("Expired");
+            }
 
             if (access.ExpiresAt < DateTime.Now)
+            {
+                ViewBag.Reason = "token_expired";
                 return View("Expired");
+            }
 
+            ViewBag.Token = token;
             ViewBag.CanEdit = access.Comment.CreatedAt >= DateTime.Now.AddDays(-14);
 
             var comment = access.Comment;
@@ -224,6 +246,7 @@ namespace HouseNet9.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.IsEdit = true;
+                ViewBag.Token = token;
                 return View("CommentForm", model);
             }
 
@@ -231,14 +254,31 @@ namespace HouseNet9.Controllers
                 .Include(a => a.Comment)
                 .FirstOrDefaultAsync(a => a.Token == token);
 
-            if (access == null || access.IsUsed)
+            //sprawdzam tokena i komentarz
+            if (access == null)
+            {
+                ViewBag.Reason = "not_found";
                 return View("Expired");
+            }
+
+            if (access.IsUsed)
+            {
+                ViewBag.Reason = "used";
+                return View("Expired");
+            }
 
             if (access.ExpiresAt < DateTime.Now)
+            {
+                ViewBag.Reason = "token_expired";
                 return View("Expired");
+            }
 
             if (access.Comment.CreatedAt < DateTime.Now.AddDays(-14))
+            {
+                ViewBag.Reason = "edit_time_expired";
                 return View("Expired");
+            }
+            //**************************
 
             var comment = access.Comment;
 
@@ -252,7 +292,8 @@ namespace HouseNet9.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Komentarz został zaktualizowany.";
+            TempData["Title"] = "Zapisano zmiany!";
+            TempData["Message"] = "Twoja opinia została zaktualizowana.";
             return RedirectToAction("Thanks");
         }
 
@@ -273,12 +314,11 @@ namespace HouseNet9.Controllers
                 return View();
             }
 
-            var oldTokens = _context.CommentAccessTokens.Where(t => t.CommentId == comment.Id && !t.IsUsed);
+            var oldTokens = await _context.CommentAccessTokens
+                .Where(t => t.CommentId == comment.Id && !t.IsUsed)
+                .ToListAsync();
 
-            foreach (var t in oldTokens)
-            {
-                t.IsUsed = true;
-            }
+            oldTokens.ForEach(t => t.IsUsed = true);
 
             // generowanie tokena
             var token = Guid.NewGuid().ToString();
@@ -294,13 +334,11 @@ namespace HouseNet9.Controllers
             _context.CommentAccessTokens.Add(access);
             await _context.SaveChangesAsync();
 
-            // 🔗 link
-            var link = Url.Action("Edit", "Comments", new { token }, Request.Scheme);
+            //email
+            await _commentNotificationService.SendCommentEditLinkAsync(comment, token);
 
-            // ✉️ TODO: wyślij maila
-            // SendEmail(email, link);
-
-            TempData["Success"] = "Wysłaliśmy link do edycji na Twój email.";
+            TempData["Title"] = "Link wysłany";
+            TempData["Message"] = "Wysłaliśmy link do edycji na Twój email.";
             return RedirectToAction("Thanks");
         }
 
@@ -359,7 +397,7 @@ namespace HouseNet9.Controllers
             });
         }
 
-
+        //Szybkie zatwierdzenie / cofnięcie zatwierdzenia
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(int id, bool? approved, int page = 1)
@@ -377,6 +415,8 @@ namespace HouseNet9.Controllers
         }
 
 
+
+        //Usuwa komentarz
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, bool? approved, int page = 1)
@@ -390,6 +430,21 @@ namespace HouseNet9.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("List", new { approved, page });
+        }
+
+
+        public IActionResult PreviewEmail()
+        {
+            var model = new EmailSimpleViewModel
+            {
+                Title = "Nowy komentarz",
+                LogoUrl = "logo.png", // wrzuć coś do /uploads/
+                ButtonUrl = "https://twojastrona.pl/comment?token=FAKE_TOKEN_123",
+                ButtonText = "Zobacz komentarz",
+                FooterText = "To jest podgląd wiadomości email."
+            };
+
+            return View("/Views/Emails/CommentNotification.cshtml", model);
         }
 
 

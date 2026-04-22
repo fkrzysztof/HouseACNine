@@ -65,6 +65,7 @@ builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 //wysylanie maili
 builder.Services.AddScoped<IReservationNotificationService, ReservationNotificationService>();
+builder.Services.AddScoped<ICommentNotificationService, CommentNotificationService>();
 
 
 

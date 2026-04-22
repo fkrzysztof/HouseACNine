@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutComments.cshtml";
+    var reason = ViewBag.Reason as string;
+}
+
+<div class="container text-center mt-5">
+
+    <h2>Nie można edytować opinii</h2>
+
+    @if (reason == "not_found")
+    {
+        <div class="alert alert-danger mt-4">
+            Nie znaleziono komentarza lub link jest nieprawidłowy.
+        </div>
+    }
+    else if (reason == "used")
+    {
+        <div class="alert alert-warning mt-4">
+            Ten link został już wykorzystany.
+        </div>
+    }
+    else if (reason == "token_expired")
+    {
+        <div class="alert alert-warning mt-4">
+            Link do edycji wygasł (24h).
+        </div>
+    }
+    else if (reason == "edit_time_expired")
+    {
+        <div class="alert alert-warning mt-4">
+            Minął czas na edycję opinii (14 dni od dodania).
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-secondary mt-4">
+            Link jest nieważny.
+        </div>
+    }
+
+    <a href="/" class="btn btn-dark mt-3">Powrót</a>
+
+</div>

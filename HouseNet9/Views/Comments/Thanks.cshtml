@@ -1,28 +1,19 @@
 ﻿@{
-    ViewData["Title"] = "Dziękujemy";
-}
-@{
     Layout = "~/Views/Shared/_LayoutComments.cshtml";
-}
 
+    var title = TempData["Title"] as string ?? "Dziękujemy!";
+    var message = TempData["Message"] as string ?? "Operacja zakończona pomyślnie.";
+}
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
 
     <div class="card shadow-lg border-0 p-4" style="max-width: 420px; width: 100%; border-radius: 16px;">
 
-        <h2 class="mb-3">Dziękujemy za opinię! ⭐</h2>
+        <h2 class="mb-3">@title</h2>
 
         <p class="text-muted">
-            Twoja opinia została zapisana i pomoże innym gościom w wyborze.
+            @message
         </p>
-
-        @if (TempData["Success"] != null)
-        {
-            <div class="alert alert-success mt-3">
-                @TempData["Success"]
-            </div>
-        }
 
     </div>
 </div>
-
