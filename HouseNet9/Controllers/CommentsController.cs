@@ -157,9 +157,9 @@ namespace HouseNet9.Controllers
                 return View("CommentForm", model);
             }
 
-            if (model.Rating < 1 || model.Rating > 5)
+            if (model.Rating < 1 || model.Rating > 4)
             {
-                ModelState.AddModelError("Rating", "Ocena musi być od 1 do 5");
+                ModelState.AddModelError("Rating", "Ocena musi być od 1 do 4");
                 return View("CommentForm", model);
             }
             //*********
@@ -284,6 +284,15 @@ namespace HouseNet9.Controllers
 
             if (comment.Id != access.CommentId)
                 return BadRequest();
+
+            if (model.Rating < 1 || model.Rating > 4)
+            {
+                ModelState.AddModelError("Rating", "Ocena musi być od 1 do 4");
+
+                ViewBag.IsEdit = true;
+                ViewBag.Token = token;
+                return View("CommentForm", model);
+            }
 
             comment.Text = model.Text;
             comment.Rating = model.Rating;

@@ -35,7 +35,7 @@
             <p><strong>Pobyt:</strong> @Model.StayFrom.ToString("MMMM yyyy")</p>
         </div>
 
-        <form asp-action="@(ViewBag.IsEdit ? "Edit" : "Add")" method="post">
+        <form asp-action="@(ViewBag.IsEdit ? "Edit" : "Add")" method="post" autocomplete="off">
             @Html.AntiForgeryToken()
             @if (ViewBag.IsEdit == true)
             {
@@ -52,7 +52,7 @@
             <div class="mb-3">
                 <label class="form-label">Ocena</label>
                 <div id="star-container">
-                    @for (int i = 1; i <= 5; i++)
+                    @for (int i = 1; i <= 4; i++)
                     {
                         <span class="star" data-value="@i">★</span>
                     }
@@ -124,7 +124,7 @@
             </script>
 
             <div class="mb-3">
-                <textarea class="form-control" asp-for="Text" placeholder="Twoja opinia"></textarea>
+                <textarea class="form-control" asp-for="Text" placeholder="Twoja opinia" maxlength="1000" spellcheck="true"></textarea>
                 <span asp-validation-for="Text" class="text-danger"></span>
             </div>
 
@@ -136,6 +136,20 @@
 
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const ratingInput = document.getElementById('Rating');
+
+        form.addEventListener('submit', function (e) {
+            if (!ratingInput.value || ratingInput.value == "0") {
+                e.preventDefault();
+                alert("Wybierz ocenę");
+            }
+        });
+    });
+</script>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

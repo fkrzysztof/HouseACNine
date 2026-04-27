@@ -10,7 +10,7 @@
                 if (Model != null && Model.GeneralInformation != null)
                     foreach (GeneralInformation item in Model.GeneralInformation)
                     {
-                        @:<div class="card p-4 m-2 d-inline justify-content-center">
+                        @:<div class="card p-2 p-lg-4 m-2 d-inline justify-content-center">
                             if (item.Image != null && item.Image.Path != null)
                             {
                                     <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
@@ -27,6 +27,8 @@
         </div>
     </div>
 </section>
+
+
 
 @* ******************************** Calendar ******************************** *@
 <section id="calendaranchor">
@@ -133,7 +135,7 @@
             </div>
             @* Opis przy VIDEO DOMU *@
             <div class="col-xl-4 col-lg-5">
-                <div class="featured-text text-center text-lg-left">
+                <div class="featured-text text-start text-lg-left m-4">
                     <h4>@Model.Name</h4>
                     <p class="text-black-50 mb-0">@Model.LongText</p>
                 </div>
@@ -143,11 +145,9 @@
 </section>
 
 
-@* *************************  DescriptionPages ************************* *@
+@* *************************  DescriptionPages *************************  *@
 <section class="py-4" id="descriptionpagesanchor">
-   @*  <div class="container px-4 px-lg-5"> *@
         <!-- Featured Project Row-->
-
         <!-- Project One Row-->
         @{
             bool xy = true;
@@ -158,7 +158,6 @@
                     <div class="desc-page-section section-triangle">
 
                         <div class="container">
-                            @* <h2 class="triangle-text top text-start">@descriptionPage.Title</h2> *@
                         <h2 class="section-divider">
                             <span>@descriptionPage.Title</span>
                         </h2>
@@ -192,26 +191,44 @@
                         </div>
 
 
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 margin-b">
                             <div class="bg-black text-center h-100 project desc-page-textbox">
                                 <div class="">
                                     <div class="project-text w-100 my-auto text-center text-lg-left">
-                                        @* <h4 class="text-white">@descriptionPage.Title</h4> *@
-                                        <p class="mb-0 text-white-50">@descriptionPage.Description</p>
+
+
+                                        @using System.Text.RegularExpressions
+
+                                        @if (!string.IsNullOrEmpty(descriptionPage.Description))
+                                        {
+                                            var text = descriptionPage.Description
+                                                .Replace("\r\n", "\n")
+                                                .Replace("\r", "\n");
+
+                                            var paragraphs = Regex.Split(text, @"\n{2,}");
+
+                                            foreach (var paragraph in paragraphs)
+                                            {
+                                                <p class="mb-3 text-start">@paragraph.Trim()</p>
+                                            }
+                                        }
+
                                     </div>
                                     <a class="" asp-area="" asp-controller="Home" asp-action="More" asp-route-id="@descriptionPage.DescriptionPageId" asp-route-houseId="@Model.HouseId">więcej >></a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                   @*  xy = !xy; *@
+
                     </div>
                     </div>
                 }
         }
-   @*  </div> *@
+
 
 </section>
+
+
 
 
 @* ----------------- Detailed Information -----------------*@

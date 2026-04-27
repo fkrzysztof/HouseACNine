@@ -110,6 +110,13 @@ app.UseAuthentication(); //dodane
 app.UseAuthorization();
 
 
+//CSP header (boost bezpieczeństwa)
+//app.Use(async (context, next) =>
+//{
+//    context.Response.Headers.Add("Content-Security-Policy",
+//        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
+//    await next();
+//});
 
 app.MapStaticAssets();
 

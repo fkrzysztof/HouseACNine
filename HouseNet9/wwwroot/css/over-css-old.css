@@ -255,21 +255,11 @@ section {
     margin: 8rem 0;
 }
 
-@media (max-width: 992px) {
-    section {
-       /* scroll-margin-top: 100px;*/
-        margin: 2rem 0;
-    }
-}
-
 /* =========================
    DESCRIPTION PAGE
 ========================= */
 .desc-page-section {
     position: relative;
-}
-.desc-page-section:not(:first-child) {
-    padding-top: 8rem;
 }
 
     .desc-page-section::before {
@@ -336,99 +326,88 @@ section {
     border-radius: 12px;
 }
 
-@media (max-width: 992px) {
-    .section-divider {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        margin: 0rem 0 2rem 0;
-        font-size: 1.5rem;
-    }
-}
-
-    /* =========================
+/* =========================
    ICON SYSTEM
 ========================= */
-    .icon {
-        display: inline-block;
-        width: 1.5em;
-        height: 1.5em;
-        object-fit: contain;
-        transition: transform 0.2s ease, opacity 0.2s ease;
-    }
+.icon {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    object-fit: contain;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
 
-    .icon-sm {
-        width: 1.25em;
-        height: 1.25em;
-    }
+.icon-sm {
+    width: 1.25em;
+    height: 1.25em;
+}
 
-    .icon-md {
-        width: 1.5em;
-        height: 1.5em;
-    }
+.icon-md {
+    width: 1.5em;
+    height: 1.5em;
+}
 
-    .icon-lg {
-        width: 2em;
-        height: 2em;
-    }
+.icon-lg {
+    width: 2em;
+    height: 2em;
+}
 
-    .icon-xl {
-        width: 3em;
-        height: 3em;
-    }
+.icon-xl {
+    width: 3em;
+    height: 3em;
+}
 
-    .icon-muted {
-        opacity: 0.6;
-    }
+.icon-muted {
+    opacity: 0.6;
+}
 
-    .icon-light {
-        filter: brightness(1.2);
-    }
+.icon-light {
+    filter: brightness(1.2);
+}
 
-    .icon-dark {
-        filter: brightness(0.6);
-    }
+.icon-dark {
+    filter: brightness(0.6);
+}
 
-    .icon-left {
-        margin-right: 0.5rem;
-    }
+.icon-left {
+    margin-right: 0.5rem;
+}
 
-    .icon-right {
-        margin-left: 0.5rem;
-    }
+.icon-right {
+    margin-left: 0.5rem;
+}
 
-    .icon-hover:hover {
-        transform: scale(1.15);
-        opacity: 0.85;
-    }
+.icon-hover:hover {
+    transform: scale(1.15);
+    opacity: 0.85;
+}
 
-    .icon-circle {
-        background: #f1f1f1;
-        border-radius: 50%;
-        padding: 0.5em;
-    }
+.icon-circle {
+    background: #f1f1f1;
+    border-radius: 50%;
+    padding: 0.5em;
+}
 
-    .icon-soft {
-        background: rgba(0,0,0,0.05);
-        border-radius: 8px;
-        padding: 0.4em;
-    }
+.icon-soft {
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 0.4em;
+}
 
-    .icon-align {
-        vertical-align: middle;
-    }
+.icon-align {
+    vertical-align: middle;
+}
 
-    /* =========================
+/* =========================
    HELPERS
 ========================= */
-    .margin-b {
-        margin-bottom: 12px;
-    }
+.margin-b {
+    margin-bottom: 12px;
+}
 
-    .card-2-border {
-        border-radius: 0 0 0 27px;
-        border-left: 2px solid rgba(0,0,0,0.45);
-        border-top: none;
-        border-right: none;
-        border-bottom: 2px solid rgba(0,0,0,0.45);
-    }
+.card-2-border {
+    border-radius: 0 0 0 27px;
+    border-left: 2px solid rgba(0,0,0,0.45);
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid rgba(0,0,0,0.45);
+}

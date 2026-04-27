@@ -9,21 +9,24 @@
         <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
         <form method="post" autocomplete="off">
+            @Html.AntiForgeryToken()
 
             <input name="reservationCode"
                    class="form-control mb-3"
                    placeholder="Kod rezerwacji"
-                   autocomplete="new-password" />
+                   maxlength="100"
+                   required />
 
-            <input name="email"
+            <input type="email"
+                   name="email"
                    class="form-control mb-3"
                    placeholder="Email"
-                   autocomplete="new-password" />
+                   maxlength="200"
+                   required />
 
             <button class="btn btn-dark w-100">
                 Dalej
             </button>
-
         </form>
 
     </div>

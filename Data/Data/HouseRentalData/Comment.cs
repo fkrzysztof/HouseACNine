@@ -13,9 +13,12 @@ namespace Data.Data.HouseRentalData
         public int Id { get; set; }
 
         [Required]
+        [StringLength(100)]
         public string ReservationCode { get; set; }
 
         [Required]
+        [EmailAddress]
+        [StringLength(200)]
         public string Email { get; set; }
 
         public int HouseId { get; set; }
@@ -25,6 +28,7 @@ namespace Data.Data.HouseRentalData
 
         [Required]
         [StringLength(1000)]
+        [MinLength(3)]
         public string Text { get; set; }
 
         public string AuthorName { get; set; }
