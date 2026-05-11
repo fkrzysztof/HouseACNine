@@ -1,38 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Globalization;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using WeatherModule.Core.Models;
 
-namespace WeatherModule.Core.Services
+namespace WeatherModule.Core.Services;
+
+public class OpenMeteoWeatherService : IWeatherService
 {
-    public class OpenMeteoWeatherService : IWeatherService
+    private readonly HttpClient _http;
+
+    public OpenMeteoWeatherService(HttpClient http)
     {
-        private readonly HttpClient _http;
+        _http = http;
+    }
 
-        public OpenMeteoWeatherService(HttpClient http)
-        {
-            _http = http;
-        }
-
-        public async Task<WeatherDto?> GetCurrentAsync(double lat, double lon)
+    public async Task<WeatherDto?> GetCurrentAsync(double lat, double lon)
+    {
+        try
         {
             var url =
-                $"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true";
+                $"https://api.open-meteo.com/v1/forecast?latitude={lat.ToString(CultureInfo.InvariantCulture)}&longitude={lon.ToString(CultureInfo.InvariantCulture)}&current=temperature_2m,weather_code,wind_speed_10m";
 
-            var json = await _http.GetFromJsonAsync<JsonElement>(url);
+            var response =
+                await _http.GetFromJsonAsync<OpenMeteoResponse>(url);
 
-            var current = json.GetProperty("current_weather");
+            if (response?.Current == null)
+                return null;
 
             return new WeatherDto
             {
-                Temperature = current.GetProperty("temperature").GetDouble(),
-                WindSpeed = current.GetProperty("windspeed").GetDouble(),
-                WeatherCode = current.GetProperty("weathercode").GetInt32()
+                Temperature = response.Current.Temperature,
+                WindSpeed = response.Current.WindSpeed,
+                WeatherCode = response.Current.WeatherCode
             };
+        }
+        catch
+        {
+            return null;
         }
     }
 }

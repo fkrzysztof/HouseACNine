@@ -38,7 +38,7 @@ namespace HouseNet9.ViewComponents
         //    return View(vm);
         //}
 
-        public async Task<IViewComponentResult> Invoke(int? id, double lat, double lon)
+        public async Task<IViewComponentResult> InvokeAsync(int? id, double lat, double lon)
         {
             var contacts = await _context.Contacts
                 .Where(w => w.HouseId == id)

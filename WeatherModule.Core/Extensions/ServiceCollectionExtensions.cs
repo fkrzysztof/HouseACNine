@@ -9,7 +9,10 @@ namespace WeatherModule.Core.Extensions
     {
         public static IServiceCollection AddWeatherModule(this IServiceCollection services)
         {
-            services.AddHttpClient<IWeatherService, OpenMeteoWeatherService>();
+            services.AddHttpClient<IWeatherService, OpenMeteoWeatherService>(client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(5);
+            });
             return services;
         }
     }

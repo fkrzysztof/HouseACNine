@@ -345,22 +345,25 @@
                     </div> *@
 
                     <!-- WEATHER -->
-                    <div class="weather-card mt-3">
+                    @if (Model.Weather != null)
+                    {
+                        <div class="weather-card mt-3">
 
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <div>Pogoda</div>
-                                <div class="fw-bold">@Model.Weather.Temperature °C</div>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div>Pogoda</div>
+                                    <div class="fw-bold">@Model.Weather.Temperature °C</div>
+                                </div>
+
+                                <i class="bi @WeatherIconHelper.GetIcon(Model.Weather.WeatherCode) fs-2"></i>
                             </div>
 
-                            <i class="bi @WeatherIconHelper.GetIcon(Model.Weather.WeatherCode) fs-2"></i>
-                        </div>
+                            <div class="small opacity-75">
+                                Wiatr: @Model.Weather.WindSpeed km/h
+                            </div>
 
-                        <div class="small opacity-75">
-                            Wiatr: @Model.Weather.WindSpeed km/h
                         </div>
-
-                    </div>
+                    }
 
 
 
