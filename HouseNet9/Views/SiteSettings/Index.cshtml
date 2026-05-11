@@ -1,0 +1,36 @@
+﻿@model Data.Data.HouseRentalData.SiteSettings
+
+@{
+    ViewData["Title"] = "Polityka prywatności";
+}
+
+<section class="privacy-page py-5">
+
+    <div class="container">
+
+        <div class="privacy-wrapper">
+
+            <h1 class="privacy-title mb-5">
+                Polityka Prywatności
+            </h1>
+
+            @if (!string.IsNullOrWhiteSpace(Model.PrivacyPolicy))
+            {
+                @Html.Raw(Model.PrivacyPolicy)
+            }
+            else
+            {
+                <p>
+                    Treść polityki prywatności nie została jeszcze dodana.
+                </p>
+            }
+
+        </div>
+
+    </div>
+
+</section>
+
+@section Styles {
+    <link href="~/css/privacy.css" rel="stylesheet" />
+}

@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementy rozwiązania", "El
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mail", "Mail\Mail.csproj", "{210744DA-F490-4BA3-8771-69AA9F1D4FDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QrGenerator.Core", "QrGenerator.Core\QrGenerator.Core.csproj", "{B777EC6D-5210-4EA9-8A21-83BACA432F3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherModule.Core", "WeatherModule.Core\WeatherModule.Core.csproj", "{0685353F-04DF-4B82-ABEC-04CC465B51C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{210744DA-F490-4BA3-8771-69AA9F1D4FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{210744DA-F490-4BA3-8771-69AA9F1D4FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{210744DA-F490-4BA3-8771-69AA9F1D4FDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B777EC6D-5210-4EA9-8A21-83BACA432F3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B777EC6D-5210-4EA9-8A21-83BACA432F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B777EC6D-5210-4EA9-8A21-83BACA432F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B777EC6D-5210-4EA9-8A21-83BACA432F3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0685353F-04DF-4B82-ABEC-04CC465B51C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0685353F-04DF-4B82-ABEC-04CC465B51C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0685353F-04DF-4B82-ABEC-04CC465B51C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0685353F-04DF-4B82-ABEC-04CC465B51C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

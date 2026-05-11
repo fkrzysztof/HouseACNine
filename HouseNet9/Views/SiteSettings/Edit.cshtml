@@ -1,0 +1,64 @@
+﻿@model Data.Data.HouseRentalData.SiteSettings
+
+
+@{
+    ViewData["Title"] = "Edycja ustawień strony";
+}
+
+<div class="container py-5">
+
+    <h1 class="mb-4">
+        Ustawienia strony
+    </h1>
+
+    @if (ViewBag.Success != null)
+    {
+        <div class="alert alert-success">
+            Zapisano zmiany.
+        </div>
+    }
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-5">
+
+            <label asp-for="PrivacyPolicy"
+                   class="form-label fw-bold">
+
+                Polityka prywatności
+
+            </label>
+
+            <textarea asp-for="PrivacyPolicy"
+                      class="form-control"
+                      rows="20"></textarea>
+
+        </div>
+
+        <div class="mb-5">
+
+            <label asp-for="CookiesPolicy"
+                   class="form-label fw-bold">
+
+                Polityka cookies
+
+            </label>
+
+            <textarea asp-for="CookiesPolicy"
+                      class="form-control"
+                      rows="12"></textarea>
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-dark px-5">
+
+            Zapisz
+
+        </button>
+
+    </form>
+
+</div>

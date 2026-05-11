@@ -1,0 +1,30 @@
+﻿.privacy-page {
+    background: #050505;
+    color: rgba(255,255,255,0.82);
+    min-height: 100vh;
+}
+
+.privacy-wrapper {
+    max-width: 900px;
+    margin: auto;
+    line-height: 1.9;
+    font-size: 1.05rem;
+}
+
+.privacy-title {
+    color: white;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.privacy-page h2 {
+    color: white;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.privacy-page p,
+.privacy-page li {
+    color: rgba(255,255,255,0.82);
+}

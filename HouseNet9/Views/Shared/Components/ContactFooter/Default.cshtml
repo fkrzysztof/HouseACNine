@@ -1,16 +1,17 @@
 ﻿@using HouseNet9.ViewModels
+@using WeatherModule.Core.Helpers
 @model ContactFooterVM
 
 
 
 
 @* ********************************** Formularz kontaktowy ********************************** *@
-<section class="signup-section" id="signup">
+<section class="signup-section before-footer" id="signup">
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5">
             <div class="col-md-10 col-lg-8 mx-auto text-center">
                 <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
-                <h2 class="text-white mb-5">Subscribe to receive updates!</h2>
+                <h2 class="text-white mb-5">Skontaktuj się z nami</h2>
 
                 <form asp-controller="Home" asp-action="SendEmail" method="post" class="form-signup">
                     @Html.AntiForgeryToken()
@@ -58,75 +59,334 @@
     </div>
 </section>
 
-<footer class="bg-white">
-    <div class="container py-4">
-        <div class="row">
-            @if (Model.Contacts?.Any() == true)
-            {
-                foreach (var contact in Model.Contacts)
+
+@* <footer class="footer-custom">
+
+    <div class="container py-5">
+
+        <div class="row gy-5">
+
+            <!-- BRAND -->
+            <div class="col-lg-3">
+
+                <h3 class="footer-logo">HouseNet9</h3>
+
+                <p class="footer-description">
+                    Nowoczesny dom wakacyjny stworzony z myślą o komforcie i prywatności.
+                    Intuicyjny system rezerwacji online.
+                </p>
+
+
+            </div>
+
+            <!-- CONTACT (UPROSZCZONY) -->
+            <div class="col-lg-3">
+
+                <h5 class="mb-4">Kontakt</h5>
+
+                @if (Model.Contacts?.Any() == true)
                 {
-                    <div class="col-md-4 mb-4">
-                        <div class="p-3 h-100">
-                            <h5 class="fw-bold">@contact.Name</h5>
+                    foreach (var contact in Model.Contacts)
+                    {
+                        <div class="col-12 mb-4">
+                         
+                                <h5 class="fw-bold">@contact.Name</h5>
 
-                            @* Adresy *@
-                            @if (contact.Addresses?.Any() == true)
-                            {
-                                <div class="mb-2">
-                                    <strong>Adres:</strong><br />
-                                    @foreach (var addr in contact.Addresses)
-                                    {
-                                        <text>
-                                            @addr.Street, @addr.PostalCode @addr.City<br />
-                                            @addr.Country<br />
-                                        </text>
-                                    }
-                                </div>
-                            }
 
-                            @* Email *@
-                            @if (contact.EmailAddresses?.Any() == true)
-                            {
-                                <div class="mb-2">
-                                    <strong>Email:</strong><br />
-                                    @foreach (var em in contact.EmailAddresses)
-                                    {
-                                        <text>
-                                            <a href="mailto:@em.Email">@em.Email</a><br />
-                                        </text>
-                                    }
-                                </div>
-                            }
+                                @if (contact.Addresses?.Any() == true)
+                                {
+                                    <div class="mb-2">
+                                        <strong>Adres:</strong><br />
+                                        @foreach (var addr in contact.Addresses)
+                                        {
+                                            <text>
+                                                @addr.Street<br />
+                                                @addr.PostalCode @addr.City<br />
+                                                @addr.Country<br />
+                                            </text>
+                                        }
+                                    </div>
+                                }
 
-                            @* Telefony *@
-                            @if (contact.PhoneNumbers?.Any() == true)
-                            {
-                                <div class="mb-2">
-                                    <strong>Telefon:</strong><br />
-                                    @foreach (var ph in contact.PhoneNumbers)
-                                    {
-                                        <text>
-                                            <a href="tel:@ph.Number">@ph.Number</a><br />
-                                        </text>
-                                    }
-                                </div>
-                            }
+
+                                @if (contact.EmailAddresses?.Any() == true)
+                                {
+                                    <div class="mb-2">
+                                        <strong>Email:</strong><br />
+                                        @foreach (var em in contact.EmailAddresses)
+                                        {
+                                            <text>
+                                                <a href="mailto:@em.Email">@em.Email</a><br />
+                                            </text>
+                                        }
+                                    </div>
+                                }
+
+                                @if (contact.PhoneNumbers?.Any() == true)
+                                {
+                                    <div class="mb-2">
+                                        <strong>Telefon:</strong><br />
+                                        @foreach (var ph in contact.PhoneNumbers)
+                                        {
+                                            <text>
+                                                <a href="tel:@ph.Number">@ph.Number</a><br />
+                                            </text>
+                                        }
+                                    </div>
+                                }
+                            
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <p>Brak danych kontaktowych dla tego domu.</p>
                     </div>
                 }
-            }
-            else
-            {
-                <div class="col-12">
-                    <p>Brak danych kontaktowych dla tego domu.</p>
+
+            </div>
+
+            <div class="col-lg-3">
+                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Polityka prywatności</a>
+                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Cookis</a>
+                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Rezerwacja ONLINE</a>
+                <a class="nav-link" asp-area="" asp-controller="DetailedInformations" asp-action="Index">#Wyposażenie</a>
+                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Odległości</a>
+                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Dom</a>
+                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Lokalizacja</a>
+            </div>
+
+
+            <!-- CTA (NAJWAŻNIEJSZE) -->
+            <div class="col-lg-3">
+
+                <h5 class="mb-3">
+                    Rezerwacja
+                </h5>
+
+                <p class="mb-4">
+                    Sprawdź dostępność i wybierz termin w kalendarzu.
+                </p>
+
+                <a href="#calendaranchor"
+                   class="btn btn-light rounded-pill px-4">
+                    Otwórz kalendarz
+                </a>
+
+                <div class="mt-3 small text-muted">
+                    Rezerwacja online • natychmiastowa dostępność • szybka weryfikacja
                 </div>
-            }
+
+            </div>
+
+
+
         </div>
 
-        <div class="text-center mt-4">
-            <a href="/Privacy" class="me-3">Polityka prywatności</a>
-            <span>© 2026 HouseNet9</span>
+        <!-- BOTTOM -->
+        <div class="footer-bottom mt-5 pt-4">
+
+            <div class="d-flex justify-content-between flex-wrap gap-3">
+
+                <span>© 2026 HouseNet9</span>
+
+                <div>
+                    <a href="/Privacy" class="me-3">Polityka prywatności</a>
+                    <a href="#calendaranchor">Rezerwacja</a>
+                </div>
+
+            </div>
+
         </div>
+
+    </div>
+
+</footer> *@
+
+
+
+<footer class="footer-custom">
+
+    <div class="container py-5">
+
+        <div class="row gy-5">
+
+            <!-- BRAND -->
+            <div class="col-lg-3">
+
+                <img src="~/uploads/@ViewBag.Logo" class="footer-logo" />
+
+                <p class="footer-description">
+                    Nowoczesny dom wakacyjny z intuicyjnym systemem rezerwacji online.
+                    Komfort, prywatność i szybka dostępność terminów.
+                </p>
+
+                <img src="/Qr/FooterQr" alt="QR Code" width="120" />
+
+@*                 <div class="footer-mini-info mt-4">
+                    <div>✓ Rezerwacja online</div>
+                    <div>✓ Aktualna dostępność</div>
+                    <div>✓ Szybki kontakt</div>
+                </div> *@
+
+            </div>
+
+            <!-- CONTACT -->
+            <div class="col-lg-3">
+
+                <h5 class="mb-4">Kontakt</h5>
+
+                @if (Model.Contacts?.Any() == true)
+                {
+                    foreach (var contact in Model.Contacts)
+                    {
+                        <div class="footer-contact-box mb-4">
+
+                            <div class="fw-bold mb-2">@contact.Name</div>
+
+                            @if (contact.Addresses?.Any() == true)
+                            {
+                                var addr = contact.Addresses.First();
+
+                                <div class="small text-muted mb-2">
+                                    @addr.Street<br />
+                                    @addr.PostalCode @addr.City<br />
+                                    @addr.Country
+                                </div>
+                            }
+
+                            @if (contact.EmailAddresses?.Any() == true)
+                            {
+                                <a class="footer-link d-block"
+                                   href="mailto:@contact.EmailAddresses.First().Email">
+                                    @contact.EmailAddresses.First().Email
+                                </a>
+                            }
+
+                            @if (contact.PhoneNumbers?.Any() == true)
+                            {
+                                <a class="footer-link d-block"
+                                   href="tel:@contact.PhoneNumbers.First().Number">
+                                    @contact.PhoneNumbers.First().Number
+                                </a>
+                            }
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="small text-muted">Brak danych kontaktowych.</p>
+                }
+
+            </div>
+
+            <!-- LINKS -->
+            <div class="col-lg-3">
+
+                <h5 class="mb-4">Informacje</h5>
+
+                <div class="footer-links">
+
+                    <a asp-controller="GeneralInformations" asp-action="Index">
+                        Polityka prywatności
+                    </a>
+
+                    <a asp-controller="GeneralInformations" asp-action="Index">
+                        Cookies
+                    </a>
+
+                    <a asp-controller="DetailedInformations" asp-action="Index">
+                        Wyposażenie
+                    </a>
+
+                    <a asp-controller="Distance" asp-action="Index">
+                        Lokalizacja i odległości
+                    </a>
+
+                    <a href="#descriptionpagesanchor">
+                        Dom i udogodnienia
+                    </a>
+
+                    <a href="#commentsContainer">
+                        Opinie klientów
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- CTA -->
+            <div class="col-lg-3">
+
+                <div class="footer-cta">
+
+                    <h5 class="mb-3">Rezerwacja</h5>
+
+                    <p class="mb-4">
+                        Sprawdź dostępność i zarezerwuj pobyt w kilka sekund.
+                    </p>
+
+                    <a href="#calendaranchor"
+                       class="btn btn-light w-100 rounded-pill">
+                        Otwórz kalendarz
+                    </a>
+
+                    <div class="mt-3 small opacity-75">
+                        ✓ Aktualna dostępność<br />
+                        ✓ Natychmiastowa rezerwacja<br />
+                        ✓ Potwierdzenie online
+                    </div>
+
+                    <!-- opcjonalnie future upgrade -->
+@*                     <div class="mt-4 small">
+                        ☀️ Pogoda: Brač ~24°C
+                    </div> *@
+
+                    <!-- WEATHER -->
+                    <div class="weather-card mt-3">
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div>Pogoda</div>
+                                <div class="fw-bold">@Model.Weather.Temperature °C</div>
+                            </div>
+
+                            <i class="bi @WeatherIconHelper.GetIcon(Model.Weather.WeatherCode) fs-2"></i>
+                        </div>
+
+                        <div class="small opacity-75">
+                            Wiatr: @Model.Weather.WindSpeed km/h
+                        </div>
+
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="footer-bottom mt-5 pt-4">
+
+            <div class="d-flex justify-content-between flex-wrap gap-3">
+
+                <span>© 2026 HouseNet9</span>
+
+                <div>
+                    <a href="/Privacy" class="me-3">Polityka prywatności</a>
+                    <a href="#calendaranchor">Rezerwacja</a>
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </footer>

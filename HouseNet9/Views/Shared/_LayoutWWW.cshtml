@@ -56,26 +56,46 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto">
 
-@*                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="DescriptionPages" asp-action="Index">DescriptionPages</a>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">Rezerwacja ONLINE</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="DetailedInformations" asp-action="Index">DetailedInformations</a>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Szczegóły
+                        </a>
+
+                        <ul class="dropdown-menu">
+
+                    @{
+                        if (ViewBag.MenuItems != null)
+                        {
+                            List<string> meuItems = ViewBag.MenuItems as List<string>;
+                            foreach (string item in meuItems)
+                            {
+                                <li>
+                                    <a href="#@item" class="dropdown-item">@item</a>
+                                </li>
+                            }
+                        }
+                    }
+
+                            <li><hr class="dropdown-divider" /></li>
+
+                            <li><h6 class="dropdown-header">Informacje</h6></li>
+
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="DetailedInformations" asp-action="Index">Wyposażenie</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Distance" asp-action="Index">Odległości</a>
+                            </li>
+
+                        </ul>
                     </li>
+
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">Distance</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">GeneralInformations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="RentalClients" asp-action="Index">RentalClients</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Houses" asp-action="Index">Houses</a>
-                    </li> *@
-                    <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Contacts" asp-action="Index">Contact</a>
+                        <a class="nav-link" asp-area="" asp-controller="Contacts" asp-action="Index">Kontakt</a>
                     </li>
                 </ul>
             </div>
@@ -127,6 +147,7 @@
 
     @if (IdHouse != null)
     {
+        //comment
         //section con/row/div
         @await Component.InvokeAsync("Comments", new { houseId = IdHouse, count = 6 })
         //button load
@@ -145,8 +166,10 @@
             </div>
         </div>
 
+        //footer
         //section con/row/div
-        @await Component.InvokeAsync("ContactFooter", new { id = IdHouse })
+        @* @await Component.InvokeAsync("ContactFooter", new { id = IdHouse }) *@
+        @await Component.InvokeAsync("ContactFooter", new { id = IdHouse, lat = 50.01, lon = 20.99 })
     }
 
 

@@ -49,9 +49,20 @@ namespace HouseNet9.Controllers.Abstract
                 ViewBag.LongText = house.LongText;
                 ViewBag.Logo = settings?.LogoFileName;
                 ViewBag.IdHouse = house.HouseId;
-            }
 
-            await next();
+                var dp = await _context.DescriptionPages.Where(w => w.HouseId == house.HouseId).Select(s => s.Title).ToListAsync();
+
+                if (dp != null && dp.Any() == true)
+                {
+                    ViewBag.MenuItems = dp;
+                }
+                else
+                {
+                    ViewBag.MenuItems = null;
+                }
+
+                await next();
+            }
         }
     }
 }

@@ -30,6 +30,7 @@ namespace HouseNet9.Data
         public DbSet<HouseSettings> HouseSettings { get; set; } = default!;
         public DbSet<Comment> Comments { get; set; }
         public DbSet<CommentAccessToken> CommentAccessTokens { get; set; }
+        public DbSet<SiteSettings> SiteSettings { get; set; }
 
 
 
