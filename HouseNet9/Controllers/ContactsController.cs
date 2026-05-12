@@ -11,7 +11,7 @@ namespace HouseNet9.Controllers
     {
 
         public ContactsController(ApplicationDbContext context, ILoggerFactory loggerFactory)
-        :base(context, loggerFactory)
+        : base(context, loggerFactory)
         {
         }
 
@@ -27,23 +27,6 @@ namespace HouseNet9.Controllers
             return View(contact);
         }
 
-        // GET: Contacts/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var contact = await _context.Contacts
-        //        .FirstOrDefaultAsync(m => m.ContactId == id);
-        //    if (contact == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(contact);
-        //}
 
         // GET: Contacts/Create
         public async Task<IActionResult> Create()
@@ -54,45 +37,58 @@ namespace HouseNet9.Controllers
         // POST: Contacts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Contact contact)
+        public async Task<IActionResult> Create(Contact model)
         {
             var houseId = CurrentHouseId;
             if (!houseId.HasValue)
-            {
                 return BadRequest("Nie wybrano domu.");
-            }
 
-            // Wymuszamy poprawny HouseId
-            contact.HouseId = CurrentHouseId;
+            model.HouseId = houseId.Value;
 
-            if (ModelState.IsValid)
-            {
-                _context.Add(contact);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            // zabezpieczenie null (WAŻNE)
+            model.Addresses ??= new();
+            model.EmailAddresses ??= new();
+            model.PhoneNumbers ??= new();
 
-            return View(contact);
+            // filtrujemy puste rekordy (tak jak w Edit)
+            model.Addresses = model.Addresses
+                .Where(x =>
+                    !string.IsNullOrWhiteSpace(x.Street) ||
+                    !string.IsNullOrWhiteSpace(x.City) ||
+                    !string.IsNullOrWhiteSpace(x.PostalCode) ||
+                    !string.IsNullOrWhiteSpace(x.Country))
+                .ToList();
+
+            model.EmailAddresses = model.EmailAddresses
+                .Where(x => !string.IsNullOrWhiteSpace(x.Email))
+                .ToList();
+
+            model.PhoneNumbers = model.PhoneNumbers
+                .Where(x => !string.IsNullOrWhiteSpace(x.Number))
+                .ToList();
+
+            _context.Contacts.Add(model);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         //GET: Contacts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var contact = await _context.Contacts
-                .Where(w => w.ContactId == id)
-                .Include(i => i.Addresses)
-                .Include(i => i.EmailAddresses)
-                .Include(i => i.PhoneNumbers)
-                .FirstOrDefaultAsync();
+                .Include(c => c.Addresses)
+                .Include(c => c.EmailAddresses)
+                .Include(c => c.PhoneNumbers)
+                .FirstOrDefaultAsync(c => c.ContactId == id);
+
             if (contact == null)
-            {
                 return NotFound();
-            }
+
             return View(contact);
         }
 
@@ -108,125 +104,120 @@ namespace HouseNet9.Controllers
                 await deleteContact(model.ContactId);
                 return RedirectToAction(nameof(Index));
             }
-            else
+
+            var contactInDb = await _context.Contacts
+                .Include(c => c.Addresses)
+                .Include(c => c.EmailAddresses)
+                .Include(c => c.PhoneNumbers)
+                .FirstOrDefaultAsync(c => c.ContactId == model.ContactId);
+
+            if (contactInDb == null)
+                return NotFound();
+
+            // =====================
+            // BASIC DATA
+            // =====================
+            contactInDb.Name = model.Name;
+
+            if (CurrentHouseId.HasValue)
+                contactInDb.HouseId = CurrentHouseId.Value;
+
+            // zabezpieczenie null
+            model.Addresses ??= new();
+            model.EmailAddresses ??= new();
+            model.PhoneNumbers ??= new();
+
+
+
+            // =========================================================
+            // ADDRESSES
+            // =========================================================
+
+            // usuń usunięte adresy
+            var addressIds = model.Addresses
+                .Where(x => x.AddressId > 0)
+                .Select(x => x.AddressId)
+                .ToList();
+
+            foreach (var existingAddress in contactInDb.Addresses.ToList())
             {
-                if (!ModelState.IsValid)
-                    return View(model);
-
-                // Pobranie kontaktu z bazy wraz z kolekcjami
-                var contactInDb = await _context.Contacts
-                    .Include(c => c.Addresses)
-                    .Include(c => c.PhoneNumbers)
-                    .Include(c => c.EmailAddresses)
-                    .FirstOrDefaultAsync(c => c.ContactId == model.ContactId);
-
-                if (contactInDb == null)
-                    return NotFound();
-
-                // ===== Aktualizacja podstawowych danych =====
-                contactInDb.Name = model.Name;
-
-                // ===== Ustawienie domu =====
-                var houseId = CurrentHouseId;
-                if (houseId.HasValue)
-                    contactInDb.HouseId = houseId.Value;
-
-                // ===== Adresy =====
-                var addressIds = model.Addresses?.Select(a => a.AddressId).ToList() ?? new List<int>();
-                foreach (var address in contactInDb.Addresses.Where(a => !addressIds.Contains(a.AddressId)).ToList())
+                if (!addressIds.Contains(existingAddress.AddressId))
                 {
-                    contactInDb.Addresses.Remove(address);
-                    _context.Addresses.Remove(address); // usuń fizycznie z bazy
+                    _context.Addresses.Remove(existingAddress);
                 }
-
-                if (model.Addresses != null)
-                {
-                    foreach (var address in model.Addresses)
-                    {
-                        var existing = contactInDb.Addresses.FirstOrDefault(a => a.AddressId == address.AddressId);
-                        if (existing != null)
-                        {
-                            existing.Street = address.Street;
-                            existing.PostalCode = address.PostalCode;
-                            existing.City = address.City;
-                            existing.Country = address.Country;
-                        }
-                        else
-                        {
-                            contactInDb.Addresses.Add(new Address
-                            {
-                                Street = address.Street,
-                                PostalCode = address.PostalCode,
-                                City = address.City,
-                                Country = address.Country
-                            });
-                        }
-                    }
-                }
-
-                // ===== E-maile =====
-                var emailIds = model.EmailAddresses?.Select(e => e.EmailAddressId).ToList() ?? new List<int>();
-                foreach (var email in contactInDb.EmailAddresses.Where(e => !emailIds.Contains(e.EmailAddressId)).ToList())
-                {
-                    contactInDb.EmailAddresses.Remove(email);
-                    _context.EmailAddresses.Remove(email);
-                }
-
-                if (model.EmailAddresses != null)
-                {
-                    foreach (var email in model.EmailAddresses)
-                    {
-                        var existing = contactInDb.EmailAddresses.FirstOrDefault(e => e.EmailAddressId == email.EmailAddressId);
-                        if (existing != null)
-                        {
-                            existing.Email = email.Email;
-                        }
-                        else
-                        {
-                            contactInDb.EmailAddresses.Add(new EmailAddress
-                            {
-                                Email = email.Email
-                            });
-                        }
-                    }
-                }
-
-                // ===== Telefony =====
-                var phoneIds = model.PhoneNumbers?.Select(p => p.PhoneNumberId).ToList() ?? new List<int>();
-                foreach (var phone in contactInDb.PhoneNumbers.Where(p => !phoneIds.Contains(p.PhoneNumberId)).ToList())
-                {
-                    contactInDb.PhoneNumbers.Remove(phone);
-                    _context.PhoneNumbers.Remove(phone);
-                }
-
-                if (model.PhoneNumbers != null)
-                {
-                    foreach (var phone in model.PhoneNumbers)
-                    {
-                        var existing = contactInDb.PhoneNumbers.FirstOrDefault(p => p.PhoneNumberId == phone.PhoneNumberId);
-                        if (existing != null)
-                        {
-                            existing.Number = phone.Number;
-                        }
-                        else
-                        {
-                            contactInDb.PhoneNumbers.Add(new PhoneNumber
-                            {
-                                Number = phone.Number
-                            });
-                        }
-                    }
-                }
-
-                // ===== Zapis do bazy =====
-                await _context.SaveChangesAsync();
-
-                // Przekierowanie do strony domu
-                //return RedirectToAction("Details", "Houses", new { id = houseId });
-                return RedirectToAction(nameof(Index));
             }
-        }
 
+            // aktualizacja + dodawanie
+            foreach (var a in model.Addresses.Where(x =>
+                !string.IsNullOrWhiteSpace(x.Street) ||
+                !string.IsNullOrWhiteSpace(x.City) ||
+                !string.IsNullOrWhiteSpace(x.PostalCode) ||
+                !string.IsNullOrWhiteSpace(x.Country)))
+            {
+                var existing = contactInDb.Addresses
+                    .FirstOrDefault(x => x.AddressId == a.AddressId);
+
+                if (existing != null)
+                {
+                    // UPDATE
+                    existing.Street = a.Street;
+                    existing.City = a.City;
+                    existing.PostalCode = a.PostalCode;
+                    existing.Country = a.Country;
+                    //existing.IsHouseAddress = a.IsHouseAddress;
+                }
+                else
+                {
+                    // ADD NEW
+                    contactInDb.Addresses.Add(new Address
+                    {
+                        Street = a.Street,
+                        City = a.City,
+                        PostalCode = a.PostalCode,
+                        Country = a.Country,
+                        IsHouseAddress = false,
+                        ContactId = contactInDb.ContactId
+                    });
+                }
+            }
+
+            // =========================================================
+            // EMAILS
+            // =========================================================
+            _context.EmailAddresses.RemoveRange(contactInDb.EmailAddresses);
+
+            contactInDb.EmailAddresses = model.EmailAddresses
+                .Where(x => !string.IsNullOrWhiteSpace(x.Email))
+                .Select(e => new EmailAddress
+                {
+                    EmailAddressId = e.EmailAddressId > 0 ? e.EmailAddressId : 0,
+                    Email = e.Email,
+                    ContactId = contactInDb.ContactId
+                })
+                .ToList();
+
+            // =========================================================
+            // PHONES
+            // =========================================================
+            _context.PhoneNumbers.RemoveRange(contactInDb.PhoneNumbers);
+
+            contactInDb.PhoneNumbers = model.PhoneNumbers
+                .Where(x => !string.IsNullOrWhiteSpace(x.Number))
+                .Select(p => new PhoneNumber
+                {
+                    PhoneNumberId = p.PhoneNumberId > 0 ? p.PhoneNumberId : 0,
+                    Number = p.Number,
+                    ContactId = contactInDb.ContactId
+                })
+                .ToList();
+
+            // =====================
+            // SAVE
+            // =====================
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
 
         private async Task deleteContact(int? id)
         {
@@ -236,43 +227,51 @@ namespace HouseNet9.Controllers
                 _context.Contacts.Remove(contact);
             }
 
-            //bez cascade
-            ////var contact = await _context.Contacts
-            ////                    .Include(c => c.Addresses)
-            ////                    .Include(c => c.PhoneNumbers)
-            ////                    .Include(c => c.EmailAddresses)
-            ////                    .FirstOrDefaultAsync(c => c.ContactId == id);
-
-            ////if (contact != null)
-            ////{
-            ////    _context.Contacts.Remove(contact);
-            ////    await _context.SaveChangesAsync();
-            ////}
-
-
-
             await _context.SaveChangesAsync();
         }
-
-
-        //Contacts/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    var contact = await _context.Contacts.FindAsync(id);
-        //    if (contact != null)
-        //    {
-        //        _context.Contacts.Remove(contact);
-        //    }
-
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
 
         private bool ContactExists(int id)
         {
             return _context.Contacts.Any(e => e.ContactId == id);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetHouseAddress(int contactId, int addressId)
+        {
+            if (!CurrentHouseId.HasValue)
+                return BadRequest();
+
+            // 1. Pobierz wszystkie kontakty z domu
+            var contacts = await _context.Contacts
+                .Include(x => x.Addresses)
+                .Where(x => x.HouseId == CurrentHouseId.Value)
+                .ToListAsync();
+
+            // 2. ODZNACZ WSZYSTKIE adresy w całym domu
+            foreach (var c in contacts)
+            {
+                foreach (var addr in c.Addresses)
+                {
+                    addr.IsHouseAddress = false;
+                }
+            }
+
+            // 3. Znajdź wybrany adres
+            var selected = contacts
+                .SelectMany(x => x.Addresses)
+                .FirstOrDefault(x => x.AddressId == addressId);
+
+            if (selected != null)
+            {
+                selected.IsHouseAddress = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -11,9 +11,9 @@ namespace Data.Data.HouseRentalData
         [Required(ErrorMessage = "Is required")]
         public required string Name { get; set; }
 
-        public ICollection<Address>? Addresses { get; set; }
-        public ICollection<PhoneNumber>? PhoneNumbers { get; set; }
-        public ICollection<EmailAddress>? EmailAddresses { get; set; }
+        public List<Address> Addresses { get; set; } = new();
+        public List<EmailAddress> EmailAddresses { get; set; } = new();
+        public List<PhoneNumber> PhoneNumbers { get; set; } = new();
 
         public int? HouseId { get; set; }
 

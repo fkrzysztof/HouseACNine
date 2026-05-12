@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using QrGenerator.Core;
 using Quartz;
 using WeatherModule.Core.Extensions;
+using GeocodingModule.Core.Extensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +73,9 @@ builder.Services.AddSingleton<QrCodeService>();
 
 //Weather
 builder.Services.AddWeatherModule();
+
+//address will be converted to GPS
+builder.Services.AddGeocodingModule();
 
 //wysylanie maili
 builder.Services.AddScoped<IReservationNotificationService, ReservationNotificationService>();

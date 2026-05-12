@@ -34,6 +34,13 @@ namespace Data.Data.HouseRentalData
             }
         }
 
+        //GPS x
+        public double? Latitude { get; set; }
+        //GPS y
+        public double? Longitude { get; set; }
+
+        public bool IsHouseAddress { get; set; } = false;
+
         public int ContactId { get; set; }
 
         [ForeignKey("ContactId")]

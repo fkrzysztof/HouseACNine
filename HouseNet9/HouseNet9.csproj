@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\GeocodingModule.Core\GeocodingModule.Core.csproj" />
     <ProjectReference Include="..\Mail\Mail.csproj" />
     <ProjectReference Include="..\QrGenerator.Core\QrGenerator.Core.csproj" />
     <ProjectReference Include="..\WeatherModule.Core\WeatherModule.Core.csproj" />
