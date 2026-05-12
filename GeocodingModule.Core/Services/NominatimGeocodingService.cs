@@ -31,8 +31,8 @@ public class NominatimGeocodingService : IGeocodingService
 
             return new GeocodingResult
             {
-                //Latitude = double.Parse(item.Lat, CultureInfo.InvariantCulture),
-                //Longitude = double.Parse(item.Lon, CultureInfo.InvariantCulture)
+                Latitude = double.Parse(item.Lat, CultureInfo.InvariantCulture),
+                Longitude = double.Parse(item.Lon, CultureInfo.InvariantCulture)
             };
         }
         catch

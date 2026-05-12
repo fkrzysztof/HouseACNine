@@ -1,6 +1,8 @@
 ﻿using Data.Data.HouseRentalData;
+using GeocodingModule.Core.Services;
 using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
+using HouseNet9.Migrations;
 using HouseNet9.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +11,13 @@ namespace HouseNet9.Controllers
 {
     public class ContactsController : BaseAdminController
     {
+        //private readonly IGeocodingService _geocodingService;
+        private readonly AddressPipelineService _addressPipeline;
 
-        public ContactsController(ApplicationDbContext context, ILoggerFactory loggerFactory)
+        public ContactsController(ApplicationDbContext context, ILoggerFactory loggerFactory, AddressPipelineService addressPipeline)
         : base(context, loggerFactory)
         {
+            _addressPipeline = addressPipeline;
         }
 
         // GET: Contacts
@@ -267,6 +272,27 @@ namespace HouseNet9.Controllers
             if (selected != null)
             {
                 selected.IsHouseAddress = true;
+
+                //***********
+                //GPS
+                //***********
+
+                // składanie pełnego adresu
+                var fullAddress =
+                    $"{selected.Street}, " +
+                    $"{selected.PostalCode} " +
+                    $"{selected.City}, " +
+                    $"{selected.Country}";
+
+                // geocoding
+                var (lat, lon) = await _addressPipeline.ResolveAsync(
+                    selected.Street,
+                    selected.PostalCode,
+                    selected.City,
+                    selected.Country);
+
+                selected.Latitude = lat;
+                selected.Longitude = lon;
             }
 
             await _context.SaveChangesAsync();
@@ -275,3 +301,4 @@ namespace HouseNet9.Controllers
         }
     }
 }
+

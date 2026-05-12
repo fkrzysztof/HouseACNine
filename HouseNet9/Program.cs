@@ -1,3 +1,5 @@
+using GeocodingModule.Core.Extensions;
+using GeocodingModule.Core.Services;
 using HouseNet9.BackgroundJobs;
 using HouseNet9.BackgroundService;
 using HouseNet9.Data;
@@ -11,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using QrGenerator.Core;
 using Quartz;
 using WeatherModule.Core.Extensions;
-using GeocodingModule.Core.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,6 +74,10 @@ builder.Services.AddSingleton<QrCodeService>();
 
 //Weather
 builder.Services.AddWeatherModule();
+
+//AddressNormalizer
+builder.Services.AddScoped<AddressNormalizerService>();
+builder.Services.AddScoped<AddressPipelineService>();
 
 //address will be converted to GPS
 builder.Services.AddGeocodingModule();

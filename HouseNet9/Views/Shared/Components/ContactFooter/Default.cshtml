@@ -60,152 +60,6 @@
 </section>
 
 
-@* <footer class="footer-custom">
-
-    <div class="container py-5">
-
-        <div class="row gy-5">
-
-            <!-- BRAND -->
-            <div class="col-lg-3">
-
-                <h3 class="footer-logo">HouseNet9</h3>
-
-                <p class="footer-description">
-                    Nowoczesny dom wakacyjny stworzony z myślą o komforcie i prywatności.
-                    Intuicyjny system rezerwacji online.
-                </p>
-
-
-            </div>
-
-            <!-- CONTACT (UPROSZCZONY) -->
-            <div class="col-lg-3">
-
-                <h5 class="mb-4">Kontakt</h5>
-
-                @if (Model.Contacts?.Any() == true)
-                {
-                    foreach (var contact in Model.Contacts)
-                    {
-                        <div class="col-12 mb-4">
-                         
-                                <h5 class="fw-bold">@contact.Name</h5>
-
-
-                                @if (contact.Addresses?.Any() == true)
-                                {
-                                    <div class="mb-2">
-                                        <strong>Adres:</strong><br />
-                                        @foreach (var addr in contact.Addresses)
-                                        {
-                                            <text>
-                                                @addr.Street<br />
-                                                @addr.PostalCode @addr.City<br />
-                                                @addr.Country<br />
-                                            </text>
-                                        }
-                                    </div>
-                                }
-
-
-                                @if (contact.EmailAddresses?.Any() == true)
-                                {
-                                    <div class="mb-2">
-                                        <strong>Email:</strong><br />
-                                        @foreach (var em in contact.EmailAddresses)
-                                        {
-                                            <text>
-                                                <a href="mailto:@em.Email">@em.Email</a><br />
-                                            </text>
-                                        }
-                                    </div>
-                                }
-
-                                @if (contact.PhoneNumbers?.Any() == true)
-                                {
-                                    <div class="mb-2">
-                                        <strong>Telefon:</strong><br />
-                                        @foreach (var ph in contact.PhoneNumbers)
-                                        {
-                                            <text>
-                                                <a href="tel:@ph.Number">@ph.Number</a><br />
-                                            </text>
-                                        }
-                                    </div>
-                                }
-                            
-                        </div>
-                    }
-                }
-                else
-                {
-                    <div class="col-12">
-                        <p>Brak danych kontaktowych dla tego domu.</p>
-                    </div>
-                }
-
-            </div>
-
-            <div class="col-lg-3">
-                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Polityka prywatności</a>
-                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Cookis</a>
-                <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">#Rezerwacja ONLINE</a>
-                <a class="nav-link" asp-area="" asp-controller="DetailedInformations" asp-action="Index">#Wyposażenie</a>
-                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Odległości</a>
-                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Dom</a>
-                <a class="nav-link" asp-area="" asp-controller="Distance" asp-action="Index">#Lokalizacja</a>
-            </div>
-
-
-            <!-- CTA (NAJWAŻNIEJSZE) -->
-            <div class="col-lg-3">
-
-                <h5 class="mb-3">
-                    Rezerwacja
-                </h5>
-
-                <p class="mb-4">
-                    Sprawdź dostępność i wybierz termin w kalendarzu.
-                </p>
-
-                <a href="#calendaranchor"
-                   class="btn btn-light rounded-pill px-4">
-                    Otwórz kalendarz
-                </a>
-
-                <div class="mt-3 small text-muted">
-                    Rezerwacja online • natychmiastowa dostępność • szybka weryfikacja
-                </div>
-
-            </div>
-
-
-
-        </div>
-
-        <!-- BOTTOM -->
-        <div class="footer-bottom mt-5 pt-4">
-
-            <div class="d-flex justify-content-between flex-wrap gap-3">
-
-                <span>© 2026 HouseNet9</span>
-
-                <div>
-                    <a href="/Privacy" class="me-3">Polityka prywatności</a>
-                    <a href="#calendaranchor">Rezerwacja</a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</footer> *@
-
-
-
 <footer class="footer-custom">
 
     <div class="container py-5">
@@ -364,6 +218,29 @@
 
                         </div>
                     }
+
+@* 
+                    @if (Model.Weather != null)
+                    {
+                        <div class="weather-card mt-3">
+
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div>Pogoda</div>
+                                    <div class="fw-bold">
+                                        @(Model.Weather.Temperature?.ToString("0") ?? "--") °C
+                                    </div>
+                                </div>
+
+                                <i class="bi @(WeatherIconHelper.GetIcon(Model.Weather.WeatherCode ?? 0)) fs-2"></i>
+                            </div>
+
+                            <div class="small opacity-75">
+                                Wiatr: @(Model.Weather.WindSpeed?.ToString("0") ?? "--") km/h
+                            </div>
+
+                        </div>
+                    } *@
 
 
 

@@ -2,6 +2,7 @@
 using HouseNet9.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WeatherModule.Core.Models;
 using WeatherModule.Core.Services;
 
 namespace HouseNet9.ViewComponents
@@ -38,7 +39,8 @@ namespace HouseNet9.ViewComponents
         //    return View(vm);
         //}
 
-        public async Task<IViewComponentResult> InvokeAsync(int? id, double lat, double lon)
+        //public async Task<IViewComponentResult> InvokeAsync(int? id, double lat, double lon)
+        public async Task<IViewComponentResult> InvokeAsync(int? id)
         {
             var contacts = await _context.Contacts
                 .Where(w => w.HouseId == id)
@@ -47,7 +49,21 @@ namespace HouseNet9.ViewComponents
                 .Include(c => c.PhoneNumbers)
                 .ToListAsync();
 
-            var weather = await _weather.GetCurrentAsync(lat, lon);
+            //gps
+            var houseAddressGPS = await _context.Addresses
+                .FirstOrDefaultAsync(a =>
+                    a.IsHouseAddress &&
+                    a.Contact.HouseId == id);
+
+            var lat = houseAddressGPS?.Latitude;
+            var lon = houseAddressGPS?.Longitude;
+
+            WeatherDto ? weather = null;
+
+            if (lat.HasValue && lon.HasValue)
+            {
+                weather = await _weather.GetCurrentAsync(lat.Value, lon.Value);
+            }
 
             var vm = new ContactFooterVM
             {
