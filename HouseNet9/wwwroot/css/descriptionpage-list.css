@@ -1,14 +1,67 @@
-﻿/* Kontener galerii */
-.image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+﻿/* =========================
+   ORDER COLUMN (PRAWA STRONA)
+========================= */
+
+#sortable-order {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 100px;
 }
 
-/* Kwadratowa miniatura */
+/* pojedynczy element */
+.order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    user-select: none;
+    border: 1px solid #e9ecef;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    background: #fff;
+    padding: 10px;
+    width: 100%;
+}
+
+    .order-item:active {
+        cursor: grabbing;
+    }
+
+    /* blok tekstu (żeby nie rozpychał itemu) */
+    .order-item span.text-truncate {
+        flex: 1;
+        min-width: 0; /* KLUCZOWE dla ellipsis */
+    }
+
+/* uchwyt drag */
+.drag-handle {
+    cursor: grab;
+    color: #888;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+    .drag-handle:active {
+        cursor: grabbing;
+    }
+
+/* efekt przeciągania */
+.sortable-ghost {
+    opacity: 0.4;
+}
+
+/* =========================
+   IMAGE GALLERY
+========================= */
+
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
 .image-item {
-    flex: 1 0 120px; /* minimalna szerokość 120px, rośnie do dostępnego miejsca */
-    max-width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     border-radius: 6px;
@@ -21,55 +74,58 @@
         display: block;
     }
 
-/* Responsywność miniatur */
-@media (max-width: 992px) {
-    .image-item {
-        flex: 1 0 45%; /* 2 w rzędzie tablet */
-    }
-}
+/* =========================
+   CARD
+========================= */
 
-@media (max-width: 576px) {
-    .image-item {
-        flex: 1 0 100%; /* 1 w rzędzie telefon */
-    }
-}
-
-/* Karty */
 .card {
-    border-radius: 8px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-/* Tytuł i przyciski w nagłówku */
 .card-header {
-    gap: 8px;
+    gap: 10px;
 }
 
-    /* Przyciski pełne, responsywne */
-    .card-header .btn-group button {
-        white-space: nowrap;
+    .card-header h5 {
+        font-size: 1rem;
     }
 
-/* Opis */
-.card-body p {
+.card-text {
     font-size: 0.9rem;
     color: #555;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
 }
 
-/* Na wąskich ekranach przyciski pionowo */
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 992px) {
+    .image-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 576px) {
+    .image-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .card-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
         .card-header .btn-group {
-            display: flex;
-            flex-direction: column;
             width: 100%;
         }
 
             .card-header .btn-group button {
                 width: 100%;
-                margin-bottom: 4px;
             }
 }

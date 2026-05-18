@@ -9,64 +9,142 @@
     </a>
 </div>
 
-<div id="pages-list" class="row g-4" data-delete-url="@Url.Action("DeleteItem", "DescriptionPages")">
-    @foreach (var item in Model)
-    {
-        <div class="col-12 col-md-6 col-lg-4 page-item" data-id="@item.DescriptionPageId">
-            <div class="card h-100 shadow-sm">
 
-                <!-- CARD HEADER -->
-                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <h5 class="mb-2 mb-md-0 text-truncate" title="@item.Title">@item.Title</h5>
-                    <div class="btn-group flex-wrap" role="group">
-                        <!-- Pełny przycisk Edytuj -->
-                        <button type="button"
-                                class="btn btn-sm btn-outline-secondary mb-2 mb-md-0 me-0 me-md-1"
-                                onclick="location.href='@Url.Action("Edit", new { id = item.DescriptionPageId })'">
-                            <i class="bi bi-pencil-square me-1"></i> Edytuj
-                        </button>
-                        <!-- Pełny przycisk Usuń -->
-                        <button type="button"
-                                class="btn btn-sm btn-outline-danger delete-page"
-                                data-id="@item.DescriptionPageId">
-                            <i class="bi bi-trash-fill me-1"></i> Usuń
-                        </button>
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-12 col-lg-8 order-2 order-lg-1">
+        <div id="pages-list" class="row g-4" data-delete-url="@Url.Action("DeleteItem", "DescriptionPages")">
 
-                <!-- CARD BODY -->
-                <div class="card-body d-flex flex-column">
-                    <!-- GALERIA ZDJĘĆ -->
-                    <div class="image-gallery mb-3">
-                        @if (item.Images != null && item.Images.Any())
-                        {
-                            foreach (var image in item.Images)
-                            {
-                                <div class="image-item">
-                                    <img src="@Url.Content("~/uploads/" + image.Path)" alt="Zdjęcie" />
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="image-item">
-                                <img src="@Url.Content("~/uploads/no_photography_24dp.svg")" alt="Brak zdjęcia" />
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-lg-6 page-item" data-id="@item.DescriptionPageId">
+                    <div class="card h-100 shadow-sm">
+
+                        <!-- CARD HEADER -->
+                        <div class="card-header d-flex justify-content-between align-items-center">
+
+                            <h5 class="mb-0 text-truncate"
+                                title="@item.Title">
+
+                                @(string.IsNullOrEmpty(item.Title)
+                                                            ? ""
+                                                            : (item.Title.Length > 25
+                                                            ? item.Title.Substring(0, 25) + "..."
+                                                            : item.Title))
+
+                        </h5>
+
+                            <div class="btn-group" role="group">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-secondary"
+                                        onclick="location.href='@Url.Action("Edit", new { id = item.DescriptionPageId })'">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger delete-page"
+                                        data-id="@item.DescriptionPageId">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
                             </div>
+
+                        </div>
+
+                        <!-- CARD BODY -->
+                        <div class="card-body d-flex flex-column">
+
+                            <!-- ZDJĘCIA -->
+                            <div class="image-gallery mb-3">
+
+                            @if (item.Images != null && item.Images.Any())
+                                {
+                                    foreach (var image in item.Images.Take(6))
+                                    {
+                                        <div class="image-item">
+                                            <img src="@Url.Content("~/uploads/" + image.Path)" alt="Zdjęcie" />
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="image-item">
+                                        <img src="@Url.Content("~/uploads/no_photography_24dp.svg")" alt="Brak zdjęcia" />
+                                    </div>
+                                }
+
+                        </div>
+
+                        <!-- OPIS (SKRÓCONY) -->
+                        <p class="card-text">
+
+                            @(string.IsNullOrEmpty(item.Description)
+                                                        ? ""
+                                                        : (item.Description.Length > 300
+                                                        ? item.Description.Substring(0, 300) + "..."
+                                                        : item.Description))
+
+                        </p>
+
+                        </div>
+                    </div>
+                </div>
                         }
+
+        </div>
+
+</div>
+    <div class="col-12 col-lg-4 order-1 order-lg-2 my-5 my-lg-0">
+
+        <h5 class="mb-3">Kolejność wyświetlania</h5>
+
+        <div id="sortable-order" class="list-group">
+
+            @{
+                int i = 1;
+            }
+
+            @foreach (var item in Model.OrderBy(x => x.DisplayOrder))
+            {
+                <div class="list-group-item order-item d-flex align-items-center justify-content-between w-100"
+                     data-id="@item.DescriptionPageId">
+
+                    <!-- LEWA STRONA: numer + tytuł -->
+                    <div class="d-flex align-items-center flex-grow-1">
+
+                        <span class="me-2 text-muted fw-bold">
+                            #@i
+                        </span>
+
+                        <span class="text-truncate">
+                            @(item.Title?.Length > 35
+                                                    ? item.Title.Substring(0, 35) + "..."
+                                                    : item.Title)
+                    </span>
+
                     </div>
 
-                    <!-- OPIS -->
-                    <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                    <!-- PRAWA STRONA: uchwyt drag -->
+                    <i class="bi bi-grip-vertical ms-2 text-muted drag-handle"></i>
+
                 </div>
-            </div>
+
+                        i++;
+            }
+
         </div>
-    }
+
+    </div>
 </div>
+
 
 @section Styles {
     <link rel="stylesheet" href="~/css/descriptionpage-list.css" />
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
     <script src="~/js/deletepage.js"></script>
+    <script src="~/js/descriptionpage-order.js"></script>
 }
+
+

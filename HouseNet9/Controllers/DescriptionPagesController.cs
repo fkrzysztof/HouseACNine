@@ -46,9 +46,44 @@ namespace HouseNet9.Controllers
         // GET: DescriptionPages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.DescriptionPages.Where(w => w.House.HouseId == CurrentHouseId).Include(i => i.Images).ToListAsync());
+            var pages = await _context.DescriptionPages
+                .AsNoTracking()
+                .Where(w => w.House.HouseId == CurrentHouseId)
+                .Include(i => i.Images.OrderBy(x => x.Order))
+                .OrderBy(o => o.DisplayOrder)
+                .ToListAsync();
+
+            return View(pages);
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOrder([FromBody] List<OrderItemDto> items)
+        {
+            var ids = items.Select(x => x.Id).ToList();
+
+            var pages = await _context.DescriptionPages
+                .Where(x => ids.Contains(x.DescriptionPageId))
+                .ToListAsync();
+
+            foreach (var item in items)
+            {
+                var page = pages.FirstOrDefault(x => x.DescriptionPageId == item.Id);
+                if (page != null)
+                    page.DisplayOrder = item.Order;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        public class OrderItemDto
+        {
+            public int Id { get; set; }
+            public int Order { get; set; }
+        }
 
 
         // GET: DescriptionPages/Create

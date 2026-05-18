@@ -21,6 +21,9 @@ namespace Data.Data.HouseRentalData
         public int HouseId { get; set; }
         public House? House { get; set; }
 
+        [Display(Name = "Kolejność")]
+        public int DisplayOrder { get; set; }
+
         //IMG COL
         [NotMapped]
         public List<IFormFile>? FormFileItems { get; set; }

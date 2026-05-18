@@ -56,6 +56,7 @@ namespace HouseNet9.Controllers
             house.DescriptionPages = await _context.DescriptionPages
                 .Where(d => d.HouseId == houseId)
                 .Include(d => d.Images)
+                .OrderBy(d => d.DisplayOrder)
                 .AsNoTracking()
                 .ToListAsync();
 
