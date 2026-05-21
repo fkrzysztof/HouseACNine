@@ -65,7 +65,7 @@
                             Szczegóły
                         </a>
 
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-menu-end">
 
                     @{
                         if (ViewBag.MenuItems != null)
@@ -178,6 +178,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/libnew/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/layout/js/scripts.js"></script>
+    <script src="~/js/ratingbox.js"></script>
+    <script src="~/js/backtotop.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

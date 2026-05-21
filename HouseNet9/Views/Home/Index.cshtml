@@ -158,69 +158,97 @@
                     <div class="desc-page-section section-triangle">
 
                         <div class="container" id="@descriptionPage.Title">
+
                         <h2 class="section-divider">
+
+                            <button class="section-accordion-btn"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-@descriptionPage.DescriptionPageId"
+                                    aria-expanded="false">
+
                             <span>@descriptionPage.Title</span>
+
+                                <i class="bi bi-chevron-down section-accordion-icon"></i>
+
+                            </button>
+
                         </h2>
+
+
                         </div>
+                    <div class="collapse show show-desktop-only" id="collapse-@descriptionPage.DescriptionPageId">
+                        <div class="container px-4 px-lg-5">
+                            <div class="row gx-3 my-5 mb-lg-0 justify-content-center">
 
-                     <div class="container px-4 px-lg-5">
-                    <div class="row gx-3 my-5 mb-lg-0 justify-content-center">
+                                <!-- *********** col-6 I PHOTO -->
 
-                        <div class="col-lg-6 @(xy == true ? "order-first" : "order-last")">
+                                @{
+                                    var images = descriptionPage.Images?.Take(12).ToList() ?? new List<MyFile>();
+                                    bool hasImages = images.Any();
 
-                            <div class="photo-masonry">
+                                    int i = 0;
+                                    xy = !xy;
+                                }
 
-                            @{
-                                var images = descriptionPage.Images?.Take(12).ToList() ?? new List<MyFile>();
-                                int i = 0;
-                                xy = !xy;
-                            }
+                                @if(hasImages)
+                                   {
+                                        <div class="col-lg-6 @(xy ? "order-lg-first" : "order-lg-last")">
 
-                            @foreach (var img in images)
-                            {
-                                i++;
+                                            <div class="photo-masonry">
 
-                                var isVerticalSlot = (i % 5 == 0);
+                                                @{
+                                                //     var images = descriptionPage.Images?.Take(12).ToList() ?? new List<MyFile>();
+                                                //     int i = 0;
+                                                //     xy = !xy;
+                                                }
 
-                                <div class="masonry-item @(isVerticalSlot ? "vertical-force" : "")">
-                                    <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" />
-                                </div>
-                            }
+                                                @foreach (var img in images)
+                                                {
+                                                    i++;
 
-                            </div>
-                        </div>
+                                                    var isVerticalSlot = (i % 5 == 0);
+
+                                                    <div class="masonry-item @(isVerticalSlot ? "vertical-force" : "")">
+                                                        <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" />
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                   }
+                                    <!-- *********** col-6 II -->
+                                <div class="@(hasImages ? "col-lg-6" : "col-12") margin-b">
+                                    <div class="bg-black text-center h-100 project desc-page-textbox">
+                                        <div class="">
+                                            <div class="project-text w-100 my-auto text-center text-lg-left">
 
 
-                        <div class="col-lg-6 margin-b">
-                            <div class="bg-black text-center h-100 project desc-page-textbox">
-                                <div class="">
-                                    <div class="project-text w-100 my-auto text-center text-lg-left">
+                                                @using System.Text.RegularExpressions
 
+                                                @if (!string.IsNullOrEmpty(descriptionPage.Description))
+                                                {
+                                                    var text = descriptionPage.Description
+                                                        .Replace("\r\n", "\n")
+                                                        .Replace("\r", "\n");
 
-                                        @using System.Text.RegularExpressions
+                                                    var paragraphs = Regex.Split(text, @"\n{2,}");
 
-                                        @if (!string.IsNullOrEmpty(descriptionPage.Description))
-                                        {
-                                            var text = descriptionPage.Description
-                                                .Replace("\r\n", "\n")
-                                                .Replace("\r", "\n");
+                                                    foreach (var paragraph in paragraphs)
+                                                    {
+                                                        <p class="mb-3 text-start">@paragraph.Trim()</p>
+                                                    }
+                                                }
 
-                                            var paragraphs = Regex.Split(text, @"\n{2,}");
-
-                                            foreach (var paragraph in paragraphs)
-                                            {
-                                                <p class="mb-3 text-start">@paragraph.Trim()</p>
-                                            }
-                                        }
-
+                                            </div>
+                                            <a class="" asp-area="" asp-controller="Home" asp-action="More" asp-route-id="@descriptionPage.DescriptionPageId" asp-route-houseId="@Model.HouseId">więcej >></a>
+                                        </div>
                                     </div>
-                                    <a class="" asp-area="" asp-controller="Home" asp-action="More" asp-route-id="@descriptionPage.DescriptionPageId" asp-route-houseId="@Model.HouseId">więcej >></a>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    </div>
+                            </div>
+                        </div>
                     </div>
                 }
         }
@@ -235,9 +263,26 @@
 <section id="detailedanchor">
     <div class="container">
 
-        <h2 class="section-divider">
-            <span>Szczegółowe iformacje</span>
-        </h2>
+<h2 class="section-divider">
+
+    <button class="section-accordion-btn"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#detailsCollapse"
+            aria-expanded="false">
+
+        <span>Szczegółowe informacje</span>
+
+        <i class="bi bi-chevron-down section-accordion-icon"></i>
+
+    </button>
+
+</h2>
+
+        <div class="collapse show show-desktop-only"
+             id="detailsCollapse">
+
+
 
         @if (Model.DetailedInformation != null && Model.DetailedInformation.Count > 0)
         {
@@ -268,6 +313,10 @@
             </div>
         }
     </div>
+
+
+            </div>
+
 </section>
 
 
@@ -275,34 +324,57 @@
 <section id="distanceanchor">
         <div class="container">
 
-        <h2 class="section-divider">
-            <span>Odległości</span>
-        </h2>
+<h2 class="section-divider">
 
-    <div class="row  my-4">
-        <div class="col-12">
-            <div class="card-columns-css">
-                @foreach (Distance distance in Model.Distances)
-                {
-                    <div class="card card-2-border p-4">
-                        @* class="card" *@
-                        <div class="card-body">
-                            <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
+    <button class="section-accordion-btn"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#distanceCollapse"
+            aria-expanded="false">
 
-                            @{
-                                if (distance != null && distance.DistanceItems != null)
-                                    foreach (DistanceItem item in distance.DistanceItems)
-                                    {
-                                        <div class="d-flex justify-content-between"><span>@item.NameInfo</span><span>@item.DistanceInfo</span></div>
-                                    }
+        <span>Odległości</span>
+
+        <i class="bi bi-chevron-down section-accordion-icon"></i>
+
+    </button>
+
+</h2>
+
+            <div class="collapse show show-desktop-only"
+                 id="distanceCollapse">
+
+
+
+                <div class="row  my-4">
+                    <div class="col-12">
+                        <div class="card-columns-css">
+                            @foreach (Distance distance in Model.Distances)
+                            {
+                                <div class="card card-2-border p-4">
+                                    @* class="card" *@
+                                    <div class="card-body">
+                                        <h5 class="card-title d-flex align-items-center"> <img class="mr-2" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
+
+                                        @{
+                                            if (distance != null && distance.DistanceItems != null)
+                                                foreach (DistanceItem item in distance.DistanceItems)
+                                                {
+                                                    <div class="d-flex justify-content-between"><span>@item.NameInfo</span><span>@item.DistanceInfo</span></div>
+                                                }
+                                        }
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>
-                }
+                </div>
             </div>
+
+
         </div>
-    </div>
-        </div>
+
+
+
 </section>
 
 
