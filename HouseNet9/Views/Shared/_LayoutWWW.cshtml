@@ -47,12 +47,23 @@
             <a class="navbar-brand" href="#page-top">
                 <img src="~/uploads/@ViewBag.Logo" class="navbar-brand" style="height:72px;" />
             </a>
-            
-            
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                Menu
-                <i class="fas fa-bars"></i>
+
+
+            <button class="navbar-toggler custom-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarResponsive"
+                    aria-controls="navbarResponsive"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
             </button>
+
+
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto">
 
@@ -180,6 +191,7 @@
     <script src="~/layout/js/scripts.js"></script>
     <script src="~/js/ratingbox.js"></script>
     <script src="~/js/backtotop.js"></script>
+    <script src="~/js/menu.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

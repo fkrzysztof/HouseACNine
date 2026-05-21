@@ -776,7 +776,7 @@
             content: "";
             flex: 1;
             height: 1px;
-            https: //yt3.ggpht.com/_qv_VW4RS1HlBrvK9ZNql-wtD5Qo-jjJzRY5w2oHyKuuv1XZAQnuCgb1YDQcTlOSIomvHOC44Q=w1060-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj background: #ddd;
+            background: #ddd;
         }
 
         .section-divider::before {
@@ -880,3 +880,169 @@
         transform: translateY(0);
         pointer-events: auto;
     }
+
+/* MOBILE ONLY */
+@media (max-width: 991.98px) {
+
+/*     domyślnie transparent */
+    #mainNav {
+        background-color: transparent !important;
+        transition: background-color 0.25s ease;
+    }
+
+/*         po otwarciu menu */
+        #mainNav.menu-open {
+            background-color: #fff !important;
+        }
+}
+
+
+.navbar-toggler {
+    border: none;
+    background: transparent;
+    padding: .5rem;
+    font-size: 1.4rem;
+    color: #fff;
+    transition: color 0.25s ease, transform 0.2s ease;
+}
+
+    .navbar-toggler:hover {
+        transform: scale(1.05);
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+/* po otwarciu menu */
+#mainNav.menu-open .navbar-toggler {
+    color: #111;
+}
+
+
+/* =========================
+   CUSTOM HAMBURGER
+========================= */
+
+.custom-toggler {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+/* usuń bootstrapowe obramowania */
+.navbar-toggler,
+.navbar-toggler:focus,
+.navbar-toggler:active {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* kreski */
+.custom-toggler span {
+    display: block;
+    width: 30px;
+    height: 2px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 999px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* po otwarciu menu -> czarne kreski */
+#mainNav.menu-open .custom-toggler span {
+    background: #111;
+}
+
+/* animacja do X */
+.custom-toggler.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.custom-toggler.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.custom-toggler.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* po otwarciu menu -> czarne */
+
+#mainNav.menu-open .custom-toggler span {
+    background: #111;
+}
+
+/* =========================
+   ANIMATED X
+========================= */
+
+.custom-toggler.active span:nth-child(1) {
+    transform: translateY(10px) rotate(45deg);
+}
+
+.custom-toggler.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.custom-toggler.active span:nth-child(3) {
+    transform: translateY(-10px) rotate(-45deg);
+}
+
+
+
+
+/* MOBILE - navbar po scrollu */
+@media (max-width: 991.98px) {
+
+    #mainNav.scrolled {
+        background-color: #fff !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+        /* hamburger czarny po scrollu */
+        #mainNav.scrolled .custom-toggler span {
+            background: #111;
+        }
+}
+
+
+
+
+/*test*/
+
+.dark-bg {
+    background: #000;
+    color: #fff;
+    position: relative;
+}
+
+/* WYCIĄGNIĘCIE TŁA NA CAŁĄ SZEROKOŚĆ */
+@media (min-width: 992px) {
+    .dark-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -100vw;
+        right: -100vw;
+        background: #000;
+        z-index: -1;
+    }
+}
