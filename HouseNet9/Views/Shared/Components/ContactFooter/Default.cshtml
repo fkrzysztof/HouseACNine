@@ -87,7 +87,7 @@
             </div>
 
             <!-- CONTACT -->
-            <div class="col-lg-3">
+            <div class="col-lg-3  text-center text-lg-start">
 
                 <h5 class="mb-4">Kontakt</h5>
 
@@ -137,7 +137,7 @@
             </div>
 
             <!-- LINKS -->
-            <div class="col-lg-3">
+            <div class="col-lg-3 text-center text-lg-start">
 
                 <h5 class="mb-4">Informacje</h5>
 
@@ -174,7 +174,7 @@
             <!-- CTA -->
             <div class="col-lg-3">
 
-                <div class="footer-cta">
+                <div class="footer-cta mt-5 mt-lg-0">
 
                     <h5 class="mb-3">Rezerwacja</h5>
 
@@ -192,11 +192,6 @@
                         ✓ Natychmiastowa rezerwacja<br />
                         ✓ Potwierdzenie online
                     </div>
-
-                    <!-- opcjonalnie future upgrade -->
-@*                     <div class="mt-4 small">
-                        ☀️ Pogoda: Brač ~24°C
-                    </div> *@
 
                     <!-- WEATHER -->
                     @if (Model.Weather != null)
@@ -219,31 +214,6 @@
                         </div>
                     }
 
-@* 
-                    @if (Model.Weather != null)
-                    {
-                        <div class="weather-card mt-3">
-
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <div>Pogoda</div>
-                                    <div class="fw-bold">
-                                        @(Model.Weather.Temperature?.ToString("0") ?? "--") °C
-                                    </div>
-                                </div>
-
-                                <i class="bi @(WeatherIconHelper.GetIcon(Model.Weather.WeatherCode ?? 0)) fs-2"></i>
-                            </div>
-
-                            <div class="small opacity-75">
-                                Wiatr: @(Model.Weather.WindSpeed?.ToString("0") ?? "--") km/h
-                            </div>
-
-                        </div>
-                    } *@
-
-
-
 
                 </div>
 
@@ -256,7 +226,7 @@
 
             <div class="d-flex justify-content-between flex-wrap gap-3">
 
-                <span>© 2026 HouseNet9</span>
+                <span>© 2026 RENTHOUSE</span>
 
                 <div>
                     <a href="/Privacy" class="me-3">Polityka prywatności</a>

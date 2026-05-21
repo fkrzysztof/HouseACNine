@@ -4,7 +4,7 @@
 
 @* *************************  GeneralInformation ************************* *@
 <section id="generalinformationanchor">
-    <div class="container">
+    <div class="container"  data-aos="fade-up">
         <div class="d-flex flex-wrap bd-highlight justify-content-center my-4">
             @{
                 if (Model != null && Model.GeneralInformation != null)
@@ -121,7 +121,7 @@
 <section>
     <div class="container">
 
-        <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
+        <div class="row gx-0 mb-4 mb-lg-5 align-items-center"  data-aos="fade-left">
             <div class="col-xl-8 col-lg-7">
 
                 <video src="~/video/compressed_cro-dron-short2-hq-ok.webm" type="audio/webm"
@@ -146,7 +146,7 @@
 
 
 @* *************************  DescriptionPages *************************  *@
-<section class="py-4" id="descriptionpagesanchor">
+<section class="py-4" id="descriptionpagesanchor" data-aos="fade-right">
         <!-- Featured Project Row-->
         <!-- Project One Row-->
         @{
@@ -263,7 +263,7 @@
 <section id="detailedanchor">
     <div class="container">
 
-<h2 class="section-divider">
+<h2 class="section-divider"  data-aos="zoom-in">
 
     <button class="section-accordion-btn"
             type="button"
@@ -287,14 +287,14 @@
         @if (Model.DetailedInformation != null && Model.DetailedInformation.Count > 0)
         {
             <div class="row my-4">
-                <div class="col-12 px-0">
+                <div class="col-12 px-4">
                     <div class="card-columns-css">
                         @foreach (DetailedInformation information in Model.DetailedInformation)
                         {
                             <div class="card card-2-border p-4">
                                 <div class="card-body">
                                     <h5 class="card-title d-flex align-items-center">
-                                        <img class="icon icon-lg icon-left icon-hover" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" alt="@information.Name" />
+                                        <img class="icon icon-hover" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" alt="@information.Name" />
                                         @information.Name
                                     </h5>
                                     @if(information.DetailedInformationItems != null && information.DetailedInformationItems.Any())
@@ -346,14 +346,14 @@
 
 
                 <div class="row  my-4">
-                    <div class="col-12">
+                    <div class="col-12 px-4">
                         <div class="card-columns-css">
                             @foreach (Distance distance in Model.Distances)
                             {
                                 <div class="card card-2-border p-4">
                                     @* class="card" *@
                                     <div class="card-body">
-                                        <h5 class="card-title d-flex align-items-center"> <img class="me-2" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
+                                        <h5 class="card-title d-flex align-items-center"> <img class="icon icon-hover" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
 
                                         @{
                                             if (distance != null && distance.DistanceItems != null)
