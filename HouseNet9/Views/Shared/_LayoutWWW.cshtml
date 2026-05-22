@@ -69,7 +69,7 @@
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="GeneralInformations" asp-action="Index">Rezerwacja ONLINE</a>
+                        <a class="nav-link" href="#calendaranchor">Rezerwacja ONLINE</a>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -97,10 +97,10 @@
                             <li><h6 class="dropdown-header">Informacje</h6></li>
 
                             <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="DetailedInformations" asp-action="Index">Wyposażenie</a>
+                                <a class="dropdown-item" href="#detailedanchor">Wyposażenie</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Distance" asp-action="Index">Odległości</a>
+                                <a class="dropdown-item" href="#distanceanchor">Odległości</a>
                             </li>
 
                         </ul>
@@ -161,6 +161,7 @@
     {
         //comment
         //section con/row/div
+
         @await Component.InvokeAsync("Comments", new { houseId = IdHouse, count = 6 })
         //button load
         <div class="container my-5">

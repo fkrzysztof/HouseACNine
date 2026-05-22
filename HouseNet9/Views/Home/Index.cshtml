@@ -4,13 +4,14 @@
 
 @* *************************  GeneralInformation ************************* *@
 <section id="generalinformationanchor">
-    <div class="container"  data-aos="fade-up">
+    <div class="container"  data-aos-delay="200" data-aos="fade-up">
         <div class="d-flex flex-wrap bd-highlight justify-content-center my-4">
             @{
+                int timeGeneralInformation = 1;
                 if (Model != null && Model.GeneralInformation != null)
                     foreach (GeneralInformation item in Model.GeneralInformation)
                     {
-                        @:<div class="card p-2 p-lg-4 m-2 d-inline justify-content-center">
+                        @:<div class="card p-2 p-lg-4 m-2 d-inline justify-content-center" data-aos-delay="@(timeGeneralInformation * 100)" data-aos="zoom-in">
                             if (item.Image != null && item.Image.Path != null)
                             {
                                     <img src="@Url.Content("~/uploads/" + item.Image.Path)" alt="Przesłany obraz" />
@@ -22,6 +23,7 @@
                                     @Html.DisplayFor(modelItem => item.Name)
                             }
                         @:</div>
+                    timeGeneralInformation++;
                     }
             }
         </div>
@@ -34,7 +36,7 @@
 <section id="calendaranchor">
 
 
-    <div class="container mt-5">
+    <div class="container mt-5 data-aos-delay="250" data-aos="fade-up"">
 
         <h2 class="section-divider">
             <span>Rezerwacja on-line</span>
@@ -121,8 +123,8 @@
 <section>
     <div class="container">
 
-        <div class="row gx-0 mb-4 mb-lg-5 align-items-center"  data-aos="fade-left">
-            <div class="col-xl-8 col-lg-7">
+        <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
+            <div class="col-xl-8 col-lg-7" data-aos-delay="300" data-aos="fade-left">
 
                 <video src="~/video/compressed_cro-dron-short2-hq-ok.webm" type="audio/webm"
                        autoplay
@@ -134,7 +136,7 @@
 
             </div>
             @* Opis przy VIDEO DOMU *@
-            <div class="col-xl-4 col-lg-5">
+            <div class="col-xl-4 col-lg-5" data-aos-delay="300" data-aos="fade-right">
                 <div class="featured-text text-start text-lg-left m-4">
                     <h4>@Model.Name</h4>
                     <p class="text-black-50 mb-0">@Model.LongText</p>
@@ -146,7 +148,7 @@
 
 
 @* *************************  DescriptionPages *************************  *@
-<section class="py-4" id="descriptionpagesanchor" data-aos="fade-right">
+<section class="py-4" id="descriptionpagesanchor">
         <!-- Featured Project Row-->
         <!-- Project One Row-->
         @{
@@ -193,15 +195,9 @@
 
                                 @if(hasImages)
                                    {
-                                        <div class="col-lg-6 @(xy ? "order-lg-first" : "order-lg-last")">
+                                        <div class="col-lg-6 @(xy ? "order-lg-first" : "order-lg-last")" data-aos-delay="200" data-aos="@(xy ? "fade-left" : "fade-right")">
 
                                             <div class="photo-masonry">
-
-                                                @{
-                                                //     var images = descriptionPage.Images?.Take(12).ToList() ?? new List<MyFile>();
-                                                //     int i = 0;
-                                                //     xy = !xy;
-                                                }
 
                                                 @foreach (var img in images)
                                                 {
@@ -210,7 +206,7 @@
                                                     var isVerticalSlot = (i % 5 == 0);
 
                                                     <div class="masonry-item @(isVerticalSlot ? "vertical-force" : "")">
-                                                        <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))" />
+                                                        <img src="@Url.Content("~/uploads/" + (img == null ? "no_photography_24dp.svg" : img.Path))"  data-aos-delay="@(i * 100)" data-aos="zoom-in" />
                                                     </div>
                                                 }
 
@@ -218,7 +214,7 @@
                                         </div>
                                    }
                                     <!-- *********** col-6 II -->
-                                <div class="@(hasImages ? "col-lg-6" : "col-12") margin-b">
+                                <div class="@(hasImages ? "col-lg-6" : "col-12") margin-b" data-aos-delay="200" data-aos="@(xy ? "flip-right" : "fade-left")">
                                     <div class="bg-black text-center h-100 project desc-page-textbox">
                                         <div class="">
                                             <div class="project-text w-100 my-auto text-center text-lg-left">
@@ -250,6 +246,7 @@
                             </div>
                         </div>
                     </div>
+                    
                 }
         }
 
@@ -263,7 +260,7 @@
 <section id="detailedanchor">
     <div class="container">
 
-<h2 class="section-divider"  data-aos="zoom-in">
+<h2 class="section-divider" data-aos-delay="250" data-aos="flip-left">
 
     <button class="section-accordion-btn"
             type="button"
@@ -286,15 +283,19 @@
 
         @if (Model.DetailedInformation != null && Model.DetailedInformation.Count > 0)
         {
-            <div class="row my-4">
-                <div class="col-12 px-4">
-                    <div class="card-columns-css">
+                <div class="row my-4">
+                    <div class="col-12 px-4">
+                        <div class="card-columns-css">
+
+                            @{
+                                int timeDetailedInformation = 1;
+                            }
                         @foreach (DetailedInformation information in Model.DetailedInformation)
                         {
-                            <div class="card card-2-border p-4">
+                            <div class="card card-2-border p-4"  data-aos-delay="@(timeDetailedInformation * 100)" data-aos="zoom-in">
                                 <div class="card-body">
                                     <h5 class="card-title d-flex align-items-center">
-                                        <img class="icon icon-hover" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" alt="@information.Name" />
+                                        <img class="icon icon-hover me-2" src="@Url.Content("~/uploads/" + (information.Image?.Path ?? "no_photography_24dp.svg"))" alt="@information.Name" />
                                         @information.Name
                                     </h5>
                                     @if(information.DetailedInformationItems != null && information.DetailedInformationItems.Any())
@@ -306,8 +307,9 @@
                                         </div>
                                     }
                                 </div>
-                            </div>
-                        }
+                                </div>
+                                timeDetailedInformation++;
+                            }
                     </div>
                 </div>
             </div>
@@ -324,7 +326,7 @@
 <section id="distanceanchor">
         <div class="container">
 
-<h2 class="section-divider">
+<h2 class="section-divider" data-aos-delay="300" data-aos="fade-left">
 
     <button class="section-accordion-btn"
             type="button"
@@ -348,23 +350,27 @@
                 <div class="row  my-4">
                     <div class="col-12 px-4">
                         <div class="card-columns-css">
+                        @{
+                            int timeDistance = 2;
+                        }
                             @foreach (Distance distance in Model.Distances)
                             {
-                                <div class="card card-2-border p-4">
+                                <div class="card card-2-border p-4"  data-aos-delay="@(timeDistance * 100)" data-aos="zoom-in">
                                     @* class="card" *@
                                     <div class="card-body">
-                                        <h5 class="card-title d-flex align-items-center"> <img class="icon icon-hover" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
+                                        <h5 class="card-title d-flex align-items-center"> <img class="icon icon-hover me-2" src="@Url.Content("~/uploads/" + (distance.Image == null ? "no_photography_24dp.svg" : distance.Image.Path))" alt="Przesłany obraz" />@distance.Name</h5>
 
                                         @{
                                             if (distance != null && distance.DistanceItems != null)
                                                 foreach (DistanceItem item in distance.DistanceItems)
                                                 {
-                                                    <div class="d-flex justify-content-between"><span>@item.NameInfo</span><span>@item.DistanceInfo</span></div>
-                                                }
-                                        }
-                                    </div>
+                                                <div class="d-flex justify-content-between"><span>@item.NameInfo</span><span>@item.DistanceInfo</span></div>
+                                            }
+                                    }
                                 </div>
-                            }
+                            </div>
+                            timeDistance++;
+                        }
                         </div>
                     </div>
                 </div>

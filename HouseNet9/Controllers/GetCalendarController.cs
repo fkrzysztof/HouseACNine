@@ -324,15 +324,20 @@ namespace HouseRent.Controllers
                 id = rentalHouse.RentalHouseID
             });
 
+            //return RedirectToAction("ThanksForTheReservation",  rentalHouse.RentalHouseID);
+
         }
 
 
 
         // --------------------------------------------------------
         // GET: Rental/ThanksForTheReservation/5
-        // --------------------------------------------------------
+        // ------------
+        // --------------------------------------------
+        [HttpGet]
         public async Task<IActionResult> ThanksForTheReservation(int id)
         {
+
             var rental = await _context.RentalHouses
                 .Include(r => r.RentalClient)
                 .FirstOrDefaultAsync(f => f.RentalHouseID == id);
@@ -373,7 +378,7 @@ namespace HouseRent.Controllers
             //}
 
 
-                var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
+            var settings = house.HouseSettingsId != null ? await _context.HouseSettings.FirstOrDefaultAsync(s => s.Id == house.HouseSettingsId)
                                                  : await _context.HouseSettings.FirstOrDefaultAsync(s => s.IsDefault);
 
             var paymentInfo = _paymentCalculator.Calculate(

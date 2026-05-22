@@ -33,21 +33,21 @@
 
                     <div class="row input-group-newsletter">
 
-                        <div class="col-md-6 my-2">
+                        <div class="col-md-6 my-2" data-aos-delay="200" data-aos="fade-left">
                             <input asp-for="Form.Name" class="form-control" placeholder="Imię" />
                             <span asp-validation-for="Form.Name" class="text-danger"></span>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" data-aos-delay="250" data-aos="fade-right">
                             <input asp-for="Form.Email" class="form-control" placeholder="Email" />
                             <span asp-validation-for="Form.Email" class="text-danger"></span>
                         </div>
 
-                        <div class="col-md-12 my-2">
+                        <div class="col-md-12 my-2" data-aos-delay="250" data-aos="fade-left">
                             <textarea asp-for="Form.Message" class="form-control" placeholder="Wiadomość" style="height:200px;"></textarea>
                             <span asp-validation-for="Form.Message" class="text-danger"></span>
                         </div>
 
-                        <div class="col-12 mt-3">
+                        <div class="col-12 mt-3" data-aos-delay="300" data-aos="fade-right">
                             <button class="btn btn-primary w-100" type="submit">Wyślij</button>
                         </div>
 
@@ -69,25 +69,19 @@
             <!-- BRAND -->
             <div class="col-lg-3">
 
-                <img src="~/uploads/@ViewBag.Logo" class="footer-logo" />
+                <img src="~/uploads/@ViewBag.Logo" class="footer-logo" data-aos-delay="200" data-aos="fade-up" />
 
                 <p class="footer-description">
                     Nowoczesny dom wakacyjny z intuicyjnym systemem rezerwacji online.
                     Komfort, prywatność i szybka dostępność terminów.
                 </p>
 
-                <img src="/Qr/FooterQr" alt="QR Code" width="120" />
-
-@*                 <div class="footer-mini-info mt-4">
-                    <div>✓ Rezerwacja online</div>
-                    <div>✓ Aktualna dostępność</div>
-                    <div>✓ Szybki kontakt</div>
-                </div> *@
+                <img src="/Qr/FooterQr" alt="QR Code" width="120" data-aos-delay="200" data-aos="flip-left" />
 
             </div>
 
             <!-- CONTACT -->
-            <div class="col-lg-3  text-center text-lg-start">
+            <div class="col-lg-3  text-center text-lg-start" data-aos-delay="200" data-aos="fade-up">
 
                 <h5 class="mb-4">Kontakt</h5>
 
@@ -137,42 +131,41 @@
             </div>
 
             <!-- LINKS -->
-            <div class="col-lg-3 text-center text-lg-start">
+            <div class="col-lg-3 text-center text-lg-start" data-aos-delay="200" data-aos="fade-up">
 
                 <h5 class="mb-4">Informacje</h5>
 
                 <div class="footer-links">
 
-                    <a asp-controller="GeneralInformations" asp-action="Index">
+                    <a href="#">
                         Polityka prywatności
                     </a>
 
-                    <a asp-controller="GeneralInformations" asp-action="Index">
+                    <a href="#">
                         Cookies
                     </a>
+                    <!--  Linki generowane-->
+                    @{
+                        if (ViewBag.MenuItems != null)
+                        {
+                            List<string> footermeuItems = ViewBag.MenuItems as List<string>;
+                            foreach (string item in footermeuItems)
+                            {
+                                <a href="#@item">@item</a>
 
-                    <a asp-controller="DetailedInformations" asp-action="Index">
-                        Wyposażenie
-                    </a>
+                            }
+                        }
+                    }
 
-                    <a asp-controller="Distance" asp-action="Index">
-                        Lokalizacja i odległości
-                    </a>
-
-                    <a href="#descriptionpagesanchor">
-                        Dom i udogodnienia
-                    </a>
-
-                    <a href="#commentsContainer">
-                        Opinie klientów
-                    </a>
-
+                    <a href="#commentanchor">Opinie klientów</a>
+                    <a href="#detailedanchor">Wyposażenie</a>
+                    <a href="#distanceanchor">Odległości</a>
                 </div>
 
             </div>
 
             <!-- CTA -->
-            <div class="col-lg-3">
+            <div class="col-lg-3" data-aos-delay="200" data-aos="fade-up">
 
                 <div class="footer-cta mt-5 mt-lg-0">
 
@@ -222,11 +215,11 @@
         </div>
 
         <!-- BOTTOM -->
-        <div class="footer-bottom mt-5 pt-4">
+        <div class="footer-bottom mt-5 pt-4" data-aos-delay="300" data-aos="zoom-in">
 
             <div class="d-flex justify-content-between flex-wrap gap-3">
 
-                <span>© 2026 RENTHOUSE</span>
+                <span>© 2006 RH</span>
 
                 <div>
                     <a href="/Privacy" class="me-3">Polityka prywatności</a>
