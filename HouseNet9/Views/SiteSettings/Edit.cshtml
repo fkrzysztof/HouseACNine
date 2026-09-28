@@ -1,8 +1,11 @@
 ﻿@model Data.Data.HouseRentalData.SiteSettings
 
-
 @{
     ViewData["Title"] = "Edycja ustawień strony";
+}
+
+@section Scripts {
+    <script src="~/js/siteSettingsQuill.js"></script>
 }
 
 <div class="container py-5">
@@ -18,45 +21,47 @@
         </div>
     }
 
-    <form asp-action="Edit" method="post">
+    <form id="siteSettingsEditForm" asp-action="Edit" method="post">
 
         <input type="hidden" asp-for="Id" />
 
         <div class="mb-5">
 
-            <label asp-for="PrivacyPolicy"
-                   class="form-label fw-bold">
-
+            <label class="form-label fw-bold">
                 Polityka prywatności
-
             </label>
 
-            <textarea asp-for="PrivacyPolicy"
-                      class="form-control"
-                      rows="20"></textarea>
+            <div id="privacyEditor"
+                 style="height: 500px; background-color: #fff;">
+                @Html.Raw(Model.PrivacyPolicy)
+            </div>
+
+            <input type="hidden"
+                   name="PrivacyPolicy" />
 
         </div>
+
 
         <div class="mb-5">
 
-            <label asp-for="CookiesPolicy"
-                   class="form-label fw-bold">
-
-                Polityka cookies
-
+            <label class="form-label fw-bold">
+                Polityka Cookies
             </label>
 
-            <textarea asp-for="CookiesPolicy"
-                      class="form-control"
-                      rows="12"></textarea>
+            <div id="cookiesEditor"
+                 style="height: 400px; background-color: #fff;">
+                @Html.Raw(Model.CookiesPolicy)
+            </div>
+
+            <input type="hidden"
+                   name="CookiesPolicy" />
 
         </div>
 
+
         <button type="submit"
                 class="btn btn-dark px-5">
-
             Zapisz
-
         </button>
 
     </form>

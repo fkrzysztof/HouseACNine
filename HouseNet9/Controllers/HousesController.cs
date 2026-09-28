@@ -88,37 +88,77 @@ namespace HouseNet9.Controllers
         }
 
         // POST: Houses/Edit/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
+        //{
+        //    //if (id != house.HouseId || house.HouseId != CurrentHouseId.Value)
+        //    //{
+        //    //    return NotFound();
+        //    //}
+        //    if (CurrentHouseId == null || house.HouseId != CurrentHouseId.Value)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(house);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!HouseExists(house.HouseId))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Edit), new { id = CurrentHouseId });
+        //    }
+        //    return View(house);
+        //}
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
+        public async Task<IActionResult> Edit([Bind("HouseId,Name,ShortText,LongText,RentalRules,IsActive")] House house)
         {
-            if (id != house.HouseId || house.HouseId != CurrentHouseId.Value)
+            if (CurrentHouseId == null || house.HouseId != CurrentHouseId.Value)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(house);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HouseExists(house.HouseId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Edit), new { id = CurrentHouseId });
+                return View(house);
             }
-            return View(house);
+
+            var existingHouse = await _context.Houses
+                .FirstOrDefaultAsync(h => h.HouseId == CurrentHouseId.Value);
+
+            if (existingHouse == null)
+            {
+                return NotFound();
+            }
+
+            existingHouse.Name = house.Name;
+            existingHouse.ShortText = house.ShortText;
+            existingHouse.LongText = house.LongText;
+            existingHouse.RentalRules = house.RentalRules;
+            existingHouse.IsActive = house.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit));
         }
+
+
 
         // GET: Houses/Delete/5
         public async Task<IActionResult> Delete(int? id)

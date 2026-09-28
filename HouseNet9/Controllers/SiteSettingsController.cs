@@ -1,38 +1,24 @@
 ﻿using Data.Data.HouseRentalData;
+using HouseNet9.Controllers.Abstract.HouseNet9.Controllers.Admin;
 using HouseNet9.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HouseNet9.Controllers
 {
-    public class SiteSettingsController : Controller
+    public class SiteSettingsController : BaseAdminController
     {
-        private readonly ApplicationDbContext _context;
 
-        public SiteSettingsController(ApplicationDbContext context)
+        public SiteSettingsController(
+            ApplicationDbContext context,
+            ILoggerFactory loggerFactory)
+            : base(context, loggerFactory)
         {
-            _context = context;
         }
 
-        // PUBLICZNA STRONA
-        // /SiteSettings
-        public async Task<IActionResult> Index()
-        {
-            var settings = await _context.SiteSettings.FirstOrDefaultAsync();
 
-            if (settings == null)
-            {
-                settings = new SiteSettings
-                {
-                    PrivacyPolicy = "",
-                    CookiesPolicy = ""
-                };
-            }
+        // PANEL ADMINA *********************************************************************
 
-            return View(settings);
-        }
-
-        // PANEL ADMINA
         // /SiteSettings/Edit
         public async Task<IActionResult> Edit()
         {
@@ -82,5 +68,8 @@ namespace HouseNet9.Controllers
 
             return View(settings);
         }
+
+
+
     }
 }

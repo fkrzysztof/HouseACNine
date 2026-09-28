@@ -1,0 +1,11 @@
+﻿@model Data.Data.HouseRentalData.SiteSettings
+
+@{
+    ViewData["Title"] = "Polityka Cookies";
+}
+
+<div id="cookies" class="container py-5">
+    <h1 class="mb-4">Polityka Cookies</h1>
+
+    @Html.Raw(Model.CookiesPolicy)
+</div>

@@ -1,4 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
+
     var quill = new Quill('#quillEditor', {
         theme: 'snow',
         modules: {
@@ -12,9 +13,10 @@
         }
     });
 
-    // synchronizacja z ukrytym inputem przy submit
-    var form = document.querySelector('form');
-    form.onsubmit = function () {
-        document.querySelector('input[name="RentalRules"]').value = quill.root.innerHTML;
-    };
+    var form = document.querySelector('#houseEditForm');
+
+    form.addEventListener('submit', function () {
+        document.querySelector('input[name="RentalRules"]').value =
+            quill.root.innerHTML;
+    });
 });

@@ -181,11 +181,32 @@ namespace HouseNet9.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-        public IActionResult Privacy()
+        [HttpGet("/privacy")]
+        public async Task<IActionResult> Privacy()
         {
-            return View();
+            var settings = await _context.SiteSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (settings == null)
+                return NotFound();
+
+            return View(settings);
         }
+
+        [HttpGet("/cookies")]
+        public async Task<IActionResult> Cookies()
+        {
+            var settings = await _context.SiteSettings
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (settings == null)
+                return NotFound();
+
+            return View(settings);
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

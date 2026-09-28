@@ -5,12 +5,12 @@
 @model Data.Data.HouseRentalData.House
 
 @section Scripts {
-    <script src="~/js/quilltextformatting.js"></script>
+    <script src="~/js/quillTextFormatting.js"></script>
 }
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit" method="post">
+        <form id="houseEditForm" asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <input type="hidden" asp-for="HouseId" />
@@ -36,15 +36,28 @@
                 <span asp-validation-for="LongText" class="text-danger"></span>
             </div>
 
+
+
+
+
+
             <!-- Zasady wynajmu -->
             <div class="mb-3">
                 <label asp-for="RentalRules" class="form-label"></label>
-                <div id="quillEditor" style="height: 400px; background-color: #fff; border: 1px solid #ccc;">
+
+                <div id="quillEditor"
+                     style="height: 400px; background-color: #fff; border: 1px solid #ccc;">
                     @Html.Raw(Model.RentalRules)
                 </div>
+
                 <input type="hidden" name="RentalRules" />
+
                 <span asp-validation-for="RentalRules" class="text-danger"></span>
             </div>
+
+
+
+
 
             <!-- Checkbox IsActive -->
             <div class="form-check mb-3">

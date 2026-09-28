@@ -28,7 +28,8 @@
             {
                 // jeśli nie wybrano domu → wróć do listy domów
                 if (CurrentHouseId == null &&
-                    context.Controller.GetType().Name != "HousesController")
+                    context.Controller.GetType().Name != "HousesController" &&
+                    context.Controller.GetType().Name != "SiteSettingsController")
                 {
                     context.Result = RedirectToAction("Index", "Houses");
                     return;
